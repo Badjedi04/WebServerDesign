@@ -33,8 +33,10 @@ def start_client(conn, addr):
     while True:
         try:
             data = conn.recv(1024)  # receive data from client
+            connection_timeout = Timer(30, close_connection, args=(conn))
+            connection_timeout.start()
             conn.sendall(data)
-            return
+            break
         except Exception as e:
             print("connection closed" + str(e))
             sys.exit()
