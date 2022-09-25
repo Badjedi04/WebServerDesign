@@ -8,6 +8,4 @@ COPY . .
 
 RUN pip3 install -r requirements.txt
 
-EXPOSE 80
-
-ENTRYPOINT [ "python", "main.py" ]
+ENTRYPOINT [ "python", "main.py", "0.0.0.0", "80" ]
