@@ -1,2 +1,5 @@
 # Ignore VS code
 .vs
+
+# Ignore Python intermediate files
+__pycache__
