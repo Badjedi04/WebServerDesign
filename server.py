@@ -32,6 +32,6 @@ def start_client(conn, addr):
             sys.exit()
         if len(data) > 0:
             conn.sendall(data)
-            #client_message = bytes.decode(data)  # decode it to string
-            #return client_message
+            conn.shutdown(socket.SHUT_RDWR)
+            conn.close()
         
