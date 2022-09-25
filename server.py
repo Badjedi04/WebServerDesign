@@ -31,6 +31,7 @@ def start_client(conn, addr):
             print("connection closed" + str(e))
             sys.exit()
         if len(data) > 0:
-            client_message = bytes.decode(data)  # decode it to string
-            return client_message
+            conn.sendall(data)
+            #client_message = bytes.decode(data)  # decode it to string
+            #return client_message
         
