@@ -18,9 +18,10 @@ def run_server(ip_addr, port):
     wait_for_connections(server_socket)
 
 def wait_for_connections(server_socket):
-    server_socket.listen(3)
-    conn, addr = server_socket.accept()
-    Thread(target=start_client, args=(conn, addr)).start()
+    while True:
+        server_socket.listen(3)
+        conn, addr = server_socket.accept()
+        Thread(target=start_client, args=(conn, addr)).start()
 
 
 def close_connection(conn, connection_timeout):
