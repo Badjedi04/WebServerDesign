@@ -27,12 +27,11 @@ def start_client(conn, addr):
     while True:
         try:
             data = conn.recv(1024)  # receive data from client
+            conn.sendall(data)
+            conn.close()
+            break
         except Exception as e:
             print("connection closed" + str(e))
             sys.exit()
-        if len(data) > 0:
-            conn.sendall(data)
-            conn.shutdown(socket.SHUT_RDWR)
-            conn.close()
-            break
+
         
