@@ -34,4 +34,5 @@ def start_client(conn, addr):
             conn.sendall(data)
             conn.shutdown(socket.SHUT_RDWR)
             conn.close()
+            break
         
