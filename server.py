@@ -1,6 +1,6 @@
 import socket
 import sys
-from threading import Thread
+from threading import Thread, Timer
 
 """
 Function to start Server
@@ -23,15 +23,21 @@ def wait_for_connections(server_socket):
     Thread(target=start_client, args=(conn, addr)).start()
 
 
+def close_connection(conn, connection_timeout):
+    connection_timeout.cancel()
+    conn.shutdown(socket.SHUT_RDWR)
+    conn.close()
+
+
 def start_client(conn, addr):
     while True:
         try:
             data = conn.recv(1024)  # receive data from client
+            connection_timeout = Timer(30, close_connection, args=(conn, connection_timeout))
+            connection_timeout.start()
             conn.sendall(data)
-            conn.close()
             break
         except Exception as e:
             print("connection closed" + str(e))
             sys.exit()
-
-        
+   
