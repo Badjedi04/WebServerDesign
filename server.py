@@ -2,6 +2,7 @@ import socket
 import sys
 from threading import Thread, Timer
 
+import parser
 """
 Function to start Server
 
@@ -35,7 +36,12 @@ def start_client(conn, addr):
             data = conn.recv(1024)  # receive data from client
             connection_timeout = Timer(30, close_connection, args=(conn))
             connection_timeout.start()
-            conn.sendall(data)
+            if data:
+                print("Data received")
+                parser.get_request_header(data.decode())
+            else:
+                print("No data")
+            #conn.sendall(data)
             break
         except Exception as e:
             print("connection closed" + str(e))

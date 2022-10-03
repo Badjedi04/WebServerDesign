@@ -3,3 +3,6 @@
 
 # Ignore Python intermediate files
 __pycache__
+
+# Ignore Logs
+Logs
