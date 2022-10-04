@@ -4,10 +4,27 @@ import json
 import constants
 
 
-def server_reply():
-    with open(constants.REQUEST_REPORT , "r") as fobj:
-        request_dict = json.load(fobj)
-    server_response = ""
-    server_response += request["method"] + constants.SPACE + request["path"] + constants.SPACE + request["http_version"] 
-    print(server_reply)
-    return server_reply
+def server_reply(config):
+    try:
+        with open(constants.RESPONSE_REPORT , "r") as fobj:
+            response_dict = json.load(fobj)
+        """
+        HTTP/1.1 200 OK
+        Date: Tue, 04 Oct 2022 10:40:39 GMT
+        Server: calebsserver
+        Content-Type: text/html
+        Last-Modified: Sat, 20 Oct 2018 02:33:21 GMT
+        Content-Length: 1936
+        """
+        server_response = ""
+        server_response += f'HTTP/{config["HEADERS"]["http_version"]} {response_dict["status_code"]} {response_dict["status_text"]}\n'
+        for (key, value) in response_dict.items():
+            if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow"]:
+                server_response += f'{key}: {value}'
+        sys.stdout.write(f'Server Response: \n {server_reply}\n')
+        return server_reply
+    except Exception as e:
+        sys.stderr.write('server_reply: error {e}\n')
+
+
+

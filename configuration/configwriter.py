@@ -21,8 +21,22 @@ def create_config_file():
 
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
-    config["HEADERS"]["http_version"] = "HTTP/1.1"
- 
+    config["HEADERS"]["http_version"] = "1.1"
+    config["HEADERS"]["server"] = "cs_ptoma001_server"
+    config["HEADERS"]["mime_types"] = "text/plain,text/html,text/xml,image/png,image/jpeg,"\
+                                        "image/gif,application/pdf,application/vnd.ms-powerpoint,"\
+                                        "application/vnd.ms-word,message/http,aaplication/octet-stream"
+    
+    config["STATUS_CODE"] = {}
+    config["STATUS_CODE"]["400"] = "Bad Response"
+    config["STATUS_CODE"]["200"] = "OK"
+    config["STATUS_CODE"]["403"] = "Forbidden"
+    config["STATUS_CODE"]["404"] = "Not Found"
+    config["STATUS_CODE"]["500"] = "Internal Server Error"
+    config["STATUS_CODE"]["501"] = "Not Implemented"
+    config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
+
+
     with open(constants.CONFIG, "w") as fobj:
         config.write(fobj)
 

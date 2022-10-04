@@ -39,8 +39,8 @@ def start_client(conn, addr, config):
             connection_timeout.start()
             if data:
                 print("Data received")
-                parser.get_request_header(data.decode())
-                conn.send(report.server_reply())
+                parser.get_request_header(data.decode(), config)
+                conn.send(report.server_reply(config))
             else:
                 print("No data")
             break
