@@ -43,7 +43,7 @@ def header_validate(request_header, config):
                     return False
                 elif line_splitter[2]: 
                     version_splitter = line_splitter[2].split("/")
-                    if version_splitter[0] is not "HTTP":
+                    if version_splitter[0] != "HTTP":
                         create_response.create_response("400", config)
                         return False                   
                     elif version_splitter[1] != config["HEADERS"]["http_version"]:
@@ -53,8 +53,8 @@ def header_validate(request_header, config):
             else:
                 line_splitter = line.split(":")
                 if len(line_splitter) != 2 \
-                    or line_splitter[0] == "Host" and line_splitter[1].strip() is not "cs531-cs_ptoma001"\
-                    or line_splitter[0]  == "Connection" and line_splitter[1].strip() is not "close":
+                    or line_splitter[0] == "Host" and line_splitter[1].strip() != "cs531-cs_ptoma001"\
+                    or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
                     create_response.create_response("400", config)
                     return False
         if request_header.splitlines()[-1].strip() is not None:
@@ -63,7 +63,7 @@ def header_validate(request_header, config):
         return True   
     except Exception as e:
         sys.strerr(f'header_validate: error {e}')
-        
+
 """
 
 """    
