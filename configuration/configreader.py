@@ -12,7 +12,7 @@ def read_config_file():
 def convert_to_int(value):
     try:
         return int(value)
-    except ValueError:
+    except Exception as e:
         return convert_list(value)
 
 def convert_list(value):
