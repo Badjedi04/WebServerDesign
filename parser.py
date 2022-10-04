@@ -20,7 +20,7 @@ def get_request_header(request_header, config):
             pass
             
     except Exception as e:
-         sys.stderr.write(f'Parser: get_request_header error: {e}\n')
+         sys.stderr.write(f'Parser: get_request_header error: {e.args}\n')
 
 def header_validate(request_header, config):
     """
@@ -62,7 +62,7 @@ def header_validate(request_header, config):
             return False
         return True   
     except Exception as e:
-        sys.stderr(f'header_validate: error {e}')
+        sys.stderr(f'header_validate: error {e.args}')
 
 """
 
