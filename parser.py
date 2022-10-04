@@ -12,6 +12,7 @@ import constants
 
 import report.responder as responder
 import report.create_response as create_response
+
 def get_request_header(request_header, config):
     try:
         sys.stdout.write(f'Print request_header: \n{request_header}\n')
@@ -34,8 +35,7 @@ def header_validate(request_header, config):
             if index == 0:
                 line_splitter = line.split()
 
-                if len(line_splitter) != 3 \
-                    or not line_splitter[1].startswith(config["MAPPING"]["host_path"]):
+                if len(line_splitter) != 3:
                     create_response.create_response("400", config)
                     return False
                 elif line_splitter[0] not in config["HEADERS"]["http_methods"]:
@@ -62,7 +62,7 @@ def header_validate(request_header, config):
             return False
         return True   
     except Exception as e:
-        sys.strerr(f'header_validate: error {e}')
+        sys.stderr(f'header_validate: error {e}')
 
 """
 
