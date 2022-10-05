@@ -30,14 +30,15 @@ def header_validate(request_header, config):
 
     """
     try:
-        dict_request = parse_header(request_header)
-        sys.stdout.write(f'Request Header size: {len(request_header.splitlines())}\n')
-
-        if request_header.splitlines()[-1].strip() is not None:
+        line_splitter = request_header.splitlines()
+        dict_request = parse_header(line_splitter)
+        sys.stdout.write(f'Request Header size: {len(line_splitter)}\n')
+        sys.stdout.write(f'Request Header : {line_splitter}\n')
+        if not line_splitter[-1].strip():
             sys.stdout.write("Last line is not empty\n")
             reply_header.create_response_header("400", config, dict_request)
             return False
-        for index, line in enumerate(request_header.splitlines()[:-2]):
+        for index, line in enumerate(line_splitter[:-2]):
             sys.stdout.write(f'validate header: {line}\n')
             if index == 0:
                 line_splitter = line.split()
@@ -77,7 +78,7 @@ def header_validate(request_header, config):
 def parse_header(request_header):
     try:
         dict_request = {}
-        for index, line in enumerate(request_header.splitlines()):
+        for index, line in enumerate(request_header):
             sys.stdout.write(f'Line  \n {line}\n')
             if line.strip():
                 if index > 0:
