@@ -32,7 +32,6 @@ def header_validate(request_header, config):
     """
     try:
         dict_request = parse_header(request_header)
-
         for index, line in enumerate(request_header.splitlines()):
             if index == 0:
                 line_splitter = line.split()
@@ -75,18 +74,17 @@ def parse_header(request_header):
         dict_request = {}
         for index, line in enumerate(request_header.splitlines()):
             sys.stdout.write(f'Line  \n {line}\n')
-            if line.strip() is None:
-                pass
-            elif index > 0:
-                line_splitter = line.split(":")
-                sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
-                dict_request[line_splitter[0]] = line_splitter[1].strip()
-            else:
-                line_splitter = line.split()
-                sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
-                dict_request["method"] = line_splitter[0]
-                dict_request["path"] = line_splitter[1]
-                dict_request["http_version"] = line_splitter[2]
+            if line.strip():
+                if index > 0:
+                    line_splitter = line.split(":")
+                    sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
+                    dict_request[line_splitter[0]] = line_splitter[1].strip()
+                else:
+                    line_splitter = line.split()
+                    sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
+                    dict_request["method"] = line_splitter[0]
+                    dict_request["path"] = line_splitter[1]
+                    dict_request["http_version"] = line_splitter[2]
 
         with open(constants.REQUEST_REPORT , "w") as fobj:
             json.dump(dict_request, fobj)
