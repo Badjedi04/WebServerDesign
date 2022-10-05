@@ -23,7 +23,7 @@ def create_response_header(status_code, config, dict_request=None):
         with open(constants.RESPONSE_REPORT, "w") as fobj:
             json.dump(dict_response,fobj)
     except Exception as e:
-        sys.stderr(f'create_response: error {e}')
+        sys.stderr.write(f'create_response: error {e}')
 
 def return_mime_type(config, file=None):
     try:
@@ -51,4 +51,4 @@ def return_mime_type(config, file=None):
             elif file_ext in ["docx", "doc"]:
                 return {"mime_type": config["HEADERS"]["mime_types"][8], "length": file_length, "payload": file_response}
     except Exception as e:
-        sys.stderr(f'return_mime_type: error {e}')
+        sys.stderr.write(f'return_mime_type: error {e}')
