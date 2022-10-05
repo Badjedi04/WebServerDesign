@@ -31,8 +31,11 @@ def header_validate(request_header, config):
     """
     try:
         dict_request = parse_header(request_header)
-        for index, line in enumerate(request_header.splitlines()):
-            sys.stdout.write('validate header: {line}\n')
+        if request_header.splitlines()[-1].strip() is not None:
+            reply_header.create_response_header("400", config, dict_request)
+            return False
+        for index, line in enumerate(request_header.splitlines()[:-2]):
+            sys.stdout.write(f'validate header: {line}\n')
             if index == 0:
                 line_splitter = line.split()
 
@@ -54,18 +57,14 @@ def header_validate(request_header, config):
                         sys.stdout.write("HTTP version is wrong \n")
                         reply_header.create_response_header("505", config, dict_request)
                         return False 
-
             else:
                 line_splitter = line.split(":")
                 if len(line_splitter) != 2 \
                     or line_splitter[0] == "Host" and line_splitter[1].strip() != "cs531-cs_ptoma001"\
                     or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
-                    sys.stdout.write("Either not key vaslue pair, host name or connection is wrong \n")
+                    sys.stdout.write("Either not key value pair, host name or connection is wrong \n")
                     reply_header.create_response_header("400", config, dict_request)
                     return False
-        if request_header.splitlines()[-1].strip() is not None:
-            reply_header.create_response_header("400", config, dict_request)
-            return False
         return True   
     except Exception as e:
         sys.stderr.write(f'header_validate: error {e}\n')
