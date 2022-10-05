@@ -15,10 +15,11 @@ def get_request_header(request_header, config):
     try:
         sys.stdout.write(f'Print request_header: \n{request_header}\n')
         if header_validate(request_header, config):
-            pass
+            sys.stdout.write(f'get_request_header: header valid\n')
+        else:
+            sys.stdout.write(f'get_request_header: header invalid\n')
     except Exception as e:
         sys.stderr.write(f'Parser: get_request_header error: {e}\n')
-        reply_header.create_response_header("500", config)
 
 
 def header_validate(request_header, config):
@@ -62,7 +63,6 @@ def header_validate(request_header, config):
         return True   
     except Exception as e:
         sys.stderr.write(f'header_validate: error {e}\n')
-        reply_header.create_response_header("500", config)
 
 """
 

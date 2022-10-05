@@ -10,7 +10,7 @@ def create_response_header(status_code, config, dict_request=None):
         dict_response["http_version"] = config["HEADERS"]["http_version"]
         dict_response["status_text"] = config["STATUS_CODE"][status_code]
         dict_response["Server"] = config["HEADERS"]["server"]
-        if dict_request:
+        if dict_request and status_code == "200":
             response = return_mime_type(config, dict_request["path"])
             dict_response["Content-type"] = f'{response["mime_type"]}; charset=iso-8859-1'
             if "length" in response:
