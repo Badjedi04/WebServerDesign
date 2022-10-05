@@ -31,14 +31,16 @@ def header_validate(request_header, config):
     """
     try:
         dict_request = parse_header(request_header)
+        sys.stdout.write(f'Request Header size: {len(request_header.splitlines())}\n')
+
         if request_header.splitlines()[-1].strip() is not None:
+            sys.stdout.write("Last line is not empty\n")
             reply_header.create_response_header("400", config, dict_request)
             return False
         for index, line in enumerate(request_header.splitlines()[:-2]):
             sys.stdout.write(f'validate header: {line}\n')
             if index == 0:
                 line_splitter = line.split()
-
                 if len(line_splitter) != 3:
                     reply_header.create_response_header("400", config, dict_request)
                     sys.stdout.write("First line is more than three\n")

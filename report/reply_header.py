@@ -19,7 +19,7 @@ def create_response_header(status_code, config, dict_request=None):
                 dict_response["payload"] = response["payload"]
             if dict_request["Connection"]:
                 dict_response["Connection"] = dict_request["Connection"]
-
+        sys.stdout.write(f'create_response_header: Response Dict\n{dict_response}\n')
 
         with open(constants.RESPONSE_REPORT, "w") as fobj:
             json.dump(dict_response,fobj)

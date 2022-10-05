@@ -31,8 +31,8 @@ def server_reply(config):
                 server_response += f'{key}: {value}'
             if key == "payload":
                 server_response += '\n{value}\n'
-        sys.stdout.write(f'Server Response: \n {server_reply}\n')
-        return server_reply
+        sys.stdout.write(f'Server Response: \n {server_response}\n')
+        return server_response
     except Exception as e:
         sys.stderr.write('server_reply: error {e}\n')
 
