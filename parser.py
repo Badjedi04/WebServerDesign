@@ -6,7 +6,7 @@
 """
 import sys 
 import json
-import os
+
 import constants
 
 import report.reply_header as reply_header
@@ -14,8 +14,8 @@ import report.reply_header as reply_header
 def get_request_header(request_header, config):
     try:
         sys.stdout.write(f'Print request_header: \n{request_header}\n')
-        if header_validate(request_header, config):
-            pass
+        #if header_validate(request_header, config):
+        #    pass
     except Exception as e:
         sys.stderr.write(f'Parser: get_request_header error: {e}\n')
         reply_header.create_response_header("500", config)
