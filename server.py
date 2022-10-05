@@ -40,7 +40,7 @@ def start_client(conn, addr, config):
             if data:
                 print("Data received")
                 parser.get_request_header(data.decode(), config)
-                conn.send(report.server_reply(config))
+                conn.send(report.handle_server_response(config))
             else:
                 print("No data")
             break

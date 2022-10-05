@@ -10,8 +10,7 @@ import os
 from venv import create
 import constants
 
-import report.responder as responder
-import report.create_response as create_response
+import report.reply as reply
 
 def get_request_header(request_header, config):
     try:
@@ -20,7 +19,7 @@ def get_request_header(request_header, config):
             pass
             
     except Exception as e:
-         sys.stderr.write(f'Parser: get_request_header error: {e.args}\n')
+         sys.stderr.write(f'Parser: get_request_header error: {e}\n')
 
 def header_validate(request_header, config):
     """
@@ -29,25 +28,25 @@ def header_validate(request_header, config):
     Connection: close
 
     """
+    dict_request = parse_header(request_header)
     try:
-        dict_request = parse_header(request_header)
         for index, line in enumerate(request_header.splitlines()):
             if index == 0:
                 line_splitter = line.split()
 
                 if len(line_splitter) != 3:
-                    create_response.create_response("400", config)
+                    reply.create_response("400", config, dict_request)
                     return False
                 elif line_splitter[0] not in config["HEADERS"]["http_methods"]:
-                    create_response.create_response("501", config)
+                    reply.create_response("501", config)
                     return False
                 elif line_splitter[2]: 
                     version_splitter = line_splitter[2].split("/")
                     if version_splitter[0] != "HTTP":
-                        create_response.create_response("400", config)
+                        reply.create_response("400", config, dict_request)
                         return False                   
                     elif version_splitter[1] != config["HEADERS"]["http_version"]:
-                        create_response.create_response("505", config)
+                        reply.create_response("505", config, dict_request)
                         return False 
 
             else:
@@ -55,14 +54,14 @@ def header_validate(request_header, config):
                 if len(line_splitter) != 2 \
                     or line_splitter[0] == "Host" and line_splitter[1].strip() != "cs531-cs_ptoma001"\
                     or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
-                    create_response.create_response("400", config)
+                    reply.create_response("400", config, dict_request)
                     return False
         if request_header.splitlines()[-1].strip() is not None:
-            create_response.create_response("400", config)
+            reply.create_response("400", config, dict_request)
             return False
         return True   
     except Exception as e:
-        sys.stderr(f'header_validate: error {e.args}')
+        sys.stderr(f'header_validate: error {e}')
 
 """
 
@@ -80,7 +79,10 @@ def parse_header(request_header):
             dict_request["method"] = line_splitter[0]
             dict_request["path"] = line_splitter[1]
             dict_request["http_version"] = line_splitter[2]
+
     with open(constants.REQUEST_REPORT , "w") as fobj:
         json.dump(dict_request, fobj)
+    if "Connection" not in dict_request:
+        dict_request["connection"] = None
     sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
     return dict_request

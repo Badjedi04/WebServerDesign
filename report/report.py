@@ -3,6 +3,14 @@ import sys
 import json
 import constants
 
+import report.responder as responder
+
+def handle_server_response(config):
+    if os.path.exists(constants.RESPONSE_REPORT):
+        return server_reply(config)
+    else:
+        responder.handle_server_request(config)
+        return server_reply(config)
 
 def server_reply(config):
     try:
