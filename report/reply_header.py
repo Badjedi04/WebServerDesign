@@ -3,7 +3,7 @@ import sys
 
 import constants
 
-def create_response(status_code, config, dict_request=None):
+def create_response_header(status_code, config, dict_request=None):
     try:
         dict_response = {}
         dict_response["status_code"] = status_code
