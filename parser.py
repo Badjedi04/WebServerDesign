@@ -32,21 +32,26 @@ def header_validate(request_header, config):
     try:
         dict_request = parse_header(request_header)
         for index, line in enumerate(request_header.splitlines()):
+            sys.stdout.write('validate header: {line}\n')
             if index == 0:
                 line_splitter = line.split()
 
                 if len(line_splitter) != 3:
                     reply_header.create_response_header("400", config, dict_request)
+                    sys.stdout.write("First line is more than three\n")
                     return False
                 elif line_splitter[0] not in config["HEADERS"]["http_methods"]:
+                    sys.stdout.write("HTTP method not supported\n")
                     reply_header.create_response_header("501", config)
                     return False
                 elif line_splitter[2]: 
                     version_splitter = line_splitter[2].split("/")
                     if version_splitter[0] != "HTTP":
+                        sys.stdout.write("HTTP not used \n")
                         reply_header.create_response_header("400", config, dict_request)
                         return False                   
                     elif version_splitter[1] != config["HEADERS"]["http_version"]:
+                        sys.stdout.write("HTTP version is wrong \n")
                         reply_header.create_response_header("505", config, dict_request)
                         return False 
 
@@ -55,6 +60,7 @@ def header_validate(request_header, config):
                 if len(line_splitter) != 2 \
                     or line_splitter[0] == "Host" and line_splitter[1].strip() != "cs531-cs_ptoma001"\
                     or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
+                    sys.stdout.write("Either not key vaslue pair, host name or connection is wrong \n")
                     reply_header.create_response_header("400", config, dict_request)
                     return False
         if request_header.splitlines()[-1].strip() is not None:
