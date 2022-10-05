@@ -64,7 +64,7 @@ def header_validate(request_header, config):
             return False
         return True   
     except Exception as e:
-        sys.stderr(f'header_validate: error {e}')
+        sys.stderr(f'header_validate: error {e}\n')
         reply.create_response("500", config)
 
 """
@@ -74,13 +74,16 @@ def parse_header(request_header):
     try:
         dict_request = {}
         for index, line in enumerate(request_header.splitlines()):
+            sys.stdout.write(f'Line  \n {line}\n')
             if line.strip() is None:
-                continue
+                pass
             elif index > 0:
                 line_splitter = line.split(":")
+                sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
                 dict_request[line_splitter[0]] = line_splitter[1].strip()
             else:
                 line_splitter = line.split()
+                sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
                 dict_request["method"] = line_splitter[0]
                 dict_request["path"] = line_splitter[1]
                 dict_request["http_version"] = line_splitter[2]
@@ -92,4 +95,4 @@ def parse_header(request_header):
         sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
         return dict_request
     except Exception as e:
-        sys.stderr.write(f'parse_header: error: {e}')
+        sys.stderr.write(f'parse_header: error: {e}\n')

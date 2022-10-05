@@ -39,6 +39,3 @@ def create_config_file():
 
     with open(constants.CONFIG, "w") as fobj:
         config.write(fobj)
-
-
-create_config_file()
