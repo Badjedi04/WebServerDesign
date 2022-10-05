@@ -19,7 +19,9 @@ def get_request_header(request_header, config):
             pass
             
     except Exception as e:
-         sys.stderr.write(f'Parser: get_request_header error: {e}\n')
+        sys.stderr.write(f'Parser: get_request_header error: {e}\n')
+        reply.create_response("500", config)
+
 
 def header_validate(request_header, config):
     """
@@ -28,8 +30,9 @@ def header_validate(request_header, config):
     Connection: close
 
     """
-    dict_request = parse_header(request_header)
     try:
+        dict_request = parse_header(request_header)
+
         for index, line in enumerate(request_header.splitlines()):
             if index == 0:
                 line_splitter = line.split()
@@ -62,27 +65,31 @@ def header_validate(request_header, config):
         return True   
     except Exception as e:
         sys.stderr(f'header_validate: error {e}')
+        reply.create_response("500", config)
 
 """
 
 """    
 def parse_header(request_header):
-    dict_request = {}
-    for index, line in enumerate(request_header.splitlines()):
-        if line.strip() is None:
-            continue
-        elif index > 0:
-            line_splitter = line.split(":")
-            dict_request[line_splitter[0]] = line_splitter[1].strip()
-        else:
-            line_splitter = line.split()
-            dict_request["method"] = line_splitter[0]
-            dict_request["path"] = line_splitter[1]
-            dict_request["http_version"] = line_splitter[2]
+    try:
+        dict_request = {}
+        for index, line in enumerate(request_header.splitlines()):
+            if line.strip() is None:
+                continue
+            elif index > 0:
+                line_splitter = line.split(":")
+                dict_request[line_splitter[0]] = line_splitter[1].strip()
+            else:
+                line_splitter = line.split()
+                dict_request["method"] = line_splitter[0]
+                dict_request["path"] = line_splitter[1]
+                dict_request["http_version"] = line_splitter[2]
 
-    with open(constants.REQUEST_REPORT , "w") as fobj:
-        json.dump(dict_request, fobj)
-    if "Connection" not in dict_request:
-        dict_request["connection"] = None
-    sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
-    return dict_request
+        with open(constants.REQUEST_REPORT , "w") as fobj:
+            json.dump(dict_request, fobj)
+        if "Connection" not in dict_request:
+            dict_request["connection"] = None
+        sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
+        return dict_request
+    except Exception as e:
+        sys.stderr.write(f'parse_header: error: {e}')

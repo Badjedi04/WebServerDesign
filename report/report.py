@@ -29,6 +29,8 @@ def server_reply(config):
         for (key, value) in response_dict.items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow"]:
                 server_response += f'{key}: {value}'
+            if key == "payload":
+                server_response += '\n{value}\n'
         sys.stdout.write(f'Server Response: \n {server_reply}\n')
         return server_reply
     except Exception as e:

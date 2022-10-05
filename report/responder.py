@@ -10,6 +10,6 @@ def handle_server_request(config):
     if dict_request["method"] in ["GET", "HEAD"]:
         dict_request["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
         if os.path.exists(dict_request["path"]):
-            reply.create_response(200, config, dict_request)
+            reply.create_response("200", config, dict_request)
         else:
-            reply.create_response(404, config, dict_request)
+            reply.create_response("404", config, dict_request)
