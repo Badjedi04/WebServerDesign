@@ -1,5 +1,6 @@
 import json
 import sys
+from datetime import datetime
 
 import constants
 
@@ -10,13 +11,16 @@ def create_response_header(status_code, config, dict_request=None):
         dict_response["http_version"] = config["HEADERS"]["http_version"]
         dict_response["status_text"] = config["STATUS_CODE"][status_code]
         dict_response["Server"] = config["HEADERS"]["server"]
-        if dict_request and status_code == "200":
-            response = return_mime_type(config, dict_request["path"])
-            dict_response["Content-type"] = f'{response["mime_type"]}; charset=iso-8859-1'
-            if "length" in response:
-                dict_response["Content-Length"] = response["length"]
-            if "payload" in response and dict_request["method"] == "GET":
-                dict_response["payload"] = response["payload"]
+        now = datetime.utcnow()
+        dict_response["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S %Z")
+        if dict_request:
+            if status_code == "200":
+                response = return_mime_type(config, dict_request["path"])
+                dict_response["Content-type"] = f'{response["mime_type"]}; charset=iso-8859-1'
+                if "length" in response:
+                    dict_response["Content-Length"] = response["length"]
+                if "payload" in response and dict_request["method"] == "GET":
+                    dict_response["payload"] = response["payload"]
             if dict_request["Connection"]:
                 dict_response["Connection"] = dict_request["Connection"]
         sys.stdout.write(f'create_response_header: Response Dict\n{dict_response}\n')
