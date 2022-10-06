@@ -20,7 +20,7 @@ def create_response_header(status_code, config, dict_request=None):
                 if "length" in response:
                     dict_response["Content-Length"] = response["length"]
                 if "payload" in response and dict_request["method"] == "GET":
-                    dict_response["payload"] = response["payload"]
+                    dict_response["payload"] = response["payload"].decode()
             if dict_request["Connection"]:
                 dict_response["Connection"] = dict_request["Connection"]
         sys.stdout.write(f'create_response_header: Response Dict\n{dict_response}\n')
