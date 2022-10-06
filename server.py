@@ -40,7 +40,10 @@ def start_client(conn, addr, config):
             if data:
                 sys.stdout.write("Server Data received\n")
                 parser.get_request_header(data.decode(), config)
+                sys.stdout.write("Server Data Parsed\n")
                 conn.send(report.handle_server_response(config))
+                sys.stdout.write("Server response sent\n")
+
             else:
                 sys.stdout.write("Server No Data received\n")
             break

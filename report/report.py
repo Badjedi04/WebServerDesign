@@ -32,7 +32,7 @@ def server_reply(config):
             if key == "payload":
                 server_response += '\n{value}\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
-        return server_response
+        return str.encode(server_response)
     except Exception as e:
         sys.stderr.write('server_reply: error {e}\n')
 
