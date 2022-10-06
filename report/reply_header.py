@@ -12,7 +12,7 @@ def create_response_header(status_code, config, dict_request=None):
         dict_response["status_text"] = config["STATUS_CODE"][status_code]
         dict_response["Server"] = config["HEADERS"]["server"]
         now = datetime.utcnow()
-        dict_response["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S %Z")
+        dict_response["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
         if dict_request:
             if status_code == "200":
                 response = return_mime_type(config, dict_request["path"])

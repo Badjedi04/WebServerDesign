@@ -34,6 +34,10 @@ def header_validate(request_header, config):
         dict_request = parse_header(line_splitter)
         sys.stdout.write(f'Request Header size: {len(line_splitter)}\n')
         sys.stdout.write(f'Request Header : {line_splitter}\n')
+        if line_splitter[-1].strip():
+            sys.stdout.write("Line is empty found**************\n")
+        if line_splitter[-1] in ['\n', '\r\n']:
+            sys.stdout.write("Line is empty found case 2**************\n")
         if not (line_splitter[-1].strip() or line_splitter[-1] in ['\n', '\r\n']):
             sys.stdout.write("Last line is not empty\n")
             reply_header.create_response_header("400", config, dict_request)

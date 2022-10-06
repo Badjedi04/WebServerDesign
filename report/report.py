@@ -28,7 +28,7 @@ def server_reply(config):
         server_response += f'HTTP/{config["HEADERS"]["http_version"]} {response_dict["status_code"]} {response_dict["status_text"]}\n'
         for (key, value) in response_dict.items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow"]:
-                server_response += f'{key}: {value}'
+                server_response += f'{key}: {value}\n'
             if key == "payload":
                 server_response += '\n{value}\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
