@@ -38,13 +38,13 @@ def start_client(conn, addr, config):
             connection_timeout = Timer(30, close_connection, args=(conn))
             connection_timeout.start()
             if data:
-                print("Data received")
+                sys.stdout.write("Server Data received\n")
                 parser.get_request_header(data.decode(), config)
                 conn.send(report.handle_server_response(config))
             else:
-                print("No data")
+                sys.stdout.write("Server No Data received\n")
             break
         except Exception as e:
-            print("connection closed" + str(e))
+            sys.stderr.write(f'start_client:error: {e}\n')
             sys.exit()
    
