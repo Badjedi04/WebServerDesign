@@ -25,16 +25,16 @@ def server_reply(config):
         Content-Length: 1936
         """
         server_response = ""
-        server_response += f'HTTP/{config["HEADERS"]["http_version"]} {response_dict["status_code"]} {response_dict["status_text"]}\n'
+        server_response += f'HTTP/{config["HEADERS"]["http_version"]} {response_dict["status_code"]} {response_dict["status_text"]}\r\n'
         for (key, value) in response_dict.items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow"]:
-                server_response += f'{key}: {value}\n'
+                server_response += f'{key}: {value}\r\n'
             if key == "payload":
-                server_response += '\n{value}\n'
-        sys.stdout.write(f'Server Response: \n {server_response}\n')
+                server_response += '\r\n{value}\r\n'
+        sys.stdout.write(f'Server Response: \r\n {server_response}\r\n')
         return str.encode(server_response)
     except Exception as e:
-        sys.stderr.write('server_reply: error {e}\n')
+        sys.stderr.write('server_reply: error {e}\r\n')
 
 
 
