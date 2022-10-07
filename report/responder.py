@@ -10,8 +10,10 @@ def handle_server_request(config, report):
 
         if report["request"]["method"] in ["GET", "HEAD"]:
             if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
+                sys.stdout.write(f'handle_server_request: path: path starts with ptomar\n')
                 report["request"]["path"] = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
             else:
+                sys.stdout.write(f'handle_server_request: path: absolute path\n')
                 report["request"]["path"] = os.path.join(config["MAPPING"]["root_dir"], report["request"]["path"])
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             if os.path.exists(report["request"]["path"]):

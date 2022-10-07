@@ -37,7 +37,7 @@ def header_validate(request_header, config):
         if len(line_splitter[-1]) > 0:
             sys.stdout.write("Last line is not empty\n")
             return reply_header.create_response_header("400", config, dict_request)
-        for index, line in enumerate(line_splitter[:-2]):
+        for index, line in enumerate(line_splitter[:-1]):
             sys.stdout.write(f'validate header: {line}\n')
             if index == 0:
                 line_splitter = line.split()
