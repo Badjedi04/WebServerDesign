@@ -13,10 +13,10 @@ def get_request_header(request_header, config):
     try:
         sys.stdout.write(f'Print request_header: \n{request_header}\n')
         report =  header_validate(request_header, config)
-        if "response" in report:
+        if "status_code" in report["response"]:
             return report
         else:
-            parse_header(request_header)
+            return parse_header(request_header)
     except Exception as e:
         sys.stderr.write(f'Parser: get_request_header error: {e}\n')
 
