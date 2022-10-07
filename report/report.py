@@ -32,7 +32,7 @@ def server_reply(config, report):
         else:
             server_response += f'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
-        return str.encode(server_response)
+        return server_response
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
 
