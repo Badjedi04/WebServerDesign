@@ -23,7 +23,7 @@ def create_response_header(status_code, config, dict_request=None):
                 if "last_modified" in response:
                     dict_response["Last-Modified"] = response["last_modified"]
                 if "payload" in response and dict_request["method"] == "GET":
-                    dict_response["payload"] = response["payload"].decode()
+                    dict_response["payload"] = response["payload"]
             if dict_request["Connection"]:
                 dict_response["Connection"] = dict_request["Connection"]
         sys.stdout.write(f'create_response_header: Response Dict\n{dict_response}\n') 
@@ -40,7 +40,7 @@ def return_mime_type(config, file_path=None):
             sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
         else:
-            with open(file_path, "rb") as fobj:
+            with open(file_path, "r") as fobj:
                 response["payload"] = fobj.read()
             response["file_length"] = len(response["payload"])
             statinfo = os.stat(file_path)
