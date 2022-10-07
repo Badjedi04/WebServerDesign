@@ -70,7 +70,7 @@ def return_mime_type(config, file_path=None):
                 response["mime_type"] = config["HEADERS"]["mime_types"][8] 
             elif file_ext in ["http"]:
                 response["mime_type"] = config["HEADERS"]["mime_types"][9] 
-            elif file_ext in ["bin"]:
+            else:
                 response["mime_type"] = config["HEADERS"]["mime_types"][10]   
             return response             
     except Exception as e:
