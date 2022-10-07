@@ -33,6 +33,7 @@ def header_validate(request_header, config):
         line_splitter = request_header.splitlines()
         sys.stdout.write(f'Request Header size: {len(line_splitter)}\n')
         sys.stdout.write(f'Request Header : {line_splitter}\n')
+        is_host_present = False
         if len(line_splitter[-1]) > 0:
             sys.stdout.write("Last line is not empty\n")
             report["response"]["status_code"] = "400"
@@ -63,11 +64,14 @@ def header_validate(request_header, config):
             else:
                 line_splitter = line.split(":")
                 if len(line_splitter) != 2 \
-                    or line_splitter[0] == "Host" and line_splitter[1].strip() != "cs531-cs_ptoma001"\
                     or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
                     sys.stdout.write("Either not key value pair, host name or connection is wrong \n")
                     report["response"]["status_code"] = "400"
                     break
+                if line_splitter[0] == "Host":
+                    is_host_present = True 
+        if not is_host_present:
+            report["response"]["status_code"] = "400"
 
         return report   
     except Exception as e:
