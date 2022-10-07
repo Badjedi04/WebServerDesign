@@ -12,7 +12,7 @@ def create_response_header(config, report):
         report["response"]["Server"] = config["HEADERS"]["server"]
         now = datetime.utcnow()
         report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        if report["request"]:
+        if "request" in  report and report["request"]:
             if report["response"]["status_code"] == "200":
                 if report["request"]["method"] == "OPTIONS":
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
@@ -21,7 +21,7 @@ def create_response_header(config, report):
                     report["response"]["payload"] = report["request"]["raw_header"]
                 else:
                     response = return_mime_type(config, report["request"]["path"])
-                    report["response"]["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
+                    report["response"]["Content-Type"] = f'{response["mime_type"]}'
                     if "file_length" in response:
                         report["response"]["Content-Length"] = response["file_length"]
                     if "last_modified" in response:
