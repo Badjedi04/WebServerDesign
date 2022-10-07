@@ -1,9 +1,13 @@
 import socket
 import sys
 from threading import Thread, Timer
+import threading
 
 import parser
 import report.report as report
+
+print_lock = threading.Lock()
+
 """
 Function to start Server
 
@@ -25,7 +29,10 @@ def run_server(config):
 def wait_for_connections(server_socket, config, connection_timeout):
     while True:
         server_socket.listen(config["SERVER"]["connections"])
-        Thread(target=start_client, args=(server_socket, config,)).start()
+        conn, addr = server_socket.accept()
+        print_lock.acquire()
+        Thread(target=start_client, args=(conn, addr, config, connection_timeout)).start()
+    server_socket.close()
 
 
 def close_connection(conn):
@@ -35,11 +42,11 @@ def close_connection(conn):
     conn.close()
 
 
-def start_client(server_socket, config):
-    try:
-        while True:
-            conn, addr = server_socket.accept()
+def start_client(conn, addr, config, connection_timeout):
+    while True:
+        try:
             data = conn.recv(1024)  # receive data from client
+
             if data:
                 connection_timeout = Timer(15, close_connection, args=(conn))
                 connection_timeout.start()                
@@ -48,13 +55,14 @@ def start_client(server_socket, config):
                 response = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
                 conn.send(report.handle_server_response(config, response))
+                print_lock.release()
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
                 close_connection(conn)
                 break
             else:
                 sys.stdout.write("Server No Data received\n")
-    except Exception as e:
-        sys.stderr.write(f'start_client:error: {e}\n')
-        sys.exit()
+        except Exception as e:
+            sys.stderr.write(f'start_client:error: {e}\n')
+            sys.exit()
    
