@@ -14,7 +14,7 @@ def handle_server_request(config, report):
                 report["request"]["path"] = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
             else:
                 sys.stdout.write(f'handle_server_request: path: absolute path\n')
-                report["request"]["path"] = os.path.join(config["MAPPING"]["root_dir"], report["request"]["path"])
+                report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             if os.path.exists(report["request"]["path"]):
                 sys.stdout.write(f'handle_server_request: 200 \n')

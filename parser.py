@@ -5,7 +5,7 @@
     Returns:
 """
 import sys 
-import json
+import urllib
 
 
 import report.reply_header as reply_header
@@ -83,7 +83,7 @@ def parse_header(request_header):
                     line_splitter = line.split()
                     sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
                     dict_request["request"]["method"] = line_splitter[0]
-                    dict_request["request"]["path"] = line_splitter[1]
+                    dict_request["request"]["path"] = urllib.parse.unquote(line_splitter[1], encoding='utf-8', errors='replace')
                     dict_request["request"]["http_version"] = line_splitter[2]
 
         if "Connection" not in dict_request:
