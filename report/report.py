@@ -28,10 +28,10 @@ def server_reply(config, report):
             sys.stdout.write(f'Server Response being created: \n {server_response}\n')
         server_response = server_response.encode()
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
-            server_response += f'\r\n{report["response"]["payload"]}\r\n'
+            server_response += f'(\r\n).encode(){report["response"]["payload"]}(\r\n).encode()'
 
         else:
-            server_response += f'\r\n'
+            server_response += f'\r\n'.encode()
         sys.stdout.write(f'Server Response: \n {server_response}\n')
         return server_response
     except Exception as e:
