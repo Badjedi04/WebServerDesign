@@ -6,7 +6,7 @@ import threading
 import parser
 import report.report as report
 
-print_lock = threading.Lock()
+#print_lock = threading.Lock()
 
 """
 Function to start Server
@@ -30,7 +30,7 @@ def wait_for_connections(server_socket, config, connection_timeout):
     while True:
         server_socket.listen(config["SERVER"]["connections"])
         conn, addr = server_socket.accept()
-        print_lock.acquire()
+        #print_lock.acquire()
         Thread(target=start_client, args=(conn, addr, config, connection_timeout)).start()
     server_socket.close()
 
@@ -55,7 +55,7 @@ def start_client(conn, addr, config, connection_timeout):
                 response = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
                 conn.send(report.handle_server_response(config, response))
-                print_lock.release()
+                #print_lock.release()
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
                 close_connection(conn)
