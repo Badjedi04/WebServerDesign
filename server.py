@@ -48,6 +48,9 @@ def start_client(conn, addr, config, connection_timeout):
             data = conn.recv(1024)  # receive data from client
 
             if data:
+                if connection_timeout is not None:
+                    connection_timeout.cancel() 
+                    close_connection(conn)
                 connection_timeout = Timer(15, close_connection, args=(conn))
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
@@ -58,7 +61,7 @@ def start_client(conn, addr, config, connection_timeout):
                 if temp:
                     conn.send(temp)
                 else:
-                    conn.send(str.encode("lull"))
+                    conn.send(str.encode("null"))
                 #print_lock.release()
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
