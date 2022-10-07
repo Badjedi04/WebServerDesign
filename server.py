@@ -25,8 +25,7 @@ def run_server(config):
 def wait_for_connections(server_socket, config, connection_timeout):
     while True:
         server_socket.listen(config["SERVER"]["connections"])
-        conn, addr = server_socket.accept()
-        Thread(target=start_client, args=(conn, addr, config, connection_timeout)).start()
+        Thread(target=start_client, args=(server_socket, config,)).start()
 
 
 def close_connection(conn):
@@ -36,25 +35,25 @@ def close_connection(conn):
     conn.close()
 
 
-def start_client(conn, addr, config, connection_timeout):
+def start_client(server_socket, config):
     try:
-        data = conn.recv(1024)  # receive data from client
-        if data:
-            if connection_timeout is not None:
-                connection_timeout.cancel()
-            connection_timeout = Timer(15, close_connection, args=(conn))
-            connection_timeout.start()                
-            sys.stdout.write("*********************************************************************************\n")
-            sys.stdout.write("Server Data received\n")
-            response = parser.get_request_header(data.decode(), config)
-            sys.stdout.write("Server Data Parsed\n")
-            conn.send(report.handle_server_response(config, response))
-            sys.stdout.write("Server response sent\n")
-            sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
-            close_connection(conn)
-
-        else:
-            sys.stdout.write("Server No Data received\n")
+        while True:
+            conn, addr = server_socket.accept()
+            data = conn.recv(1024)  # receive data from client
+            if data:
+                connection_timeout = Timer(15, close_connection, args=(conn))
+                connection_timeout.start()                
+                sys.stdout.write("*********************************************************************************\n")
+                sys.stdout.write("Server Data received\n")
+                response = parser.get_request_header(data.decode(), config)
+                sys.stdout.write("Server Data Parsed\n")
+                conn.send(report.handle_server_response(config, response))
+                sys.stdout.write("Server response sent\n")
+                sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
+                close_connection(conn)
+                break
+            else:
+                sys.stdout.write("Server No Data received\n")
     except Exception as e:
         sys.stderr.write(f'start_client:error: {e}\n')
         sys.exit()
