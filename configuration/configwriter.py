@@ -13,7 +13,7 @@ def create_config_file():
     config["SERVER"] = {}
     config["SERVER"]["ip_addr"] = "0.0.0.0" 
     config["SERVER"]["port"] = "80"
-    config["SERVER"]["connections"] = "1"
+    config["SERVER"]["connections"] = "4"
 
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
