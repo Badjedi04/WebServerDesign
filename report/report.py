@@ -26,8 +26,9 @@ def server_reply(config, report):
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow"]:
                 server_response += f'{key}: {value}\r\n'
             sys.stdout.write(f'Server Response being created: \n {server_response}\n')
-        if "payload" in report["response"]:
-            server_response += f'{report["response"]["payload"]}\r\n'
+        if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
+            server_response += f'\r\n{report["response"]["payload"]}\r\n'
+
         else:
             server_response += f'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
