@@ -16,6 +16,7 @@ Returns:
 """
 def run_server(config):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((config["SERVER"]["ip_addr"], config["SERVER"]["port"]  ))
     wait_for_connections(server_socket, config)
 
@@ -38,6 +39,7 @@ def start_client(conn, addr, config):
             connection_timeout = Timer(30, close_connection, args=(conn))
             connection_timeout.start()
             if data:
+
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
                 response = parser.get_request_header(data.decode(), config)
