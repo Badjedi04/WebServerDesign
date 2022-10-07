@@ -1,21 +1,16 @@
-import os
 import sys
-import json
-import constants
 
 import report.responder as responder
 
-def handle_server_response(config):
-    if os.path.exists(constants.RESPONSE_REPORT):
-        return server_reply(config)
+def handle_server_response(config, report):
+    if "request" not in report:
+        return server_reply(config, report)
     else:
-        responder.handle_server_request(config)
-        return server_reply(config)
+        report = responder.handle_server_request(config, report)
+        return server_reply(config, report)
 
-def server_reply(config):
+def server_reply(config, report):
     try:
-        with open(constants.RESPONSE_REPORT , "r") as fobj:
-            response_dict = json.load(fobj)
         """
         HTTP/1.1 200 OK
         Date: Tue, 04 Oct 2022 10:40:39 GMT
@@ -25,13 +20,13 @@ def server_reply(config):
         Content-Length: 1936
         """
         server_response = ""
-        server_response += f'HTTP/{config["HEADERS"]["http_version"]} {response_dict["status_code"]} {response_dict["status_text"]}\r\n'
-        for (key, value) in response_dict.items():
+        server_response += f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n'
+        for (key, value) in report["response"].items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow"]:
                 server_response += f'{key}: {value}\r\n'
             sys.stdout.write(f'Server Response being created: \n {server_response}\n')
-        if "payload" in response_dict:
-            server_response += '\r\n{response_dict["payload"]}\r\n'
+        if "payload" in report["response"]:
+            server_response += f'\r\n{report["response"]["payload"]}\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
         return str.encode(server_response)
     except Exception as e:

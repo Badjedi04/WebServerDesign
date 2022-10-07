@@ -39,9 +39,9 @@ def start_client(conn, addr, config):
             connection_timeout.start()
             if data:
                 sys.stdout.write("Server Data received\n")
-                parser.get_request_header(data.decode(), config)
+                response = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
-                conn.send(report.handle_server_response(config))
+                conn.send(report.handle_server_response(config, response))
                 sys.stdout.write("Server response sent\n")
 
             else:

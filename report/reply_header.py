@@ -5,31 +5,29 @@ import os
 
 import constants
 
-def create_response_header(status_code, config, dict_request=None):
+def create_response_header(status_code, config, report):
     try:
-        dict_response = {}
-        dict_response["status_code"] = status_code
-        dict_response["http_version"] = config["HEADERS"]["http_version"]
-        dict_response["status_text"] = config["STATUS_CODE"][status_code]
-        dict_response["Server"] = config["HEADERS"]["server"]
+        report["response"] = {}
+        report["response"]["status_code"] = status_code
+        report["response"]["http_version"] = config["HEADERS"]["http_version"]
+        report["response"]["status_text"] = config["STATUS_CODE"][status_code]
+        report["response"]["Server"] = config["HEADERS"]["server"]
         now = datetime.utcnow()
-        dict_response["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        if dict_request:
+        report["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        if report["request"]:
             if status_code == "200":
-                response = return_mime_type(config, dict_request["path"])
-                dict_response["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
+                response = return_mime_type(config, report["request"]["path"])
+                report["response"]["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
                 if "file_length" in response:
-                    dict_response["Content-Length"] = response["file_length"]
+                    report["response"]["Content-Length"] = response["file_length"]
                 if "last_modified" in response:
-                    dict_response["Last-Modified"] = response["last_modified"]
-                if "payload" in response and dict_request["method"] == "GET":
-                    dict_response["payload"] = response["payload"]
-            if dict_request["Connection"]:
-                dict_response["Connection"] = dict_request["Connection"]
-        sys.stdout.write(f'create_response_header: Response Dict\n{dict_response}\n') 
-
-        with open(constants.RESPONSE_REPORT, "w") as fobj:
-            json.dump(dict_response,fobj)
+                    report["response"]["Last-Modified"] = response["last_modified"]
+                if "payload" in response and report["request"]["method"] == "GET":
+                    report["response"]["payload"] = response["payload"]
+            if report["request"]["Connection"]:
+                report["response"]["Connection"] = report["request"]["Connection"]
+        sys.stdout.write(f'Report\n{report}\n') 
+        return report
     except Exception as e:
         sys.stderr.write(f'create_response_header: error {e}\n')
 
