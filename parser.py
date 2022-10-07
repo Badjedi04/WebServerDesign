@@ -79,6 +79,7 @@ def header_validate(request_header, config):
 def parse_header(request_header):
     try:
         dict_request = {"request":{}}
+        dict_request["request"]["raw_header"] = request_header
         line_splitter = request_header.splitlines()
         for index, line in enumerate(line_splitter):
             sys.stdout.write(f'Line  \n {line}\n')

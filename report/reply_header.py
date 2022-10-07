@@ -15,7 +15,10 @@ def create_response_header(config, report):
         if report["request"]:
             if report["response"]["status_code"] == "200":
                 if report["request"]["method"] == "OPTIONS":
-                    report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])    
+                    report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
+                elif report["request"]["method"] == "TRACE":
+                    report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
+                    report["response"]["payload"] = report["request"]["raw_header"]
                 else:
                     response = return_mime_type(config, report["request"]["path"])
                     report["response"]["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
@@ -39,7 +42,7 @@ def return_mime_type(config, file_path=None):
             sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
         else:
-            with open(file_path, "r") as fobj:
+            with open(file_path, "rb") as fobj:
                 response["payload"] = fobj.read()
             response["file_length"] = len(response["payload"])
             statinfo = os.stat(file_path)
