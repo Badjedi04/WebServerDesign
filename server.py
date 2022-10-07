@@ -41,7 +41,6 @@ def start_client(conn, addr, config):
     while True:
         try:
             data = conn.recv(1024)  # receive data from client
-
             if data:
                 connection_timeout = Timer(30, close_connection, args=(conn))
                 connection_timeout.start()                
