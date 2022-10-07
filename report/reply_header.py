@@ -13,7 +13,7 @@ def create_response_header(status_code, config, report):
         report["response"]["status_text"] = config["STATUS_CODE"][status_code]
         report["response"]["Server"] = config["HEADERS"]["server"]
         now = datetime.utcnow()
-        report["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
         if report["request"]:
             if status_code == "200":
                 response = return_mime_type(config, report["request"]["path"])
