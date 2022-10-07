@@ -9,7 +9,10 @@ def handle_server_request(config, report):
     try:
 
         if report["request"]["method"] in ["GET", "HEAD"]:
-            report["request"]["path"] = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
+            if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
+                report["request"]["path"] = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
+            else:
+                report["request"]["path"] = os.path.join(config["MAPPING"]["root_dir"], report["request"]["path"])
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             if os.path.exists(report["request"]["path"]):
                 sys.stdout.write(f'handle_server_request: 200 \n')

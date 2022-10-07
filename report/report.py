@@ -3,7 +3,7 @@ import sys
 import report.responder as responder
 
 def handle_server_response(config, report):
-    if "request" not in report:
+    if "response" in report:
         return server_reply(config, report)
     else:
         report = responder.handle_server_request(config, report)

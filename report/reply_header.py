@@ -17,7 +17,7 @@ def create_response_header(status_code, config, report):
         if report["request"]:
             if status_code == "200":
                 if report["request"]["method"] == "OPTIONS":
-                    report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])[:-2]    
+                    report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])    
                 else:
                     response = return_mime_type(config, report["request"]["path"])
                     report["response"]["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
