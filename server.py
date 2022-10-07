@@ -38,11 +38,14 @@ def start_client(conn, addr, config):
             connection_timeout = Timer(30, close_connection, args=(conn))
             connection_timeout.start()
             if data:
+                sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
                 response = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
                 conn.send(report.handle_server_response(config, response))
                 sys.stdout.write("Server response sent\n")
+                sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
+
                 break
             else:
                 sys.stdout.write("Server No Data received\n")
