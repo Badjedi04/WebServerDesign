@@ -50,7 +50,9 @@ def return_mime_type(config, file_path=None):
 
             sys.stdout.write(f'File Ext: {file_ext}\n')
 
-            if file_ext == "html":
+            if file_ext == "txt":
+                response["mime_type"] = config["HEADERS"]["mime_types"][0]
+            elif file_ext == "html":
                 response["mime_type"] = config["HEADERS"]["mime_types"][1] 
             elif file_ext == "xml": 
                 response["mime_type"] = config["HEADERS"]["mime_types"][2] 
