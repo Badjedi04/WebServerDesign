@@ -50,7 +50,6 @@ def start_client(conn, addr, config, connection_timeout):
             if data:
                 if connection_timeout is not None:
                     connection_timeout.cancel() 
-                    close_connection(conn)
                 connection_timeout = Timer(15, close_connection, args=(conn))
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
