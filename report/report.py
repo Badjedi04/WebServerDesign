@@ -31,7 +31,8 @@ def server_reply(config):
                 server_response += f'{key}: {value}\r\n'
             if key == "payload":
                 server_response += '\r\n{value}\r\n'
-        sys.stdout.write(f'Server Response: \r\n {server_response}\r\n')
+            sys.stdout.write(f'Server Response being created: \n {server_response}\n')
+        sys.stdout.write(f'Server Response: \n {server_response}\n')
         return str.encode(server_response)
     except Exception as e:
         sys.stderr.write('server_reply: error {e}\r\n')

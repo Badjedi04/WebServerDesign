@@ -18,8 +18,10 @@ def create_response_header(status_code, config, dict_request=None):
             if status_code == "200":
                 response = return_mime_type(config, dict_request["path"])
                 dict_response["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
-                if "length" in response:
-                    dict_response["Content-Length"] = response["length"]
+                if "file_length" in response:
+                    dict_response["Content-Length"] = response["file_length"]
+                if "last_modified" in response:
+                    dict_response["Last-Modified"] = response["last_modified"]
                 if "payload" in response and dict_request["method"] == "GET":
                     dict_response["payload"] = response["payload"].decode()
             if dict_request["Connection"]:
