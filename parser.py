@@ -43,19 +43,23 @@ def header_validate(request_header, config):
                 if len(line_splitter) != 3:
                     sys.stdout.write("First line is more than three\n")
                     report["response"]["status_code"] = "400"
+                    break
 
                 elif line_splitter[0] not in config["HEADERS"]["http_methods"]:
                     sys.stdout.write("HTTP method not supported\n")
                     report["response"]["status_code"] = "501"
+                    break
 
                 elif line_splitter[2]: 
                     version_splitter = line_splitter[2].split("/")
                     if version_splitter[0] != "HTTP":
                         sys.stdout.write("HTTP not used \n")
                         report["response"]["status_code"] = "400"
+                        break
                     elif version_splitter[1] != config["HEADERS"]["http_version"]:
                         sys.stdout.write("HTTP version is wrong \n")
                         report["response"]["status_code"] = "505"
+                        break
             else:
                 line_splitter = line.split(":")
                 if len(line_splitter) != 2 \
@@ -63,6 +67,7 @@ def header_validate(request_header, config):
                     or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
                     sys.stdout.write("Either not key value pair, host name or connection is wrong \n")
                     report["response"]["status_code"] = "400"
+                    break
 
         return report   
     except Exception as e:
