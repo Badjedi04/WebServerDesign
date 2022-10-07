@@ -61,5 +61,4 @@ def start_client(conn, addr, config):
                 sys.stdout.write("Server No Data received\n")
         except Exception as e:
             sys.stderr.write(f'start_client:error: {e}\n')
-            sys.exit()
    
