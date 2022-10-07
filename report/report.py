@@ -1,9 +1,10 @@
 import sys
-
+import report.reply_header as reply_header
 import report.responder as responder
 
 def handle_server_response(config, report):
     if "response" in report:
+        report = reply_header.create_response_header(config, report)
         return server_reply(config, report)
     else:
         report = responder.handle_server_request(config, report)
