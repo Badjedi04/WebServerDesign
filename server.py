@@ -22,16 +22,15 @@ def run_server(config):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((config["SERVER"]["ip_addr"], config["SERVER"]["port"]  ))
-    connection_timeout = None
 
-    wait_for_connections(server_socket, config, connection_timeout)
+    wait_for_connections(server_socket, config)
 
-def wait_for_connections(server_socket, config, connection_timeout):
+def wait_for_connections(server_socket, config):
     while True:
         server_socket.listen(config["SERVER"]["connections"])
         conn, addr = server_socket.accept()
         #print_lock.acquire()
-        Thread(target=start_client, args=(conn, addr, config, connection_timeout)).start()
+        Thread(target=start_client, args=(conn, addr, config)).start()
     server_socket.close()
 
 
@@ -42,14 +41,12 @@ def close_connection(conn):
     conn.close()
 
 
-def start_client(conn, addr, config, connection_timeout):
+def start_client(conn, addr, config):
     while True:
         try:
             data = conn.recv(1024)  # receive data from client
 
             if data:
-                if connection_timeout is not None:
-                    connection_timeout.cancel() 
                 connection_timeout = Timer(15, close_connection, args=(conn))
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
@@ -64,7 +61,6 @@ def start_client(conn, addr, config, connection_timeout):
                 #print_lock.release()
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
-                close_connection(conn)
                 break
             else:
                 sys.stdout.write("Server No Data received\n")
