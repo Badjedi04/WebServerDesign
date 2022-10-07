@@ -7,7 +7,6 @@ import constants
 
 def create_response_header(config, report):
     try:
-        report["response"] = {}
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
