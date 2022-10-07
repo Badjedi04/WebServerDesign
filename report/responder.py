@@ -17,5 +17,7 @@ def handle_server_request(config, report):
             else:
                 sys.stdout.write(f'handle_server_request: 404 \n')
                 return reply_header.create_response_header("404", config, report)
+        elif report["request"]["method"] == "OPTIONS":    
+            return reply_header.create_response_header("200", config, report)
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')

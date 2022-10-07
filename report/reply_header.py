@@ -16,14 +16,17 @@ def create_response_header(status_code, config, report):
         report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
         if report["request"]:
             if status_code == "200":
-                response = return_mime_type(config, report["request"]["path"])
-                report["response"]["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
-                if "file_length" in response:
-                    report["response"]["Content-Length"] = response["file_length"]
-                if "last_modified" in response:
-                    report["response"]["Last-Modified"] = response["last_modified"]
-                if "payload" in response and report["request"]["method"] == "GET":
-                    report["response"]["payload"] = response["payload"]
+                if report["request"]["method"] == "OPTIONS":
+                    report["response"]["ALLOW"] =  ", ".join(config["HEADERS"]["http_methods"])[:-2]    
+                else:
+                    response = return_mime_type(config, report["request"]["path"])
+                    report["response"]["Content-Type"] = f'{response["mime_type"]}; charset=iso-8859-1'
+                    if "file_length" in response:
+                        report["response"]["Content-Length"] = response["file_length"]
+                    if "last_modified" in response:
+                        report["response"]["Last-Modified"] = response["last_modified"]
+                    if "payload" in response and report["request"]["method"] == "GET":
+                        report["response"]["payload"] = response["payload"]
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
         sys.stdout.write(f'Report\n{report}\n') 
