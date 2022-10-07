@@ -37,27 +37,25 @@ def close_connection(conn):
 
 
 def start_client(conn, addr, config, connection_timeout):
-    while True:
-        try:
-            data = conn.recv(1024)  # receive data from client
+    try:
+        data = conn.recv(1024)  # receive data from client
 
-            if data:
-                if connection_timeout is not None:
-                    connection_timeout.cancel()
-                connection_timeout = Timer(15, close_connection, args=(conn))
-                connection_timeout.start()                
-                sys.stdout.write("*********************************************************************************\n")
-                sys.stdout.write("Server Data received\n")
-                response = parser.get_request_header(data.decode(), config)
-                sys.stdout.write("Server Data Parsed\n")
-                conn.send(report.handle_server_response(config, response))
-                sys.stdout.write("Server response sent\n")
-                sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
+        if data:
+            if connection_timeout is not None:
+                connection_timeout.cancel()
+            connection_timeout = Timer(15, close_connection, args=(conn))
+            connection_timeout.start()                
+            sys.stdout.write("*********************************************************************************\n")
+            sys.stdout.write("Server Data received\n")
+            response = parser.get_request_header(data.decode(), config)
+            sys.stdout.write("Server Data Parsed\n")
+            conn.send(report.handle_server_response(config, response))
+            sys.stdout.write("Server response sent\n")
+            sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
 
-                break
-            else:
-                sys.stdout.write("Server No Data received\n")
-        except Exception as e:
-            sys.stderr.write(f'start_client:error: {e}\n')
-            sys.exit()
+        else:
+            sys.stdout.write("Server No Data received\n")
+    except Exception as e:
+        sys.stderr.write(f'start_client:error: {e}\n')
+        sys.exit()
    
