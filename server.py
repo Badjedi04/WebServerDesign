@@ -38,10 +38,10 @@ def start_client(conn, addr):
             connection_timeout.start()
             if data:
                 print("Data received")
-                parser.get_request_header(data.decode())
+               # parser.get_request_header(data.decode())
             else:
                 print("No data")
-            #conn.sendall(data)
+            conn.sendall(data)
             break
         except Exception as e:
             print("connection closed" + str(e))
