@@ -25,7 +25,7 @@ def create_config_file():
     config["HEADERS"]["server"] = "cs_ptoma001_server"
     config["HEADERS"]["mime_types"] = "text/plain,text/html,text/xml,image/png,image/jpeg,"\
                                         "image/gif,application/pdf,application/vnd.ms-powerpoint,"\
-                                        "application/vnd.ms-word,message/http,application/octet-stream" #Request Header connection:close & Host
+                                        "application/vnd.ms-word,message/http,application/octet-stream" 
     config["STATUS_CODE"] = {}
     config["STATUS_CODE"]["400"] = "Bad Response"
     config["STATUS_CODE"]["200"] = "OK"
@@ -34,6 +34,11 @@ def create_config_file():
     config["STATUS_CODE"]["500"] = "Internal Server Error"
     config["STATUS_CODE"]["501"] = "Not Implemented"
     config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
+    config["STATUS_CODE"]["301"] = "Moved Permanently"
+    config["STATUS_CODE"]["302"] = "Found"
+    config["STATUS_CODE"]["304"] = "Not Modified"
+    config["STATUS_CODE"]["408"] = "Request Timeout"
+    config["STATUS_CODE"]["412"] = "Precondition Failed"
 
 
     with open(constants.CONFIG, "w") as fobj:
