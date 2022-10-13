@@ -44,10 +44,10 @@ def start_client(conn, addr, config):
             if data:
 <<<<<<< HEAD
                 print("Data received")
-               # parser.get_request_header(data.decode())
+                parser.get_request_header(data.decode())
             else:
                 print("No data")
-            conn.sendall(data)
+            # conn.sendall(data)
             break
 =======
                 connection_timeout = Timer(30, close_connection, args=(conn))
