@@ -34,6 +34,3 @@ def server_reply(config, report):
         return server_response.encode()
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
-
-
-

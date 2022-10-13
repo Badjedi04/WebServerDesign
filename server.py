@@ -10,13 +10,10 @@ import report.report as report
 
 """
 Function to start Server
-
 Parameters:
     ip_addr (str): IP Address
     port (int): Port Number
-
 Returns:
-
 """
 def run_server(config):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,13 +40,16 @@ def start_client(conn, addr, config):
             data = conn.recv(1024)  # receive data from client
             if data:
 <<<<<<< HEAD
+<<<<<<< HEAD
                 print("Data received")
-               # parser.get_request_header(data.decode())
+                parser.get_request_header(data.decode())
             else:
                 print("No data")
-            conn.sendall(data)
+            # conn.sendall(data)
             break
 =======
+=======
+>>>>>>> 9d2d6a6 (Update All files)
                 connection_timeout = Timer(30, close_connection, args=(conn))
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
@@ -64,7 +64,12 @@ def start_client(conn, addr, config):
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
                 break
+<<<<<<< HEAD
 >>>>>>> a1
         except Exception as e:
             sys.stderr.write(f'start_client:error: {e}\n')
    
+=======
+        except Exception as e:
+            sys.stderr.write(f'start_client:error: {e}\n')
+>>>>>>> 9d2d6a6 (Update All files)
