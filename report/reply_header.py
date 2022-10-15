@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 import os
 
+import utils
 import constants
 
 def create_response_header(config, report):
@@ -10,8 +11,9 @@ def create_response_header(config, report):
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
-        now = datetime.utcnow()
-        report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        now = utils.convert_timestamp_to_gmt(datetime.utcnow())
+        if now:
+            report["response"]["Date"] = now
         if "request" in  report and report["request"]:
             if report["response"]["status_code"] == "200":
                 if report["request"]["method"] == "OPTIONS":
@@ -45,9 +47,9 @@ def return_mime_type(config, file_path=None):
             with open(file_path, "rb") as fobj:
                 response["payload"] = fobj.read()
             response["file_length"] = len(response["payload"])
-            statinfo = os.stat(file_path)
-            last_modified = datetime.utcfromtimestamp(statinfo.st_mtime)
-            response["last_modified"] = last_modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            last_modified = utils.get_file_last_modified_time(file_path)
+            if last_modified:
+                response["last_modified"] = last_modified
             file_ext = file_path.split("/")[-1].split(".")[-1]
             sys.stdout.write(f'Response before mime-type: {response}\n')
 

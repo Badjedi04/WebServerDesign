@@ -6,7 +6,7 @@
 import sys 
 import urllib.parse as url_parse
 
-import report.reply_header as reply_header
+import utils
 
 def get_request_header(request_header, config):
     try:
@@ -75,44 +75,37 @@ def header_validate(request_header, config):
                     break
                 if line_splitter[0] == "Host":
                     is_host_present = True 
+                elif line_splitter[0] in ["If-Modified-Since"]:
+                    if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
+                        sys.stdout.write("If-Modified-Since has invalid value\n")
+                        is_host_present = True 
+                        report["response"]["status_code"] = "400"
+                        break
+                elif line_splitter[0] in ["If-Unmodified-Since"]:
+                    if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
+                        sys.stdout.write("If-Unmodified-Since has invalid value\n")
+                        is_host_present = True 
+                        report["response"]["status_code"] = "400"
+                        break   
+                elif line_splitter[0] in ["If-Match"]:
+                    if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
+                        sys.stdout.write("If-Match has invalid value\n")
+                        is_host_present = True 
+                        report["response"]["status_code"] = "400"
+                        break
+                elif line_splitter[0] in ["If-Non-Match"]:
+                    if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
+                        sys.stdout.write("If-Non-Match has invalid value\n")
+                        is_host_present = True 
+                        report["response"]["status_code"] = "400"
+                        break                     
+                 
         if not is_host_present:
             report["response"]["status_code"] = "400"
-
         return report   
     except Exception as e:
         sys.stderr.write(f'header_validate: error {e}\n')
 
-"""
-"""    
-def parse_header(request_header):
-    try:
-        dict_request = {"request":{}}
-        dict_request["request"]["raw_header"] = request_header
-        line_splitter = request_header.splitlines()
-        for index, line in enumerate(line_splitter):
-            sys.stdout.write(f'Line  \n {line}\n')
-            if line.strip():
-                if index > 0:
-                    line_splitter = line.split(":")
-                    sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
-                    dict_request["request"][line_splitter[0]] = line_splitter[1].strip()
-                else:
-                    line_splitter = line.split()
-                    sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
-                    dict_request["request"]["method"] = line_splitter[0]
-                    dict_request["request"]["path"] = url_parse.unquote(line_splitter[1], encoding='utf-8', errors='replace')
-                    dict_request["request"]["http_version"] = line_splitter[2]
-
-        if "Connection" not in dict_request:
-            dict_request["request"]["Connection"] = None
-        sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
-        return dict_request
-    except Exception as e:
-        sys.stderr.write(f'parse_header: error: {e}\n')
-
-        return report   
-    except Exception as e:
-        sys.stderr.write(f'header_validate: error {e}\n')
 
 """
 
