@@ -1,6 +1,7 @@
 import sys
 import configparser
 import constants
+import hashlib
 
 def read_config_file():
     try:
@@ -30,3 +31,12 @@ def convert_list(value):
         return splitter
     else:
         return value    
+
+def convert_to_hash(value):
+    if "" in value:
+        textUtf8 = value.encode("utf-8")
+        hash = hashlib.md5( textUtf8 )
+        hexa = hash.hexdigest()
+        return hexa
+    else:
+        return value
