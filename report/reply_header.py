@@ -1,9 +1,9 @@
 import sys
 from datetime import datetime
+import os
 
 import utils
-
-import error_page
+import dynamic_html
 
 def create_response_header(config, report):
     try:
@@ -21,7 +21,7 @@ def create_response_header(config, report):
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
                     report["response"]["payload"] = report["request"]["raw_header"]
                 else:
-                    response = return_mime_type(config, report["request"]["path"])
+                    response = return_mime_type(config, report)
                     report["response"]["Content-Type"] = f'{response["mime_type"]}'
                     if "file_length" in response:
                         report["response"]["Content-Length"] = response["file_length"]
@@ -30,7 +30,7 @@ def create_response_header(config, report):
                     if "payload" in response and report["request"]["method"] == "GET":
                         report["response"]["payload"] = response["payload"]
             elif report["response"]["status_code"] != "200" and  report["request"]["method"] == "GET":
-                report["response"]["payload"] = error_page.create_html_page(report["response"]["status_code"], report["response"]["status_text"])
+                report["response"]["payload"] = dynamic_html.create_error_page(report)
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
         sys.stdout.write(f'Report\n{report}\n') 
@@ -38,12 +38,17 @@ def create_response_header(config, report):
     except Exception as e:
         sys.stderr.write(f'create_response_header: error {e}\n')
 
-def return_mime_type(config, file_path=None):
+def return_mime_type(config, report):
     try:
         response = {}
+        file_path = report["request"]["path"]
         if file_path is None:
             sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
+        elif os.path.isdir(file_path):
+            sys.stdout.write(f'Mime Type returned is dir: {config["HEADERS"]["mime_types"][1]}\n')
+            response["mime_type"] = config["HEADERS"]["mime_types"][1]
+            response["payload"] = dynamic_html.create_directory_listing(report, config)      
         else:
             with open(file_path, "rb") as fobj:
                 response["payload"] = fobj.read()
@@ -81,3 +86,5 @@ def return_mime_type(config, file_path=None):
             return response             
     except Exception as e:
         sys.stderr.write(f'return_mime_type: error {e}\n')
+
+
