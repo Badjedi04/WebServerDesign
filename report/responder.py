@@ -1,5 +1,6 @@
 import os
 import sys
+import hashlib
 
 import report.reply_header as reply_header
 import utils
@@ -21,39 +22,36 @@ def handle_server_request(config, report):
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             # Check if file is present or not
             if os.path.exists(report["request"]["path"]):
-                if "If-Modified-Since" in report["request"]:
-                    if utils.get_file_last_modified_time(report["request"]["path"]) <= utils.convert_timestamp_to_gmt(report["request"]["If-Modified-Since"]):
-                        report["response"]["status_code"] = "304"
-                report["response"]["status_code"] = "200"
-                sys.stdout.write(f'handle_server_request: 200 \n')
-                return reply_header.create_response_header(config, report)
-            if os.path.exists(report["request"]["path"]):
-                if "If-Match" in report["request"]:
-                    if configreader.convert_to_hash(report["request"]["If-Match"]):
+                if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
+                    sys.stdout.write(f'If-Unmodified-Since exists \n')
+                    if utils.get_file_last_modified_time(report["request"]["path"]) > utils.convert_timestamp_to_gmt(report["request"]["If-Unmodified-Since"]):
                         report["response"]["status_code"] = "412"
-                report["response"]["status_code"] = "200"
-                sys.stdout.write(f'handle_server_request: 200 \n')
-                return reply_header.create_response_header(config, report)
-            if os.path.exists(report["request"]["path"]):
-                if "If-None-Match" in report["request"]:
-                    if configreader.convert_to_hash(report["request"]["If-None-Match"]):
+                        sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
+                elif "If-Modified-Since" in report["request"]:
+                    sys.stdout.write(f'If-Modified-Since exists \n')
+                    if utils.get_file_last_modified_time(report["request"]["path"]) > utils.convert_timestamp_to_gmt(report["request"]["If-Modified-Since"]):
+                        sys.stdout.write(f'If-Modified-Since: file modified after \n')
                         report["response"]["status_code"] = "304"
-                report["response"]["status_code"] = "200"
-                sys.stdout.write(f'handle_server_request: 200 \n')
+                else:
+                    report["response"]["status_code"] = "200"
+                    sys.stdout.write(f'handle_server_request: 200 \n')
                 return reply_header.create_response_header(config, report)
-                            
-            else:
-                sys.stdout.write(f'handle_server_request: 404 \n')
-                report["response"]["status_code"] = "404"
-                return reply_header.create_response_header(config, report)
-        elif report["request"]["method"] in ["GET"]:
-            if os.path.exists(report["request"]["path"]):
-                    if "If-Unmodified-Since" in report["request"]:
-                        if utils.get_file_last_modified_time(report["request"]["path"]) <= utils.convert_timestamp_to_gmt(report["request"]["If-Unodified-Since"]):
+                '''
+                if os.path.exists(report["request"]["path"]):
+                    if "If-Match" in report["request"]:
+                        if configreader.convert_to_hash(report["request"]["If-Match"]):
                             report["response"]["status_code"] = "412"
                     report["response"]["status_code"] = "200"
                     sys.stdout.write(f'handle_server_request: 200 \n')
                     return reply_header.create_response_header(config, report)
+                if os.path.exists(report["request"]["path"]):
+                    if "If-None-Match" in report["request"]:
+                        if configreader.convert_to_hash(report["request"]["If-None-Match"]):
+                            report["response"]["status_code"] = "304"
+                    report["response"]["status_code"] = "200"
+                    sys.stdout.write(f'handle_server_request: 200 \n')
+                    return reply_header.create_response_header(config, report)
+                '''                
             else:
                 sys.stdout.write(f'handle_server_request: 404 \n')
                 report["response"]["status_code"] = "404"
@@ -64,3 +62,12 @@ def handle_server_request(config, report):
             return reply_header.create_response_header(config, report)
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')
+
+def convert_to_hash(value):
+    if ":" in value:
+        textUtf8 = value.encode("utf-8")
+        hash = hashlib.md5( textUtf8 )
+        hexa = hash.hexdigest()
+        return hexa
+    else:
+        return value

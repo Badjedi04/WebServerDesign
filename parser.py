@@ -76,7 +76,7 @@ def header_validate(request_header, config):
                     break
                 if line_splitter[0] == "Host":
                     is_host_present = True 
-                elif line_splitter[0] in ["If-Modified-Since,If-Unmodified-Since"]:
+                elif line_splitter[0] in ["If-Modified-Since, If-Unmodified-Since"]:
                     if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
                         sys.stdout.write("Modify Header has invalid value\n")
                         is_host_present = True 
