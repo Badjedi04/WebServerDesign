@@ -83,6 +83,7 @@ def header_validate(request_header, config):
                         report["response"]["status_code"] = "400"
                         break 
                 elif line_splitter[0] in ["If-Match,If-Non-Match"]:
+                    pass
                     if configreader.convert_to_hash(line_splitter[1]) is None:
                         sys.stdout.write("Match has invalid value\n")
                         is_host_present = True 

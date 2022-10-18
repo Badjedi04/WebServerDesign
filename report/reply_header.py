@@ -1,10 +1,9 @@
-import json
 import sys
 from datetime import datetime
-import os
 
 import utils
-import constants
+
+import error_page
 
 def create_response_header(config, report):
     try:
@@ -30,6 +29,8 @@ def create_response_header(config, report):
                         report["response"]["Last-Modified"] = response["last_modified"]
                     if "payload" in response and report["request"]["method"] == "GET":
                         report["response"]["payload"] = response["payload"]
+            elif report["response"]["status_code"] != "200" and  report["request"]["method"] == "GET":
+                report["response"]["payload"] = error_page.create_html_page(report["response"]["status_code"], report["response"]["status_text"])
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
         sys.stdout.write(f'Report\n{report}\n') 

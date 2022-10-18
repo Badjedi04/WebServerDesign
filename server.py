@@ -1,7 +1,6 @@
 import socket
 import sys
 from threading import Thread, Timer
-import threading
 
 import parser
 import report.report as report
