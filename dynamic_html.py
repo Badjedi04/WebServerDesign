@@ -28,14 +28,12 @@ def create_error_page(report):
     return create_dynamic_page(title, heading, body)
 
 def create_directory_listing(report, config):
-    if report["request"]["path"] != "/":
-        directory_listing = [f for f in os.listdir(config.root_folder + report["request"]["path"])]
-    else:
-        directory_listing = [f for f in os.listdir(config.root_folder)]
+    directory_listing = [f for f in os.listdir(report["request"]["path"])]
+
     table_rows = ""
     for i in range(0, len(directory_listing)):
         modified_time = utils.get_file_last_modified_time(report["request"]["path"])
-        if os.path.isfile(config.root_folder + report["request"]["path"] + directory_listing[i]):
+        if os.path.isfile(config["MAPPING"]["root_dir"]  + report["request"]["path"] + directory_listing[i]):
             file_size = str(os.path.getsize(config["MAPPING"]["root_dir"] + report["request"]["path"] + "/"
                                             + directory_listing[i]))
         else:
