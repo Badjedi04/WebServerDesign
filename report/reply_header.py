@@ -84,7 +84,7 @@ def return_mime_type(config, report):
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][9] 
             else:
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][10]   
-            return mime_response             
+        return mime_response             
     except Exception as e:
         sys.stderr.write(f'return_mime_type: error {e}\n')
 
