@@ -102,7 +102,7 @@ def parse_header(request_header):
             sys.stdout.write(f'Line  \n {line}\n')
             if line.strip():
                 if index > 0:
-                    line_splitter = line.split(":")
+                    line_splitter = line.split(":", 1)
                     sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
                     dict_request["request"][line_splitter[0]] = line_splitter[1].strip()
                 else:
