@@ -27,7 +27,6 @@ def get_file_last_modified_time(file_path):
         return None     
 
 def convert_to_md5(value):
-    textUtf8 = value.encode("utf-8")
-    hash = hashlib.md5( textUtf8 )
+    hash = hashlib.md5(value)
     hexa = hash.hexdigest()
     return hexa

@@ -41,7 +41,7 @@ def create_config_file():
     config["STATUS_CODE"]["304"] = "Not Modified"
     config["STATUS_CODE"]["408"] = "Request Timeout"
     config["STATUS_CODE"]["412"] = "Precondition Failed"
-
+    config["STATUS_CODE"]["418"] = "Timeout"
 
     with open(constants.CONFIG, "w") as fobj:
         config.write(fobj)
