@@ -44,11 +44,13 @@ def start_client(conn, addr, config):
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
-                response = parser.get_request_header(data.decode(), config)
+                report = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
-                temp = report.handle_server_response(config, response)
-                if temp:
-                    conn.send(temp)
+                report = report.handle_server_response(config, report)
+                if report:
+                    conn.send(report)
+                    if report["response"]["Connection"] == "close":
+                        close_connection(conn)
                 else:
                     conn.send(str.encode("null"))
                 sys.stdout.write("Server response sent\n")
