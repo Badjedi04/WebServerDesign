@@ -103,9 +103,12 @@ def fix_host_path(report, config):
 Function to check redirects
 """
 def check_file_redirects(report):
-    redirect_config = configreader.read_redirect()
-    # Check 301 redirects
-    if re.match(redirect_config["PATH"]["301"].split(" ")[0], report["response"]["path"]):
+    try:
+        redirect_config = configreader.read_redirect()
+        sys.stdout.write(f'check_file_redirects: \n {redirect_config}\n')
+        # Check 301 redirects
+        if re.match(redirect_config["PATH"]["301"].split(" ")[0], report["response"]["path"]):
+            sys.stdout.write(f'check_file_redirects: 301\n')
             string_match = re.search(redirect_config["PATH"]["301"].split(" ")[0], report["response"]["path"])
             split_redirect = redirect_config["PATH"]["301"].split(" ")[1].split("/")
             count_dollars = 0
@@ -120,23 +123,27 @@ def check_file_redirects(report):
             report["response"]["status_code"] = "301"
             report["response"]["Location"] = redirect_path
             report["response"]["path"] = redirect_path
-    # Check 302 redirects
-    else:
-        temporary_pattern = redirect_config["PATH"]["302"].split("\n")
-        for i in range(0, len(temporary_pattern)):
-            if re.match(temporary_pattern[i].split(" ")[0], report["response"]["path"]):
-                string_match = re.search(temporary_pattern[i].split(" ")[0], report["response"]["path"])
-                split_redirect = temporary_pattern[i].split(" ")[1].split("/")
-                count_dollars = 0
-                redirect_path = ""
-                for j in range(0, len(split_redirect)):
-                    if "$" in split_redirect[j] and split_redirect[j].replace("$", "").isdigit():
-                        count_dollars += 1
-                        redirect_path += string_match.group(count_dollars) + "/"
-                    else:
-                        redirect_path += split_redirect[j] + "/"
-                redirect_path = redirect_path[:-1]
-                report["response"]["status_code"] = "302"
-                report["response"]["Location"] = redirect_path
-                report["response"]["path"] = redirect_path
-    return report
+        # Check 302 redirects
+        else:
+            sys.stdout.write(f'check_file_redirects: 302\n')
+            temporary_pattern = redirect_config["PATH"]["302"].split("\n")
+            for i in range(0, len(temporary_pattern)):
+                if re.match(temporary_pattern[i].split(" ")[0], report["response"]["path"]):
+                    string_match = re.search(temporary_pattern[i].split(" ")[0], report["response"]["path"])
+                    split_redirect = temporary_pattern[i].split(" ")[1].split("/")
+                    count_dollars = 0
+                    redirect_path = ""
+                    for j in range(0, len(split_redirect)):
+                        if "$" in split_redirect[j] and split_redirect[j].replace("$", "").isdigit():
+                            count_dollars += 1
+                            redirect_path += string_match.group(count_dollars) + "/"
+                        else:
+                            redirect_path += split_redirect[j] + "/"
+                    redirect_path = redirect_path[:-1]
+                    report["response"]["status_code"] = "302"
+                    report["response"]["Location"] = redirect_path
+                    report["response"]["path"] = redirect_path
+        sys.stdout.write(f'check_file_redirects: \n {report}\n')
+        return report
+    except Exception as e:
+        sys.stderr.write(f'check_file_redirects: error: {e}\n')
