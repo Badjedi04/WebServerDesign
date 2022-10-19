@@ -53,12 +53,12 @@ def check_if_modified_header(report):
     try:
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
             sys.stdout.write(f'If-Unmodified-Since exists \n')
-            if datetime.strptime(utils.get_file_last_modified_time(report["request"]["path"]), "%a, %d %b %Y %H:%M:%S GMT") > utils.convert_timestamp_to_gmt(report["request"]["If-Unmodified-Since"]):
+            if datetime.strptime(utils.get_file_last_modified_time(report["request"]["path"]), "%a, %d %b %Y %H:%M:%S GMT") >= utils.convert_timestamp_to_gmt(report["request"]["If-Unmodified-Since"]):
                 report["response"]["status_code"] = "412"
                 sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
         elif "If-Modified-Since" in report["request"] and  "If-None-Match" not in report["request"]:
             sys.stdout.write(f'If-Modified-Since exists \n')
-            if  datetime.strptime(utils.get_file_last_modified_time(report["request"]["path"]), "%a, %d %b %Y %H:%M:%S GMT")  > utils.convert_timestamp_to_gmt(report["request"]["If-Modified-Since"]):
+            if  datetime.strptime(utils.get_file_last_modified_time(report["request"]["path"]), "%a, %d %b %Y %H:%M:%S GMT")  >= utils.convert_timestamp_to_gmt(report["request"]["If-Modified-Since"]):
                 sys.stdout.write(f'If-Modified-Since: file modified after \n')
                 report["response"]["status_code"] = "304"
         return report
