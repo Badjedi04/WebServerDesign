@@ -5,7 +5,6 @@ from threading import Thread, Timer
 import server_parser.parser as parser
 import server_responder.responder as responder
 
-
 """
 Function to start Server
 Parameters:
@@ -25,11 +24,20 @@ def wait_for_connections(server_socket, config):
         Thread(target=start_client, args=(conn, addr, config)).start()
 
 
-def close_connection(conn):
+def close_connection(conn, timeout=False, config=None):
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+    if timeout:
+        report = {}
+        report["response"] = {}
+        report["response"]["http_version"] = config["HEADERS"]["http_version"]
+        report["response"]["status_code"] = "418"
+        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+        report["response"]["Server"] = config["HEADERS"]["server"]
+        report["response"]["Connection"] = "close" 
+        responder.server_reply(config, report)
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
@@ -39,7 +47,7 @@ def start_client(conn, addr, config):
         try:
             data = conn.recv(1024)  # receive data from client
             if data:
-                connection_timeout = Timer(30, close_connection, args=(conn))
+                connection_timeout = Timer(config["SERVER"]["timeout"], close_connection, args=(conn, True, config))
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")

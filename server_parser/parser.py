@@ -2,7 +2,6 @@ import sys
 import urllib.parse as url_parse
 
 import utils.utils as utils
-from configuration import configreader
 
 def get_request_header(request_header, config):
     try:
@@ -67,7 +66,7 @@ def header_validate(request_header, config):
                     is_host_present = True 
                     report["response"]["status_code"] = "400"
                     break
-                elif line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
+                elif line_splitter[0]  == "Connection" and line_splitter[1].strip() not in ["close", "keep-alive"]:
                     sys.stdout.write("Either not key value pair, host name or connection is wrong \n")
                     is_host_present = True 
                     report["response"]["status_code"] = "400"
@@ -77,7 +76,7 @@ def header_validate(request_header, config):
                     is_host_present = True 
                 
                 elif line_splitter[0] in ["If-Modified-Since, If-Unmodified-Since"]:
-                    if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
+                    if utils.convert_string_to_datetime(line_splitter[1]) is None:
                         sys.stdout.write("Modify Header has invalid value\n")
                         is_host_present = True 
                         report["response"]["status_code"] = "400"

@@ -28,11 +28,6 @@ def handle_server_request(config, report):
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')
 
-def convert_to_md5(value):
-    textUtf8 = value.encode("utf-8")
-    hash = hashlib.md5( textUtf8 )
-    hexa = hash.hexdigest()
-    return hexa
 
 """
 This function is responsible for returning status code and redirect path on the basis of file path 
@@ -42,6 +37,7 @@ def check_file_path(report):
         report["response"]["status_code"] = "200"
         #report = check_file_redirects(report)
         report = check_if_modified_header(report)
+        report = check_if_match_header(report)
     else:
         report["response"]["status_code"] = "404"
     return report
@@ -53,12 +49,12 @@ def check_if_modified_header(report):
     try:
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
             sys.stdout.write(f'If-Unmodified-Since exists \n')
-            if datetime.strptime(utils.get_file_last_modified_time(report["request"]["path"]), "%a, %d %b %Y %H:%M:%S GMT") > utils.convert_timestamp_to_gmt(report["request"]["If-Unmodified-Since"]):
+            if utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"])) >= utils.convert_string_to_datetime(report["request"]["If-Unmodified-Since"]):
                 report["response"]["status_code"] = "412"
                 sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
         elif "If-Modified-Since" in report["request"] and  "If-None-Match" not in report["request"]:
             sys.stdout.write(f'If-Modified-Since exists \n')
-            if  datetime.strptime(utils.get_file_last_modified_time(report["request"]["path"]), "%a, %d %b %Y %H:%M:%S GMT")  < utils.convert_timestamp_to_gmt(report["request"]["If-Modified-Since"]):
+            if  utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]))  <= utils.convert_string_to_datetime(report["request"]["If-Modified-Since"]):
                 sys.stdout.write(f'If-Modified-Since: file modified after \n')
                 report["response"]["status_code"] = "304"
         return report
@@ -69,23 +65,23 @@ def check_if_modified_header(report):
 """
 Function to match If-Match and If-None-Match headers
 """
-def check_if_match_header(report, config):
+def check_if_match_header(report):
 
     if "If-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:
             file_content = fobj.read()
-        if report["request"]["If-Match"] != "*" and convert_to_md5(file_content) != report["request"]["If-Match"]:
+        if report["request"]["If-Match"] != "*" and utils.convert_to_md5(file_content) != report["request"]["If-Match"]:
             report["response"]["status_code"] = "412"
             sys.stdout.write(f'check_if_match_header: 412 \n')
     elif "If-None-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:
             file_content = fobj.read()
-        if report["request"]["If-None-Match"] == "*" and convert_to_md5(file_content) == report["request"]["If-None-Match"]:
+        if report["request"]["If-None-Match"] == "*" and utils.convert_to_md5(file_content) == report["request"]["If-None-Match"]:
             if report["request"]["http_method"] in ["GET", "HEAD"]:
                 report["response"]["status_code"] = "304"
             else:
                 report["response"]["status_code"] = "412"
-        return report
+    return report
 
 """
 Function to set host path

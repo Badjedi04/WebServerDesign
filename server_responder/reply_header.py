@@ -28,6 +28,8 @@ def create_response_header(config, report):
                         report["response"]["Content-Length"] = mime_response["file_length"]
                     if "last_modified" in mime_response:
                         report["response"]["Last-Modified"] = mime_response["last_modified"]
+                    if "ETag" in mime_response:
+                        report["response"]["ETag"] = mime_response["ETag"]
                     if "payload" in mime_response and report["request"]["method"] == "GET":
                         report["response"]["payload"] = mime_response["payload"]
             elif report["response"]["status_code"] not in ["200", "304"] and  report["request"]["method"] == "GET":
@@ -54,6 +56,7 @@ def return_mime_type(config, report):
             with open(file_path, "rb") as fobj:
                 mime_response["payload"] = fobj.read()
             mime_response["file_length"] = len(mime_response["payload"])
+            mime_response["ETag"] = utils.convert_to_md5(mime_response["payload"])
             last_modified = utils.get_file_last_modified_time(file_path)
             if last_modified:
                 mime_response["last_modified"] = last_modified
