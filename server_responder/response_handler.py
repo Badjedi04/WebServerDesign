@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import hashlib
 
 import server_responder.reply_header as reply_header
@@ -40,6 +41,7 @@ This function is responsible for returning status code and redirect path on the 
 def check_file_path(report):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
+        report = check_file_redirects(report)
         report = check_if_modified_header(report)
     else:
         report["response"]["status_code"] = "404"
@@ -94,4 +96,47 @@ def fix_host_path(report, config):
     else:
         sys.stdout.write(f'handle_server_request: path: absolute path\n')
         report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
+    return report
+
+
+"""
+Function to check redirects
+"""
+def check_file_redirects(report):
+    redirect_config = configreader.read_redirect()
+    # Check 301 redirects
+    if re.match(redirect_config["PATH"]["301"].split(" ")[0], report["response"]["path"]):
+            string_match = re.search(redirect_config["PATH"]["301"].split(" ")[0], report["response"]["path"])
+            split_redirect = redirect_config["PATH"]["301"].split(" ")[1].split("/")
+            count_dollars = 0
+            redirect_path = ""
+            for j in range(0, len(split_redirect)):
+                if "$" in split_redirect[j] and split_redirect[j].replace("$", "").isdigit():
+                    count_dollars += 1
+                    redirect_path += string_match.group(count_dollars) + "/"
+                else:
+                    redirect_path += split_redirect[j] + "/"
+            redirect_path = redirect_path[:-1]
+            report["response"]["status_code"] = "301"
+            report["response"]["Location"] = redirect_path
+            report["response"]["path"] = redirect_path
+    # Check 302 redirects
+    else:
+        temporary_pattern = redirect_config["PATH"]["302"].split("\n")
+        for i in range(0, len(temporary_pattern)):
+            if re.match(temporary_pattern[i].split(" ")[0], report["response"]["path"]):
+                string_match = re.search(temporary_pattern[i].split(" ")[0], report["response"]["path"])
+                split_redirect = temporary_pattern[i].split(" ")[1].split("/")
+                count_dollars = 0
+                redirect_path = ""
+                for j in range(0, len(split_redirect)):
+                    if "$" in split_redirect[j] and split_redirect[j].replace("$", "").isdigit():
+                        count_dollars += 1
+                        redirect_path += string_match.group(count_dollars) + "/"
+                    else:
+                        redirect_path += split_redirect[j] + "/"
+                redirect_path = redirect_path[:-1]
+                report["response"]["status_code"] = "302"
+                report["response"]["Location"] = redirect_path
+                report["response"]["path"] = redirect_path
     return report
