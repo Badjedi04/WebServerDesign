@@ -2,8 +2,8 @@ import os
 import sys
 import hashlib
 
-import report.reply_header as reply_header
-import utils
+import server_responder.reply_header as reply_header
+import utils.utils as utils
 from configuration import configreader
 
 def handle_server_request(config, report):

@@ -1,12 +1,7 @@
-"""
-    Function to receive request headers
-    Parameters:
-    Returns:
-"""
 import sys 
 import urllib.parse as url_parse
 
-import utils
+import utils.utils as utils
 from configuration import configreader
 
 def get_request_header(request_header, config):

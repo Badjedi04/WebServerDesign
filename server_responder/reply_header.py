@@ -2,8 +2,8 @@ import sys
 from datetime import datetime
 import os
 
-import utils
-import dynamic_html
+import utils.utils as utils
+import server_responder.dynamic_html as dynamic_html
 
 def create_response_header(config, report):
     try:

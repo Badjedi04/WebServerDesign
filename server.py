@@ -2,10 +2,9 @@ import socket
 import sys
 from threading import Thread, Timer
 
-import parser
-import report.report as report
+import server_parser.parser as parser
+import server_responder.responder as responder
 
-#print_lock = threading.Lock()
 
 """
 Function to start Server
@@ -44,12 +43,12 @@ def start_client(conn, addr, config):
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
-                report = parser.get_request_header(data.decode(), config)
+                server_report = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
-                report = report.handle_server_response(config, report)
-                if report:
-                    conn.send(report)
-                    if report["response"]["Connection"] == "close":
+                server_report = responder.handle_server_response(config, server_report)
+                if server_report:
+                    conn.send(server_report)
+                    if responder["response"]["Connection"] == "close":
                         close_connection(conn)
                 else:
                     conn.send(str.encode("null"))

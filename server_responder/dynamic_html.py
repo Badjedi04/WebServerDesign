@@ -1,7 +1,7 @@
 from jinja2 import Environment
 import os
 
-import utils
+import utils.utils as utils
 
 def create_dynamic_page(title="", heading="", body=""):
     html_content = """

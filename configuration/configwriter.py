@@ -1,5 +1,6 @@
 import configparser
-import constants
+
+import utils.constants as constants
 
 """
     Function to write configuraation file

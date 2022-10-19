@@ -1,6 +1,7 @@
 import sys
 import configparser
-import constants
+
+import utils.constants as constants
 
 def read_config_file():
     try:
