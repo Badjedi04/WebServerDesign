@@ -68,14 +68,19 @@ def header_validate(request_header, config):
                         break
             else:
                 line_splitter = line.split(":")
-                if len(line_splitter) != 2 \
-                    or line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
+                if len(line_splitter) != 2:
+                    is_host_present = True 
+                    report["response"]["status_code"] = "400"
+                    break
+                elif line_splitter[0]  == "Connection" and line_splitter[1].strip() != "close":
                     sys.stdout.write("Either not key value pair, host name or connection is wrong \n")
                     is_host_present = True 
                     report["response"]["status_code"] = "400"
                     break
-                if line_splitter[0] == "Host":
+                
+                elif line_splitter[0] == "Host":
                     is_host_present = True 
+                
                 elif line_splitter[0] in ["If-Modified-Since, If-Unmodified-Since"]:
                     if utils.convert_timestamp_to_gmt(line_splitter[1]) is None:
                         sys.stdout.write("Modify Header has invalid value\n")
@@ -119,7 +124,7 @@ def parse_header(request_header):
                     dict_request["request"]["path"] = url_parse.unquote(line_splitter[1], encoding='utf-8', errors='replace')
                     dict_request["request"]["http_version"] = line_splitter[2]
 
-        if "Connection" not in dict_request:
+        if "Connection" not in dict_request["request"]:
             dict_request["request"]["Connection"] = None
         sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
         return dict_request
