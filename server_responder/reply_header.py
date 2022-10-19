@@ -56,7 +56,7 @@ def return_mime_type(config, report):
             with open(file_path, "rb") as fobj:
                 mime_response["payload"] = fobj.read()
             mime_response["file_length"] = len(mime_response["payload"])
-            mime_response["ETag"] = "\"" + utils.convert_to_md5(mime_response["payload"]) + "\""
+            mime_response["ETag"] = '"' + utils.convert_to_md5(mime_response["payload"]) + '"'
             last_modified = utils.get_file_last_modified_time(file_path)
             if last_modified:
                 mime_response["last_modified"] = last_modified

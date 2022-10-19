@@ -37,7 +37,8 @@ def close_connection(conn, timeout=False, config=None):
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
         report["response"]["Connection"] = "close" 
-        responder.server_reply(config, report)
+        
+        conn.send(responder.server_reply(config, report))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
