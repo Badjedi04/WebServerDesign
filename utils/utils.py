@@ -4,7 +4,7 @@ from datetime import datetime
 
 def convert_timestamp_to_gmt(timestamp):
     try:
-        return timestamp.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        return datetime.strptime(timestamp, "%a, %d %b %Y %H:%M:%S GMT")
     except Exception as e:
         sys.stderr.write(f'convert_timestamp_to_gmt: error: {e}')
         return None
