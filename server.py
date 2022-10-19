@@ -45,10 +45,10 @@ def start_client(conn, addr, config):
                 sys.stdout.write("Server Data received\n")
                 server_report = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
-                server_report = responder.handle_server_response(config, server_report)
-                if server_report:
-                    conn.send(server_report)
-                    if responder["response"]["Connection"] == "close":
+                server_response = responder.handle_server_response(config, server_report)
+                if server_response:
+                    conn.send(server_response)
+                    if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
                         close_connection(conn)
                 else:
                     conn.send(str.encode("null"))
