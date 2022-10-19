@@ -38,18 +38,9 @@ Function to read redirect.ini
 """
 def read_redirect():
     try:
-        dict_config = {}
         config = configparser.ConfigParser(dict_type=MultiOrderedDict, strict=False)
         config.read("redirect.ini")
-
-        for section in config.sections():
-            sys.stdout.write(f'section: {section}\n')
-            dict_config[section] = {}
-            for (key, value) in config[section].items():
-                sys.stdout.write(f'key: {key}  value: {value}\n')
-                dict_config[section][key] = convert_to_int(value)
-        sys.stdout.write(f'read_redirect: \n{dict_config}\n')
-        return dict_config
+        return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
 
