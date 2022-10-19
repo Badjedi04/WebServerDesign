@@ -39,7 +39,7 @@ def close_connection(conn, timeout=False, config=None):
         report["response"]["Connection"] = "close" 
         
         conn.send(responder.server_reply(config, report))
-    #conn.shutdown(socket.SHUT_RDWR)
+    conn.shutdown(socket.SHUT_RDWR)
     conn.close()
     sys.exit()
 
@@ -62,6 +62,7 @@ def start_client(conn, addr, config):
                 if server_response:
                     conn.send(server_response)
                     if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
+                        connection_timeout.cancel()
                         close_connection(conn)
                 else:
                     conn.send(str.encode("null"))

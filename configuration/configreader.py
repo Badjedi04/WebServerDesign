@@ -44,12 +44,14 @@ def read_redirect():
         for section in config.sections(): 
             for (key, value) in config[section].items():
                 if key in config:
-                    if isinstance(config[key], str):
-                        temp = [config_dict[key]]
-                        config_dict[key] = temp
+                    if not isinstance(config[key], list):
+                        temp = [config_dict[key], value]
+                        config_dict.update({key:temp})
+                    else:
                         config_dict[key].append(value)
                 else:
                     config_dict[key] = value
+        sys.stdout.write(f'read_redirect: \n{config_dict}\n')
         return config_dict
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
