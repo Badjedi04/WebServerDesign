@@ -49,4 +49,4 @@ class MultiOrderedDict(OrderedDict):
         if isinstance(value, list) and key in self:
             self[key].extend(value)
         else:
-            super().__setitem__(key, value)
+            super(MultiOrderedDict, self).__setitem__(key, value)
