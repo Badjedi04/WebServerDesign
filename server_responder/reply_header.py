@@ -30,7 +30,7 @@ def create_response_header(config, report):
                         report["response"]["Last-Modified"] = mime_response["last_modified"]
                     if "payload" in mime_response and report["request"]["method"] == "GET":
                         report["response"]["payload"] = mime_response["payload"]
-            elif report["response"]["status_code"] != "200" and  report["request"]["method"] == "GET":
+            elif report["response"]["status_code"] not in ["200", "304"] and  report["request"]["method"] == "GET":
                 report["response"]["payload"] = dynamic_html.create_error_page(report)
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
@@ -71,7 +71,7 @@ def return_mime_type(config, report):
             elif file_ext == "png":
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][3] 
             elif file_ext in ["jpg", "jpeg"]:
-               mime_response["mime_type"] = config["HEADERS"]["mime_types"][4] 
+                mime_response["mime_type"] = config["HEADERS"]["mime_types"][4] 
             elif file_ext == "gif":
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][5] 
             elif file_ext == "pdf":

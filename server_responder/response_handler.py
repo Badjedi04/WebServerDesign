@@ -1,3 +1,4 @@
+from genericpath import isdir
 import os
 import sys
 import re
@@ -26,14 +27,11 @@ def handle_server_request(config, report):
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')
 
-def convert_to_hash(value):
-    if ":" in value:
-        textUtf8 = value.encode("utf-8")
-        hash = hashlib.md5( textUtf8 )
-        hexa = hash.hexdigest()
-        return hexa
-    else:
-        return value
+def convert_to_md5(value):
+    textUtf8 = value.encode("utf-8")
+    hash = hashlib.md5( textUtf8 )
+    hexa = hash.hexdigest()
+    return hexa
 
 """
 This function is responsible for returning status code and redirect path on the basis of file path 
@@ -41,7 +39,7 @@ This function is responsible for returning status code and redirect path on the 
 def check_file_path(report):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
-        report = check_file_redirects(report)
+        #report = check_file_redirects(report)
         report = check_if_modified_header(report)
     else:
         report["response"]["status_code"] = "404"
@@ -57,7 +55,7 @@ def check_if_modified_header(report):
             if utils.get_file_last_modified_time(report["request"]["path"]) > utils.convert_timestamp_to_gmt(report["request"]["If-Unmodified-Since"]):
                 report["response"]["status_code"] = "412"
                 sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
-        elif "If-Modified-Since" in report["request"]:
+        elif "If-Modified-Since" in report["request"] and  "If-None-Match" not in report["request"]:
             sys.stdout.write(f'If-Modified-Since exists \n')
             if utils.get_file_last_modified_time(report["request"]["path"]) > utils.convert_timestamp_to_gmt(report["request"]["If-Modified-Since"]):
                 sys.stdout.write(f'If-Modified-Since: file modified after \n')
@@ -71,20 +69,22 @@ def check_if_modified_header(report):
 Function to match If-Match and If-None-Match headers
 """
 def check_if_match_header(report, config):
-    if os.path.exists(report["request"]["path"]):
-        if "If-Match" in report["request"]:
-            if configreader.convert_to_hash(report["request"]["If-Match"]):
-                report["response"]["status_code"] = "412"
-        report["response"]["status_code"] = "200"
-        sys.stdout.write(f'handle_server_request: 200 \n')
-        return reply_header.create_response_header(config, report)
-    if os.path.exists(report["request"]["path"]):
-        if "If-None-Match" in report["request"]:
-            if configreader.convert_to_hash(report["request"]["If-None-Match"]):
+
+    if "If-Match" in report["request"]:
+        with open(report["request"]["path"], "rb") as fobj:
+            file_content = fobj.read()
+        if report["request"]["If-Match"] != "*" and convert_to_md5(file_content) != report["request"]["If-Match"]:
+            report["response"]["status_code"] = "412"
+            sys.stdout.write(f'check_if_match_header: 412 \n')
+    elif "If-None-Match" in report["request"]:
+        with open(report["request"]["path"], "rb") as fobj:
+            file_content = fobj.read()
+        if report["request"]["If-None-Match"] == "*" and convert_to_md5(file_content) == report["request"]["If-None-Match"]:
+            if report["request"]["http_method"] in ["GET", "HEAD"]:
                 report["response"]["status_code"] = "304"
-        report["response"]["status_code"] = "200"
-        sys.stdout.write(f'handle_server_request: 200 \n')
-        return reply_header.create_response_header(config, report)
+            else:
+                report["response"]["status_code"] = "412"
+        return report
 
 """
 Function to set host path
@@ -96,6 +96,11 @@ def fix_host_path(report, config):
     else:
         sys.stdout.write(f'handle_server_request: path: absolute path\n')
         report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
+    
+    if os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
+        report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
+    elif report["request"]["path"] == (config["MAPPING"]["root_dir"] + "/"):
+        report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
     return report
 
 
