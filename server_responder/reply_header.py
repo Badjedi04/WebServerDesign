@@ -10,7 +10,7 @@ def create_response_header(config, report):
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
-        now = utils.convert_timestamp_to_gmt(datetime.utcnow())
+        now = utils.convert_datetime_to_string(datetime.utcnow())
         if now:
             report["response"]["Date"] = now
         if "request" in  report and report["request"]:
