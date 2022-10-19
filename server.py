@@ -41,6 +41,7 @@ def close_connection(conn, timeout=False, config=None):
         conn.send(responder.server_reply(config, report))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
+    sys.exit()
 
 
 def start_client(conn, addr, config):

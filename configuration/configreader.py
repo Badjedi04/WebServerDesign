@@ -38,15 +38,19 @@ Function to read redirect.ini
 """
 def read_redirect():
     try:
-        config = configparser.ConfigParser(dict_type=MultiOrderedDict, strict=False)
+        config = configparser.ConfigParser()
         config.read("redirect.ini")
-        return config
+        config_dict = {}
+        for section in config.sections(): 
+            for (key, value) in config[section].items():
+                if key in config:
+                    if isinstance(config[key], str):
+                        temp = [config_dict[key]]
+                        config_dict[key] = temp
+                        config_dict[key].append(value)
+                else:
+                    config_dict[key] = value
+        return config_dict
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
 
-class MultiOrderedDict(OrderedDict):
-    def __setitem__(self, key, value):
-        if isinstance(value, list) and key in self:
-            self[key].extend(value)
-        else:
-            super(MultiOrderedDict, self).__setitem__(key, value)

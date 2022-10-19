@@ -35,7 +35,7 @@ This function is responsible for returning status code and redirect path on the 
 def check_file_path(report):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
-        #report = check_file_redirects(report)
+        report = check_file_redirects(report)
         report = check_if_modified_header(report)
         report = check_if_match_header(report)
     else:
