@@ -20,7 +20,7 @@ def handle_server_request(config, report):
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             
             # Check if file is present or not
-            report = check_file_path(report)
+            report = check_file_path(report, config)
          
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:   
             report["response"]["status_code"] = "200" 
@@ -32,10 +32,10 @@ def handle_server_request(config, report):
 """
 This function is responsible for returning status code and redirect path on the basis of file path 
 """
-def check_file_path(report):
+def check_file_path(report, config):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
-        report = check_file_redirects(report)
+        report = check_file_redirects(report, config)
         report = check_if_modified_header(report)
         report = check_if_match_header(report)
     else:
@@ -104,16 +104,14 @@ def fix_host_path(report, config):
 """
 Function to check redirects
 """
-def check_file_redirects(report):
+def check_file_redirects(report, config):
     try:
-        redirect_config = configreader.read_redirect()
-        sys.stdout.write(f'check_file_redirects: \n {redirect_config}\n')
-        return report
+        sys.stdout.write(f'check_file_redirects: \n {config}\n')
         # Check 301 redirects
-        if re.match(redirect_config["301"].split(" ")[0], report["response"]["path"]):
+        if re.match(config["REDIRECT"]["301"].split(" ")[0], report["response"]["path"]):
             sys.stdout.write(f'check_file_redirects: 301\n')
-            string_match = re.search(redirect_config["301"].split(" ")[0], report["response"]["path"])
-            split_redirect = redirect_config["301"].split(" ")[1].split("/")
+            string_match = re.search(config["REDIRECT"]["301"].split(" ")[0], report["response"]["path"])
+            split_redirect = config["REDIRECT"]["301"].split(" ")[1].split("/")
             count_dollars = 0
             redirect_path = ""
             for j in range(0, len(split_redirect)):
@@ -129,7 +127,7 @@ def check_file_redirects(report):
         # Check 302 redirects
         else:
             sys.stdout.write(f'check_file_redirects: 302\n')
-            for redirect_pattern in redirect_config["302"]:
+            for redirect_pattern in config["REDIRECT"]["302"]:
                 if re.match(redirect_pattern.split(" ")[0], report["response"]["path"]):
                     string_match = re.search(redirect_pattern.split(" ")[0], report["response"]["path"])
                     split_redirect = redirect_pattern.split(" ")[1].split("/")
