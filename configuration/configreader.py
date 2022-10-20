@@ -47,27 +47,13 @@ def read_redirect():
             sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
                 sys.stdout.write(f'read_redirect: {key}: {value}\n')
-                if key in config_dict:
-                    if not isinstance(config_dict[key], list):
-                        temp = [config_dict[key], value]
-                        config_dict.update({key:temp})
-                    else:
-                        config_dict[key].append(value)
-                else:
-                    config_dict[key] = value
+                value = value.replace("[", "").replace("]", "")
+                if "," in value:
+                    value = value.split(",")
+                config_dict[key] = value
             sys.stdout.write(f'read_redirect: \n{config_dict}\n')
         
         #sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
         return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
-
-class M(OrderedDict):
-    def __setitem__(self, key, value):
-        if key in self:
-            items = self[key]
-            new = value[0]
-            if new not in items:
-                items.append(new)
-        else:
-            super(M, self).__setitem__(key, value)
