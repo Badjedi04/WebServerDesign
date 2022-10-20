@@ -50,9 +50,9 @@ def read_redirect():
                 if "," in value:
                     value = value.split(",")
                 config_dict[key] = value
-            sys.stdout.write(f'read_redirect: \n{config_dict}\n')
+                sys.stdout.write(f'read_redirect: \n{config_dict}\n')
         
-        #sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
+        sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
         return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
