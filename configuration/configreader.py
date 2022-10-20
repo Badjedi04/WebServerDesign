@@ -42,7 +42,6 @@ def read_redirect():
         config.read("redirect.ini")
         
         config_dict = {}
-        sys.stdout.write(f'read_redirect: section: {section}\n')
         for section in config.sections(): 
             sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
