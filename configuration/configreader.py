@@ -38,7 +38,7 @@ Function to read redirect.ini
 """
 def read_redirect():
     try:
-        config = configparser.ConfigParser(dict_type= M, strict=False)
+        config = configparser.ConfigParser()
         config.read("redirect.ini")
         
         config_dict = {}
