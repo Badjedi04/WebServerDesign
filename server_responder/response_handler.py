@@ -35,7 +35,7 @@ This function is responsible for returning status code and redirect path on the 
 def check_file_path(report):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
-        #report = check_file_redirects(report)
+        report = check_file_redirects(report)
         report = check_if_modified_header(report)
         report = check_if_match_header(report)
     else:
@@ -109,10 +109,10 @@ def check_file_redirects(report):
         redirect_config = configreader.read_redirect()
         sys.stdout.write(f'check_file_redirects: \n {redirect_config}\n')
         # Check 301 redirects
-        if re.match(redirect_config.split(" ")[0], report["response"]["path"]):
+        if re.match(redirect_config["301"].split(" ")[0], report["response"]["path"]):
             sys.stdout.write(f'check_file_redirects: 301\n')
-            string_match = re.search(redirect_config.split(" ")[0], report["response"]["path"])
-            split_redirect = redirect_config.split(" ")[1].split("/")
+            string_match = re.search(redirect_config["301"].split(" ")[0], report["response"]["path"])
+            split_redirect = redirect_config["301"].split(" ")[1].split("/")
             count_dollars = 0
             redirect_path = ""
             for j in range(0, len(split_redirect)):
@@ -128,11 +128,10 @@ def check_file_redirects(report):
         # Check 302 redirects
         else:
             sys.stdout.write(f'check_file_redirects: 302\n')
-            temporary_pattern = redirect_config.split("\n")
-            for i in range(0, len(temporary_pattern)):
-                if re.match(temporary_pattern[i].split(" ")[0], report["response"]["path"]):
-                    string_match = re.search(temporary_pattern[i].split(" ")[0], report["response"]["path"])
-                    split_redirect = temporary_pattern[i].split(" ")[1].split("/")
+            for redirect_pattern in redirect_config["302"]:
+                if re.match(redirect_pattern.split(" ")[0], report["response"]["path"]):
+                    string_match = re.search(redirect_pattern.split(" ")[0], report["response"]["path"])
+                    split_redirect = redirect_pattern.split(" ")[1].split("/")
                     count_dollars = 0
                     redirect_path = ""
                     for j in range(0, len(split_redirect)):
