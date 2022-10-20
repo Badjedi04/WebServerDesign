@@ -42,7 +42,9 @@ def read_redirect():
         config.read("redirect.ini")
         config_dict = {}
         for section in config.sections(): 
+            sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
+                sys.stdout.write(f'read_redirect: {key}: {value}\n')
                 if key in config_dict:
                     if not isinstance(config_dict[key], list):
                         temp = [config_dict[key], value]
@@ -52,7 +54,7 @@ def read_redirect():
                 else:
                     config_dict[key] = value
             sys.stdout.write(f'read_redirect: \n{config_dict}\n')
-        sys.stdout.write(f'read_redirect: \n{config_dict}\n')
+        sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
         return config_dict
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
