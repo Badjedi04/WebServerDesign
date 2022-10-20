@@ -76,11 +76,15 @@ def header_validate(request_header, config):
                     is_host_present = True 
                 
                 elif line_splitter[0] in ["If-Modified-Since, If-Unmodified-Since"]:
-                    if utils.convert_string_to_datetime(line_splitter[1]) is None:
+                    temp = utils.convert_string_to_datetime(line_splitter[1])
+                    sys.stdout.write("Print temp \n")
+                    if  temp is None:
                         sys.stdout.write("Modify Header has invalid value\n")
                         is_host_present = True 
                         report["response"]["status_code"] = "400"
                         break 
+                else:
+                    sys.stdout.write("All OK \n")
                                               
         if not is_host_present:
             report["response"]["status_code"] = "400"
