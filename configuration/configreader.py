@@ -38,9 +38,11 @@ Function to read redirect.ini
 """
 def read_redirect():
     try:
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(dict_type= M, strict=False)
         config.read("redirect.ini")
+        """
         config_dict = {}
+        sys.stdout.write(f'read_redirect: section: {section}\n')
         for section in config.sections(): 
             sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
@@ -54,8 +56,18 @@ def read_redirect():
                 else:
                     config_dict[key] = value
             sys.stdout.write(f'read_redirect: \n{config_dict}\n')
-        sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
-        return config_dict
+        """
+        #sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
+        return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
 
+class M(dict):
+    def __setitem__(self, key, value):
+        if key in self:
+            items = self[key]
+            new = value[0]
+            if new not in items:
+                items.append(new)
+        else:
+            super(M, self).__setitem__(key, value)
