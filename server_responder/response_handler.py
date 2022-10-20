@@ -109,10 +109,10 @@ def check_file_redirects(report):
         redirect_config = configreader.read_redirect()
         sys.stdout.write(f'check_file_redirects: \n {redirect_config}\n')
         # Check 301 redirects
-        if re.match(redirect_config["301"].split(" ")[0], report["response"]["path"]):
+        if re.match(redirect_config.split(" ")[0], report["response"]["path"]):
             sys.stdout.write(f'check_file_redirects: 301\n')
-            string_match = re.search(redirect_config["301"].split(" ")[0], report["response"]["path"])
-            split_redirect = redirect_config["301"].split(" ")[1].split("/")
+            string_match = re.search(redirect_config.split(" ")[0], report["response"]["path"])
+            split_redirect = redirect_config.split(" ")[1].split("/")
             count_dollars = 0
             redirect_path = ""
             for j in range(0, len(split_redirect)):
@@ -128,7 +128,7 @@ def check_file_redirects(report):
         # Check 302 redirects
         else:
             sys.stdout.write(f'check_file_redirects: 302\n')
-            temporary_pattern = redirect_config["302"].split("\n")
+            temporary_pattern = redirect_config.split("\n")
             for i in range(0, len(temporary_pattern)):
                 if re.match(temporary_pattern[i].split(" ")[0], report["response"]["path"]):
                     string_match = re.search(temporary_pattern[i].split(" ")[0], report["response"]["path"])

@@ -40,7 +40,7 @@ def read_redirect():
     try:
         config = configparser.ConfigParser(dict_type= M, strict=False)
         config.read("redirect.ini")
-        """
+        
         config_dict = {}
         sys.stdout.write(f'read_redirect: section: {section}\n')
         for section in config.sections(): 
@@ -56,13 +56,13 @@ def read_redirect():
                 else:
                     config_dict[key] = value
             sys.stdout.write(f'read_redirect: \n{config_dict}\n')
-        """
+        
         #sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
         return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
 
-class M(dict):
+class M(OrderedDict):
     def __setitem__(self, key, value):
         if key in self:
             items = self[key]
