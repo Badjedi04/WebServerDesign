@@ -1,4 +1,3 @@
-from genericpath import isdir
 import os
 import sys
 import re
@@ -109,40 +108,29 @@ def check_file_redirects(report, config):
         sys.stdout.write(f'check_file_redirects: \n {config}\n')
         # Check 301 redirects
         if re.match(config["REDIRECT"]["301"].split(" ")[0], report["request"]["path"]):
-            sys.stdout.write(f'check_file_redirects: 301\n')
-            string_match = re.search(config["REDIRECT"]["301"].split(" ")[0], report["request"]["path"])
-            split_redirect = config["REDIRECT"]["301"].split(" ")[1].split("/")
-            count_dollars = 0
-            redirect_path = ""
-            for j in range(0, len(split_redirect)):
-                if "$" in split_redirect[j] and split_redirect[j].replace("$", "").isdigit():
-                    count_dollars += 1
-                    redirect_path += string_match.group(count_dollars) + "/"
-                else:
-                    redirect_path += split_redirect[j] + "/"
-            redirect_path = redirect_path[:-1]
-            report["response"]["status_code"] = "301"
-            report["response"]["Location"] = redirect_path
-            report["request"]["path"] = redirect_path
+            sys.stdout.write(f'check_file_redirects: path match: 301: {report["request"]["path"]}\n')
+            for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
+                for file_name in files:
+                    dest_match = re.match(config["REDIRECT"]["301"].split(" ")[1], os.path.join(root, file_name))
+                    if dest_match:
+                        report["response"]["status_code"] = "301"
+                        report["response"]["Location"] = os.path.join(root, file_name)
+                        report["request"]["path"] = os.path.join(root, file_name)
+                    break
         # Check 302 redirects
         else:
             sys.stdout.write(f'check_file_redirects: 302\n')
             for redirect_pattern in config["REDIRECT"]["302"]:
                 if re.match(redirect_pattern.split(" ")[0], report["request"]["path"]):
-                    string_match = re.search(redirect_pattern.split(" ")[0], report["request"]["path"])
-                    split_redirect = redirect_pattern.split(" ")[1].split("/")
-                    count_dollars = 0
-                    redirect_path = ""
-                    for j in range(0, len(split_redirect)):
-                        if "$" in split_redirect[j] and split_redirect[j].replace("$", "").isdigit():
-                            count_dollars += 1
-                            redirect_path += string_match.group(count_dollars) + "/"
-                        else:
-                            redirect_path += split_redirect[j] + "/"
-                    redirect_path = redirect_path[:-1]
-                    report["response"]["status_code"] = "302"
-                    report["response"]["Location"] = redirect_path
-                    report["request"]["path"] = redirect_path
+                    sys.stdout.write(f'check_file_redirects: path match: 302: {report["request"]["path"]}\n')
+                    for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
+                        for file_name in files:
+                            dest_match = re.match(redirect_pattern.split(" ")[1], os.path.join(root, file_name))
+                            if dest_match:
+                                report["response"]["status_code"] = "302"
+                                report["response"]["Location"] = os.path.join(root, file_name)
+                                report["request"]["path"] = os.path.join(root, file_name)
+                            break
         sys.stdout.write(f'check_file_redirects: \n {report}\n')
         return report
     except Exception as e:
