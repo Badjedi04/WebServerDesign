@@ -108,6 +108,7 @@ def check_file_redirects(report):
     try:
         redirect_config = configreader.read_redirect()
         sys.stdout.write(f'check_file_redirects: \n {redirect_config}\n')
+        return report
         # Check 301 redirects
         if re.match(redirect_config["301"].split(" ")[0], report["response"]["path"]):
             sys.stdout.write(f'check_file_redirects: 301\n')
