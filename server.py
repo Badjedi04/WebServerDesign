@@ -61,11 +61,13 @@ def start_client(conn, addr, config):
                 if server_response:
                     conn.send(server_response)
                     if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
+                        sys.stdout.write("Connection close called due to Connection:close header\n")
                         connection_timeout.cancel()
                         close_connection(conn)
                 else:
                     conn.send(str.encode("null"))
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
+                break
         except Exception as e:
             sys.stderr.write(f'start_client:error: {e}\n')
