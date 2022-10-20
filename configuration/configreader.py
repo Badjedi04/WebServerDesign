@@ -46,10 +46,8 @@ def read_redirect():
             sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
                 sys.stdout.write(f'read_redirect: {key}: {value}\n')
-                value = value.replace("[", "").replace("]", "")
-                if "," in value:
-                    value = value.split(",")
-                config_dict[key] = value
+          
+                config_dict[key] = convert_list(value)
                 sys.stdout.write(f'read_redirect: \n{config_dict}\n')
         
         sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
