@@ -108,9 +108,9 @@ def check_file_redirects(report, config):
     try:
         sys.stdout.write(f'check_file_redirects: \n {config}\n')
         # Check 301 redirects
-        if re.match(config["REDIRECT"]["301"].split(" ")[0], report["response"]["path"]):
+        if re.match(config["REDIRECT"]["301"].split(" ")[0], report["request"]["path"]):
             sys.stdout.write(f'check_file_redirects: 301\n')
-            string_match = re.search(config["REDIRECT"]["301"].split(" ")[0], report["response"]["path"])
+            string_match = re.search(config["REDIRECT"]["301"].split(" ")[0], report["request"]["path"])
             split_redirect = config["REDIRECT"]["301"].split(" ")[1].split("/")
             count_dollars = 0
             redirect_path = ""
@@ -123,13 +123,13 @@ def check_file_redirects(report, config):
             redirect_path = redirect_path[:-1]
             report["response"]["status_code"] = "301"
             report["response"]["Location"] = redirect_path
-            report["response"]["path"] = redirect_path
+            report["request"]["path"] = redirect_path
         # Check 302 redirects
         else:
             sys.stdout.write(f'check_file_redirects: 302\n')
             for redirect_pattern in config["REDIRECT"]["302"]:
-                if re.match(redirect_pattern.split(" ")[0], report["response"]["path"]):
-                    string_match = re.search(redirect_pattern.split(" ")[0], report["response"]["path"])
+                if re.match(redirect_pattern.split(" ")[0], report["request"]["path"]):
+                    string_match = re.search(redirect_pattern.split(" ")[0], report["request"]["path"])
                     split_redirect = redirect_pattern.split(" ")[1].split("/")
                     count_dollars = 0
                     redirect_path = ""
@@ -142,7 +142,7 @@ def check_file_redirects(report, config):
                     redirect_path = redirect_path[:-1]
                     report["response"]["status_code"] = "302"
                     report["response"]["Location"] = redirect_path
-                    report["response"]["path"] = redirect_path
+                    report["request"]["path"] = redirect_path
         sys.stdout.write(f'check_file_redirects: \n {report}\n')
         return report
     except Exception as e:
