@@ -1,3 +1,4 @@
+from genericpath import isdir
 import os
 import sys
 import re
@@ -107,8 +108,9 @@ def check_file_redirects(report, config):
     try:
         sys.stdout.write(f'check_file_redirects: \n {config}\n')
         # Check 301 redirects
-        if re.match(config["REDIRECT"]["301"].split(" ")[0], report["request"]["path"]):
-            sys.stdout.write(f'check_file_redirects: path match: 301: {report["request"]["path"]}\n')
+        path = report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")
+        if re.match(config["REDIRECT"]["301"].split(" ")[0], path):
+            sys.stdout.write(f'check_file_redirects: path match: 301: {path}\n')
             for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
                 for file_name in files:
                     dest_match = re.match(config["REDIRECT"]["301"].split(" ")[1], os.path.join(root, file_name))
@@ -121,8 +123,8 @@ def check_file_redirects(report, config):
         else:
             sys.stdout.write(f'check_file_redirects: 302\n')
             for redirect_pattern in config["REDIRECT"]["302"]:
-                if re.match(redirect_pattern.split(" ")[0], report["request"]["path"]):
-                    sys.stdout.write(f'check_file_redirects: path match: 302: {report["request"]["path"]}\n')
+                if re.match(redirect_pattern.split(" ")[0], path):
+                    sys.stdout.write(f'check_file_redirects: path match: 302: {path}\n')
                     for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
                         for file_name in files:
                             dest_match = re.match(redirect_pattern.split(" ")[1], os.path.join(root, file_name))
