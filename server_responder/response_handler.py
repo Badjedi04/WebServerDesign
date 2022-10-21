@@ -49,12 +49,16 @@ def check_if_modified_header(report):
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Unmodified-Since"])
             sys.stdout.write(f'If-Unmodified-Since exists \n')
-            if unmodified_time and utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]) >= unmodified_time):
+            if not unmodified_time:
+                return report
+            if utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]) >= unmodified_time):
                 report["response"]["status_code"] = "412"
                 sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
         elif "If-Modified-Since" in report["request"] and  "If-None-Match" not in report["request"]:
             sys.stdout.write(f'If-Modified-Since exists \n')
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Modified-Since"])
+            if not unmodified_time:
+                return report
             if  utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]))  <= unmodified_time:
                 sys.stdout.write(f'If-Modified-Since: file modified after \n')
                 report["response"]["status_code"] = "304"
