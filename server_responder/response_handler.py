@@ -75,13 +75,19 @@ def check_if_match_header(report):
     if "If-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:
             file_content = fobj.read()
-        if report["request"]["If-Match"] != "*" and utils.convert_to_md5(file_content) != report["request"]["If-Match"]:
+        file_md5 = utils.convert_to_md5(file_content)
+        file_md5 = '"' + file_md5 + '"'
+        sys.stdout.write(f'check_if_match_header: md5 for file {file_md5}\n')
+        if report["request"]["If-Match"] != "*" and file_md5 != report["request"]["If-Match"]:
             report["response"]["status_code"] = "412"
             sys.stdout.write(f'check_if_match_header: 412 \n')
     elif "If-None-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:
             file_content = fobj.read()
-        if report["request"]["If-None-Match"] == "*" and utils.convert_to_md5(file_content) == report["request"]["If-None-Match"]:
+        file_md5 = utils.convert_to_md5(file_content)
+        file_md5 = '"' + file_md5 + '"'
+        sys.stdout.write(f'check_if_match_header: md5 for file {file_md5}\n')
+        if report["request"]["If-None-Match"] == "*" and file_md5 == report["request"]["If-None-Match"]:
             if report["request"]["http_method"] in ["GET", "HEAD"]:
                 report["response"]["status_code"] = "304"
             else:
