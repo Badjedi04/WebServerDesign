@@ -1,6 +1,5 @@
 import sys
 import configparser
-from collections import OrderedDict
 
 import utils.constants as constants
 
@@ -31,7 +30,15 @@ def convert_list(value):
         splitter= value.split(",")
         return splitter
     else:
-        return value    
+        return convert_to_bool(value)    
+
+def convert_to_bool(value):
+    if value == "True":
+        return True
+    elif value == "False":
+        return False
+    else:
+        return value
 
 """
 Function to read redirect.ini
