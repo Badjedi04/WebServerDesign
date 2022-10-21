@@ -1,4 +1,3 @@
-from genericpath import isdir
 import os
 import sys
 import re
@@ -110,7 +109,7 @@ def check_file_redirects(report, config):
         path = report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")
         sys.stdout.write(f'check_file_redirects: Path for file redirect {path}\n')
         regex_pattern = re.compile(config["REDIRECT"]["301"].split()[0])
-        sys.stdout.write(f'check_file_redirects: pattern {redirect_pattern}\n')
+        sys.stdout.write(f'check_file_redirects: pattern {regex_pattern}\n')
         if regex_pattern.findall(path):
             sys.stdout.write(f'check_file_redirects: path match: 301: {path}\n')
             regex_pattern = re.compile(config["REDIRECT"]["301"].split()[1])
