@@ -127,7 +127,8 @@ def check_file_redirects(report, config):
             regex_pattern = re.compile(config["REDIRECT"]["301"].split()[1])
             for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
                 for file_name in files:
-                    dest_match = regex_pattern.search(os.path.join(root, file_name))
+                    dest_path = os.path.join(root, file_name).replace(config["MAPPING"]["root_dir"], "")
+                    dest_match = regex_pattern.search(dest_path)                    
                     if dest_match:
                         report["response"]["status_code"] = "301"
                         report["response"]["Location"] = os.path.join(root, file_name)
@@ -144,7 +145,8 @@ def check_file_redirects(report, config):
                     regex_pattern = re.compile(redirect_pattern.split()[1])
                     for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
                         for file_name in files:
-                            dest_match = regex_pattern.search(os.path.join(root, file_name))
+                            dest_path = os.path.join(root, file_name).replace(config["MAPPING"]["root_dir"], "")
+                            dest_match = regex_pattern.search(dest_path)
                             if dest_match:
                                 report["response"]["status_code"] = "302"
                                 report["response"]["Location"] = os.path.join(root, file_name)
