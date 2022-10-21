@@ -75,6 +75,3 @@ def create_directory_listing(report, config):
     directory_listing_table = Environment().from_string(table_html).render(table_rows=table_rows)
     payload = create_dynamic_page("Directory Listing", "Index of " + report["request"]["path"] + " :", directory_listing_table)
     return payload
-
-
-
