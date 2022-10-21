@@ -84,10 +84,10 @@ def decompose_headers(response_header):
     temp = ""
     for line in list_header_splitter:
         if len(line) > 0:
-            temp += line + "\r\n"
+            temp += line + "\n"
         else:
-            temp += "\r\n"
+            temp += "\n"
             list_header.append(temp)
             temp = ""
         sys.stdout.write(f'Header splitted each: \n {list_header}\n')
-    return response_header
+    return list_header
