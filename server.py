@@ -33,7 +33,7 @@ def close_connection(conn, timeout=False, config=None):
         report = {}
         report["response"] = {}
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
-        report["response"]["status_code"] = "418"
+        report["response"]["status_code"] = "408"
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
         report["response"]["Connection"] = "close" 
