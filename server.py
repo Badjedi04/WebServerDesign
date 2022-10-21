@@ -57,7 +57,7 @@ def start_client(conn, addr, config):
                 sys.stdout.write("Server Data received\n")
                 response_header = data.decode()
                 response_header = decompose_headers(response_header)
-                server_report = parser.get_request_header(data.decode(), config)
+                server_report = parser.get_request_header(response_header, config)
                 sys.stdout.write("Server Data Parsed\n")
                 server_response = responder.handle_server_response(config, server_report)
                 if server_response:
@@ -77,6 +77,7 @@ def start_client(conn, addr, config):
 
 def decompose_headers(response_header):
     header_splitter = response_header.split("\r\n\r\n")
+    sys.stdout.write(f'Header splitted: \n {header_splitter}\n')
     for header in header_splitter:
-        sys.stdout.write(f'Header splitted: \n {header}\n')
+        sys.stdout.write(f'Header splitted each: \n {header}\n')
     return response_header
