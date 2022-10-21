@@ -55,7 +55,9 @@ def start_client(conn, addr, config):
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
-                server_report = parser.get_request_header(data.decode(), config)
+                response_header = data.decode()
+                response_header = decompose_headers(response_header)
+                server_report = parser.get_request_header(response_header, config)
                 sys.stdout.write("Server Data Parsed\n")
                 server_response = responder.handle_server_response(config, server_report)
                 if server_response:
@@ -71,3 +73,20 @@ def start_client(conn, addr, config):
                 break
         except Exception as e:
             sys.stderr.write(f'start_client:error: {e}\n')
+
+
+def decompose_headers(response_header):
+    sys.stdout.write(f'decompose_headers called\n')
+    list_header_splitter = response_header.splitlines()
+    list_header = []
+    sys.stdout.write(f'Header splitted: \n {list_header_splitter}\n')
+    temp = ""
+    for line in list_header_splitter:
+        if len(line) > 0:
+            temp += line + "\n"
+        else:
+            temp += "\n"
+            list_header.append(temp)
+            temp = ""
+        sys.stdout.write(f'Header splitted each: \n {list_header}\n')
+    return response_header
