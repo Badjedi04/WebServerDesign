@@ -76,6 +76,7 @@ def start_client(conn, addr, config):
 
 
 def decompose_headers(response_header):
+    sys.stdout.write(f'decompose_headers called\n')
     list_header_splitter = response_header.splitlines()
     list_header = []
     sys.stdout.write(f'Header splitted: \n {list_header_splitter}\n')
