@@ -1,12 +1,9 @@
 import socket
 import sys
 from threading import Thread, Timer
-import threading
 
-import parser
-import report.report as report
-
-#print_lock = threading.Lock()
+import server_parser.parser as parser
+import server_responder.responder as responder
 
 """
 Function to start Server
@@ -27,49 +24,59 @@ def wait_for_connections(server_socket, config):
         Thread(target=start_client, args=(conn, addr, config)).start()
 
 
-def close_connection(conn):
+def close_connection(conn, timeout=False, config=None):
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+    sys.stdout.write("Going to close connection\n")
+    sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+    if timeout:
+        report = {}
+        report["response"] = {}
+        report["response"]["http_version"] = config["HEADERS"]["http_version"]
+        report["response"]["status_code"] = "408"
+        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+        report["response"]["Server"] = config["HEADERS"]["server"]
+        report["response"]["Connection"] = "close" 
+        
+        conn.send(responder.server_reply(config, report))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
 
 def start_client(conn, addr, config):
+    connection_timeout = None
     while True:
         try:
             data = conn.recv(1024)  # receive data from client
             if data:
-<<<<<<< HEAD
-<<<<<<< HEAD
-                print("Data received")
-                parser.get_request_header(data.decode())
-            else:
-                print("No data")
-            # conn.sendall(data)
-            break
-=======
-=======
->>>>>>> 9d2d6a6 (Update All files)
-                connection_timeout = Timer(30, close_connection, args=(conn))
+                if connection_timeout is not None:
+                    connection_timeout.cancel()
+                connection_timeout = Timer(config["SERVER"]["timeout"], close_connection, args=(conn, True, config))
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
-                response = parser.get_request_header(data.decode(), config)
+                response_header = data.decode()
+                response_header = decompose_headers(response_header)
+                server_report = parser.get_request_header(data.decode(), config)
                 sys.stdout.write("Server Data Parsed\n")
-                temp = report.handle_server_response(config, response)
-                if temp:
-                    conn.send(temp)
+                server_response = responder.handle_server_response(config, server_report)
+                if server_response:
+                    conn.send(server_response)
+                    if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
+                        sys.stdout.write("Connection close called due to Connection:close header\n")
+                        connection_timeout.cancel()
+                        close_connection(conn)
                 else:
                     conn.send(str.encode("null"))
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
                 break
-<<<<<<< HEAD
->>>>>>> a1
         except Exception as e:
             sys.stderr.write(f'start_client:error: {e}\n')
-   
-=======
-        except Exception as e:
-            sys.stderr.write(f'start_client:error: {e}\n')
->>>>>>> 9d2d6a6 (Update All files)
+
+
+def decompose_headers(response_header):
+    header_splitter = response_header.split("\r\n\r\n")
+    for header in header_splitter:
+        sys.stdout.write(f'Header splitted: \n {header}\n')
+    return response_header
