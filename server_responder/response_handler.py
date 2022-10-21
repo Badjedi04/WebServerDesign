@@ -121,13 +121,13 @@ def check_file_redirects(report, config):
         path = report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")
         sys.stdout.write(f'check_file_redirects: Path for file redirect {path}\n')
         regex_pattern = re.compile(config["REDIRECT"]["301"].split()[0])
-        sys.stdout.write(f'check_file_redirects: pattern {regex_pattern}\n')
-        if regex_pattern.findall(path):
+        sys.stdout.write(f'301 check_file_redirects: pattern {regex_pattern}\n')
+        if regex_pattern.search(path):
             sys.stdout.write(f'check_file_redirects: path match: 301: {path}\n')
             regex_pattern = re.compile(config["REDIRECT"]["301"].split()[1])
             for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
                 for file_name in files:
-                    dest_match = regex_pattern.findall(os.path.join(root, file_name))
+                    dest_match = regex_pattern.search(os.path.join(root, file_name))
                     if dest_match:
                         report["response"]["status_code"] = "301"
                         report["response"]["Location"] = os.path.join(root, file_name)
@@ -138,12 +138,13 @@ def check_file_redirects(report, config):
             sys.stdout.write(f'check_file_redirects: 302\n')
             for redirect_pattern in config["REDIRECT"]["302"]:
                 regex_pattern = re.compile(redirect_pattern.split()[0])
-                if regex_pattern.findall(path):
+                sys.stdout.write(f'302 check_file_redirects: pattern {regex_pattern}\n')
+                if regex_pattern.search(path):
                     sys.stdout.write(f'check_file_redirects: path match: 302: {path}\n')
                     regex_pattern = re.compile(redirect_pattern.split()[1])
                     for root, dirs, files in os.walk(config["MAPPING"]["root_dir"]):
                         for file_name in files:
-                            dest_match = regex_pattern.findall(os.path.join(root, file_name))
+                            dest_match = regex_pattern.search(os.path.join(root, file_name))
                             if dest_match:
                                 report["response"]["status_code"] = "302"
                                 report["response"]["Location"] = os.path.join(root, file_name)
