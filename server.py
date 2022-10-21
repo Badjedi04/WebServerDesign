@@ -57,17 +57,18 @@ def start_client(conn, addr, config):
                 sys.stdout.write("Server Data received\n")
                 response_header = data.decode()
                 response_header = decompose_headers(response_header)
-                server_report = parser.get_request_header(response_header, config)
-                sys.stdout.write("Server Data Parsed\n")
-                server_response = responder.handle_server_response(config, server_report)
-                if server_response:
-                    conn.send(server_response)
-                    if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
-                        sys.stdout.write("Connection close called due to Connection:close header\n")
-                        connection_timeout.cancel()
-                        close_connection(conn)
-                else:
-                    conn.send(str.encode("null"))
+                for header in response_header:
+                    server_report = parser.get_request_header(header, config)
+                    sys.stdout.write("Server Data Parsed\n")
+                    server_response = responder.handle_server_response(config, server_report)
+                    if server_response:
+                        conn.send(server_response)
+                        if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
+                            sys.stdout.write("Connection close called due to Connection:close header\n")
+                            connection_timeout.cancel()
+                            close_connection(conn)
+                    else:
+                        conn.send(str.encode("null"))
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
                 break
