@@ -16,7 +16,7 @@ def handle_server_request(config, report):
             # Map the host path to the local path
             # If host path starts with https://cs531....
             report = fix_host_path(report, config)
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
+            sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             
             # Check if file is present or not
             report = check_file_path(report, config)
@@ -35,8 +35,8 @@ def check_file_path(report, config):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
         report = check_file_redirects(report, config)
-        report = check_if_modified_header(report, config)
-        report = check_if_match_header(report, config)
+        report = check_if_modified_header(report)
+        report = check_if_match_header(report)
     else:
         report["response"]["status_code"] = "404"
     return report
@@ -44,23 +44,23 @@ def check_file_path(report, config):
 """
 Function to match If-Unmodified-Since and If-Modified-Since headers
 """
-def check_if_modified_header(report, config):
+def check_if_modified_header(report):
     try:
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Unmodified-Since"])
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'If-Unmodified-Since exists \n')
+            sys.stdout.write(f'If-Unmodified-Since exists \n')
             if not unmodified_time:
                 return report
             if utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]) >= unmodified_time):
                 report["response"]["status_code"] = "412"
-                if config["SERVER"]["debug_mode"]: sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
+                sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
         elif "If-Modified-Since" in report["request"] and  "If-None-Match" not in report["request"]:
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'If-Modified-Since exists \n')
+            sys.stdout.write(f'If-Modified-Since exists \n')
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Modified-Since"])
             if not unmodified_time:
                 return report
             if  utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]))  <= unmodified_time:
-                if config["SERVER"]["debug_mode"]: sys.stdout.write(f'If-Modified-Since: file modified after \n')
+                sys.stdout.write(f'If-Modified-Since: file modified after \n')
                 report["response"]["status_code"] = "304"
         return report
     except Exception as e:
@@ -70,7 +70,7 @@ def check_if_modified_header(report, config):
 """
 Function to match If-Match and If-None-Match headers
 """
-def check_if_match_header(report, config):
+def check_if_match_header(report):
 
     if "If-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:

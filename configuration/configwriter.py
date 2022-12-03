@@ -5,7 +5,9 @@ import utils.constants as constants
 """
     Function to write configuraation file
     Parameters:
+
     Returns:
+
 """
 def create_config_file():
     config = configparser.ConfigParser(strict=False)
@@ -14,7 +16,6 @@ def create_config_file():
     config["SERVER"]["port"] = "80"
     config["SERVER"]["connections"] = "4"
     config["SERVER"]["timeout"] = "5"
-    config["SERVER"]["debug_mode"] = "True"
 
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
