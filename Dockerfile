@@ -1,13 +1,27 @@
-# syntax=docker/dockerfile:1
+# Use an official Python runtime as a parent image
+FROM python
 
-FROM python:latest
-
+# Set the working directory to /app
 WORKDIR /app
 
-COPY . . 
+COPY samples ./samples/
+COPY public ./public/
+COPY bootstrap.sh ./
+RUN  chmod a+x bootstrap.sh
+RUN  ./bootstrap.sh
 
-ADD data/cs531-test-files.tar.gz /var/www/
+COPY requirements.txt /app
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-RUN pip3 install -r requirements.txt
+# Copy the current directory contents into the container at /app
+COPY src ./src/
+COPY Configuration ./Configuration/
+COPY Main.py ./
 
-ENTRYPOINT [ "python", "main.py"]
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+
+# Run Server.py.py when the container launches
+CMD ["python", "Main.py"]
