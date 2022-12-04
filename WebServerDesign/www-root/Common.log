@@ -1,0 +1,92 @@
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET / HTTP/1.1 200 652
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET / HTTP/3.1 505 191
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] FOO / HTTP/1.1 501 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/1/1.3/assignment1.ppt HTTP/1.1 200 46592
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/1/1.2/arXiv.org.Idenitfy.repsonse.xml HTTP/1.1 200 3142
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/1/1.4/escape%this.html HTTP/1.1 200 67
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/1/1.4/test:.HTM HTTP/1.1 200 25
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/2/0.jpeg HTTP/1.1 200 38457
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/2/6.gif HTTP/1.1 200 49803
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/4/thisfileisempty.txt HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/4/directory3isempty HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /a1-test/1/1.1/go%20hokies!.html HTTP/1.1 200 55
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] HEAD /a1-test/1/1.1/go%20hokies!.html HTTP/1.1 200 55
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] TRACE / HTTP/1.1 200 124
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] OPTIONS / HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET /foo HTTP/1.1 400 161
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] GET / HTTP/1.1 400 161
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] OPTIONS /Debug.log HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] OPTIONS /ErrorPage/Error400.html HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] OPTIONS /ErrorPage/Error400.html HTML/1.1 400 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] OPTIONS /ErrorPage/Error400.html HTTP/1.1 400 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] HEAD 127.0.0.1:5010/a1-test/1/1.1/go%20hokies!.html HTTP/1.1 200 55
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:52:28] HEAD 127.0.0.1:5010/a1-test/2/0.jpeg HTTP/1.1 200 38457
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET / HTTP/1.1 200 656
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET / HTTP/3.1 505 191
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] FOO / HTTP/1.1 501 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/1/1.3/assignment1.ppt HTTP/1.1 200 46592
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/1/1.2/arXiv.org.Idenitfy.repsonse.xml HTTP/1.1 200 3142
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/1/1.4/escape%this.html HTTP/1.1 200 67
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/1/1.4/test:.HTM HTTP/1.1 200 25
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/2/0.jpeg HTTP/1.1 200 38457
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/2/6.gif HTTP/1.1 200 49803
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/4/thisfileisempty.txt HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/4/directory3isempty HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /a1-test/1/1.1/go%20hokies!.html HTTP/1.1 200 55
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] HEAD /a1-test/1/1.1/go%20hokies!.html HTTP/1.1 200 55
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] TRACE / HTTP/1.1 200 124
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] OPTIONS / HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET /foo HTTP/1.1 400 161
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] GET / HTTP/1.1 400 161
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] OPTIONS /Debug.log HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] OPTIONS /ErrorPage/Error400.html HTTP/1.1 200 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] OPTIONS /ErrorPage/Error400.html HTML/1.1 400 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] OPTIONS /ErrorPage/Error400.html HTTP/1.1 400 0
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] HEAD 127.0.0.1:5010/a1-test/1/1.1/go%20hokies!.html HTTP/1.1 200 55
+
+0.0.0.0 - - [Mon, 15 Oct 2018 11:55:55] HEAD 127.0.0.1:5010/a1-test/2/0.jpeg HTTP/1.1 200 38457
+
