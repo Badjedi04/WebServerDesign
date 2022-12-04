@@ -30,4 +30,3 @@ def convert_list(value):
         return splitter
     else:
         return value    
-
