@@ -1,7 +1,4 @@
-# Ignore VS code
-.vs
-
-# Ignore Python intermediate files
+# Ignore Python Intermediate and Build Files
 __pycache__
 
 # Ignore Logs
