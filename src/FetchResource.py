@@ -64,7 +64,7 @@ class FetchResource:
             response_code = 404
             return response_code, requested_resource
         # Check if resource can be served to the user id
-        elif not (getpass.getuser() == "staff" or getpass.getuser() == "root" or getpass.getuser() == "msiddique"):
+        elif not (getpass.getuser() == "staff" or getpass.getuser() == "root" or getpass.getuser() == "ptoma001"):
             self.__write_debug_logs("fetch_resource: forbidden zone: " + str(self.__config_instance.root_folder
                                                                              + requested_resource))
             response_code = 403

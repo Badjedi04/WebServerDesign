@@ -16,7 +16,7 @@ from src.MimeTypeReader import MimeTypeReader
 from src.ConfigReader import ConfigReader
 from src.AccessReader import AccessReader
 from src.Constants import *
-from src.ValidateHeader import ValidateHeader
+from src.Parser.ValidateHeader import ValidateHeader
 from src.FetchResource import FetchResource
 from src.Redirect import Redirect
 
