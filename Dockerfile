@@ -1,7 +1,7 @@
 # Use an official Python runtime as a parent image
 FROM python
 
-LABEL maintainer="Mohammed Nauman Siddique"
+LABEL maintainer="Prashant Tomar"
 
 # Set the working directory to /app
 WORKDIR /app
