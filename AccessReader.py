@@ -10,3 +10,5 @@ class AccessReader:
         self.restricted_folders = self.config['RESTRICTED']['FOLDERS']
         self.access_files = self.config['ACCESS']['FILES']
         self.access_folders = self.config['ACCESS']['FOLDERS']
+        self.logs_redirect = self.config["VirtualURI"][".well-known"]
+        self.virtual_uri = self.config["VirtualURI"]

@@ -392,7 +392,10 @@ class Server:
         if request_method == "GET" or request_method == "HEAD":
             self.debug_logger.debug("fetch_resource: request method: "+ request_method)
             requested_resource = unquote(requested_resource)
-
+            for key in self.config_access.virtual_uri:
+                if key in requested_resource:
+                    requested_resource = requested_resource.replace(key, self.config_access.logs_redirect)
+                    break
             if not os.path.exists(self.config_instance.root_folder + requested_resource):
                 self.debug_logger.debug(str(self.config_instance.root_folder + requested_resource))
                 self.debug_logger.debug("Requested resource missing 404: " + requested_resource)
