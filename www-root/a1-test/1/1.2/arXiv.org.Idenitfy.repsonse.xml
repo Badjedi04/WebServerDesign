@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+<responseDate>2006-01-29T18:24:13Z</responseDate>
+<request verb="Identify">http://arXiv.org/oai2</request>
+<Identify>
+<repositoryName>arXiv</repositoryName>
+<baseURL>http://arXiv.org/oai2</baseURL>
+<protocolVersion>2.0</protocolVersion>
+<adminEmail>www-admin@arxiv.org</adminEmail>
+<earliestDatestamp>2003-02-05</earliestDatestamp>
+<deletedRecord>persistent</deletedRecord>
+<granularity>YYYY-MM-DD</granularity>
+<description>
+<oai-identifier xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
+ <scheme>oai</scheme>
+ <repositoryIdentifier>arXiv.org</repositoryIdentifier>
+ <delimiter>:</delimiter>
+ <sampleIdentifier>oai:arXiv.org:quant-ph/9901001</sampleIdentifier>
+</oai-identifier>
+</description>
+<description>
+<eprints xmlns="http://www.openarchives.org/OAI/1.1/eprints" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/eprints http://www.openarchives.org/OAI/1.1/eprints.xsd">
+ <content>
+  <text>Author self-archived e-prints</text>
+ </content>
+ <metadataPolicy>
+  <text>Metadata harvesting permitted through OAI interface</text>
+  <URL>http://arXiv.org/help/oa/metadataPolicy</URL>
+ </metadataPolicy>
+ <dataPolicy>
+  <text>Full-content harvesting not permitted (except by special arrangement)</text>
+  <URL>http://arXiv.org/help/oa/dataPolicy</URL>
+ </dataPolicy>
+ <submissionPolicy>
+  <text>Author self-submission preferred, submissions screened for appropriateness.</text>
+  <URL>http://arXiv.org/help/submit</URL>
+ </submissionPolicy>
+</eprints>
+</description>
+<description>
+<friends xmlns="http://www.openarchives.org/OAI/2.0/friends/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/friends/ http://www.openarchives.org/OAI/2.0/friends.xsd">
+ <baseURL>http://naca.larc.nasa.gov/oai2.0/</baseURL>
+ <baseURL>http://techreports.larc.nasa.gov/ltrs/oai2.0/</baseURL>
+ <baseURL>http://physnet.uni-oldenburg.de/oai/oai.php</baseURL>
+ <baseURL>http://cogprints.soton.ac.uk/perl/oai</baseURL>
+</friends>
+</description>
+<description>
+<branding xmlns="http://www.openarchives.org/OAI/2.0/branding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/branding/ http://www.openarchives.org/OAI/2.0/branding.xsd">
+ <collectionIcon>
+ <url>http://arxiv.org/OAI/arXivLogo.png</url>
+ <link>http://arxiv.org/</link>
+ <title>arXiv e-print archive</title>
+ <width>88</width>
+ <height>31</height>
+ </collectionIcon>
+<metadataRendering metadataNamespace="http://www.openarchives.org/OAI/2.0/oai_dc/" mimeType="text/xsl">http://arxiv.org/OAI/arXivMetadata.xsl</metadataRendering>
+</branding>
+</description>
+</Identify>
+</OAI-PMH>
