@@ -8,28 +8,17 @@ import logging.handlers
 from datetime import datetime
 from datetime import timezone
 
-try:
-    from WebServerDesign.MimeTypeReader import MimeTypeReader
-except ImportError:
-    from MimeTypeReader import MimeTypeReader
-try:
-    from WebServerDesign.ConfigReader import ConfigReader
-except ImportError:
-    from ConfigReader import ConfigReader
+from MimeTypeReader import MimeTypeReader
+from ConfigReader import ConfigReader
+
 try:
     from urllib import unquote
 except ImportError:
     from urllib.parse import unquote
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
+from AccessReader import AccessReader
 
-try:
-    from WebServerDesign.AccessReader import AccessReader
-except ImportError:
-    from AccessReader import AccessReader
 
 
 class Server:
@@ -40,9 +29,9 @@ class Server:
     """
 
     def __init__(self, host, port):
-        self.config_instance = ConfigReader("Config.ini")
-        self.config_mime_type = MimeTypeReader("MimeTypes.ini")
-        self.config_access = AccessReader("Access.ini")
+        self.config_instance = ConfigReader("Configuration/Config.ini")
+        self.config_mime_type = MimeTypeReader("Configuration/MimeTypes.ini")
+        self.config_access = AccessReader("Configuration/Access.ini")
         if host is None:
             self.host = self.config_instance.default_hostname
         else:
