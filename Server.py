@@ -41,7 +41,7 @@ class Server:
         else:
             self.port = port
         self.access_logger = self.set_up_logger('ACCESS_LOGS', self.config_instance.access_debugging_folder + "/" +
-                                                'Common.log')
+                                                'access.log')
         self.debug_logger = self.set_up_logger('DEBUG_LOGS', self.config_instance.debug_folder + "/" + 'Debug.log')
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -394,7 +394,7 @@ class Server:
             requested_resource = unquote(requested_resource)
             for key in self.config_access.virtual_uri:
                 if key in requested_resource:
-                    requested_resource = requested_resource.replace(key, "Common.log")
+                    requested_resource = "access.log"
                     break
             if not os.path.exists(self.config_instance.root_folder + requested_resource):
                 self.debug_logger.debug(str(self.config_instance.root_folder + requested_resource))
