@@ -166,8 +166,9 @@ class Server:
         self.debug_logger.debug("return_response_header: " + str(server_response))
         conn.send(server_response)
         self.debug_logger.debug("return_response_header: Closing connection with client")
-        conn.close()
         self.write_common_log(response_code, content_length, client_header)
+        conn.close()
+        
 
     '''
     Validate HTTP headers
@@ -429,8 +430,9 @@ class Server:
                 self.debug_logger.debug(str(server_response))
                 conn.send(server_response)
                 self.debug_logger.debug("Closing connection with client")
-                conn.close()
                 self.write_common_log(response_code, content_length, client_header)
+                conn.close()
+                
             elif os.path.isfile(self.config_instance.root_folder + requested_resource):
                 self.debug_logger.debug("fetch_resource: Is File:" + requested_resource)
                 response_code = 200
@@ -448,9 +450,10 @@ class Server:
                     server_response += file_content
                 conn.send(server_response)
                 self.debug_logger.debug("Closing connection with client")
-                conn.close()
                 self.write_common_log(response_code, content_length, client_header)
 
+                conn.close()
+                
         elif request_method == "OPTIONS" or request_method == "TRACE":
             self.debug_logger.debug("fetch_resource: request method" + request_method)
             response_code = 200
@@ -474,8 +477,9 @@ class Server:
             self.debug_logger.debug(str(server_response))
             conn.send(server_response)
             self.debug_logger.debug("Closing connection with client")
-            conn.close()
             self.write_common_log(response_code, content_length, client_header)
+            conn.close()
+            
 
     def write_common_log(self, response_code, content_length, client_header):
         current_date = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
