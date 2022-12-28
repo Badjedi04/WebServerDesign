@@ -1,3 +1,6 @@
+assignment1
+# CS531
+
 # 
 # Web Server Design: CS531
 #
@@ -123,3 +126,4 @@ en, es, de, ja, ko, ru
 Vary: negotiate, header1, header2, …, headerN
 only send Vary if CN is possible for this URI
 * Generate structured ETags on selected representation as per RFC 2295 (section 9.2)
+main
