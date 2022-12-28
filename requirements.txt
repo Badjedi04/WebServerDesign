@@ -1,5 +1,0 @@
-assignment1
-pytz
-
-jinja2
-main
