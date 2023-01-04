@@ -13,6 +13,10 @@ def create_config_file():
     config["SERVER"]["ip_addr"] = "0.0.0.0" 
     config["SERVER"]["port"] = "80"
     config["SERVER"]["connections"] = "4"
+    
+    config["MAPPING"] = {}
+    config["MAPPING"]["root_dir"] = "/var/www"
+    config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
 
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
@@ -29,8 +33,3 @@ def create_config_file():
     config["STATUS_CODE"]["500"] = "Internal Server Error"
     config["STATUS_CODE"]["501"] = "Not Implemented"
     config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
-    config["STATUS_CODE"]["301"] = "Moved Permanently"
-    config["STATUS_CODE"]["302"] = "Found"
-    config["STATUS_CODE"]["304"] = "Not Modified"
-    config["STATUS_CODE"]["408"] = "Request Timeout"
-    config["STATUS_CODE"]["412"] = "Precondition Failed"
