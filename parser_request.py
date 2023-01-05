@@ -9,11 +9,15 @@ import urllib.parse as url_parse
 import server_report.reply_header as reply_header
 
 def get_request_header(request_header, config):
+    try:
+        sys.stdout.write(f'Print request_header: \n{request_header}\n')
         report =  header_validate(request_header, config)
         if "status_code" in report["response"]:
             return report
         else:
             return parse_header(request_header)
+    except Exception as e:
+        sys.stderr.write(f'Parser: get_request_header error: {e}\n')
 
 
 def header_validate(request_header, config):
@@ -25,15 +29,20 @@ def header_validate(request_header, config):
     try:
         report = {"response": {}}
         line_splitter = request_header.splitlines()
+        sys.stdout.write(f'Request Header size: {len(line_splitter)}\n')
+        sys.stdout.write(f'Request Header : {line_splitter}\n')
         is_host_present = False
         if len(line_splitter[-1]) > 0:
+            sys.stdout.write("Last line is not empty\n")
             is_host_present = True 
             report["response"]["status_code"] = "400"
         for index, line in enumerate(line_splitter[:-1]):
+            sys.stdout.write(f'validate header: {line}\n')
             is_host_present = True 
             if index == 0:
                 line_splitter = line.split()
                 if len(line_splitter) != 3:
+                    sys.stdout.write("First line is more than three\n")
                     is_host_present = True 
                     report["response"]["status_code"] = "400"
                     break
@@ -100,7 +109,6 @@ def parse_header(request_header):
         return dict_request
     except Exception as e:
         sys.stderr.write(f'parse_header: error: {e}\n')
-
 
 """
 
