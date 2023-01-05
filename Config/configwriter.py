@@ -1,4 +1,5 @@
 import configparser
+import constants
 
 """
     Function to write configuraation file
@@ -33,3 +34,6 @@ def create_config_file():
     config["STATUS_CODE"]["500"] = "Internal Server Error"
     config["STATUS_CODE"]["501"] = "Not Implemented"
     config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
+
+    with open(constants.CONFIG, "w") as fobj:
+        config.write(fobj)
