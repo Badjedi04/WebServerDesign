@@ -22,7 +22,7 @@ def create_response_header(config, report):
                     report["response"]["payload"] = report["request"]["raw_header"]
                 else:
                     mime_response = return_mime_type(config, report)
-                    if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Mime Response\n{mime_response}\n')
+                    sys.stdout.write(f'Mime Response\n{mime_response}\n')
                     report["response"]["Content-Type"] = f'{mime_response["mime_type"]}'
                     if "file_length" in mime_response:
                         report["response"]["Content-Length"] = mime_response["file_length"]
@@ -36,7 +36,7 @@ def create_response_header(config, report):
                 report["response"]["payload"] = dynamic_html.create_error_page(report)
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
-        if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Report\n{report}\n') 
+        sys.stdout.write(f'Report\n{report}\n') 
         return report
     except Exception as e:
         sys.stderr.write(f'create_response_header: error {e}\n')
@@ -46,10 +46,10 @@ def return_mime_type(config, report):
         mime_response = {}
         file_path = report["request"]["path"]
         if file_path is None:
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
+            sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
             mime_response["mime_type"] = config["HEADERS"]["mime_types"][1]
         elif os.path.isdir(file_path):
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Mime Type returned is dir: {config["HEADERS"]["mime_types"][1]}\n')
+            sys.stdout.write(f'Mime Type returned is dir: {config["HEADERS"]["mime_types"][1]}\n')
             mime_response["mime_type"] = config["HEADERS"]["mime_types"][1]
             mime_response["payload"] = dynamic_html.create_directory_listing(report, config)      
         else:
@@ -61,9 +61,9 @@ def return_mime_type(config, report):
             if last_modified:
                 mime_response["last_modified"] = last_modified
             file_ext = file_path.split("/")[-1].split(".")[-1]
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Response before mime-type: {mime_response}\n')
+            sys.stdout.write(f'Response before mime-type: {mime_response}\n')
 
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'File Ext: {file_ext}\n')
+            sys.stdout.write(f'File Ext: {file_ext}\n')
 
             if file_ext == "txt":
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][0]

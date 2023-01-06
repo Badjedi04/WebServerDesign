@@ -26,12 +26,12 @@ def server_reply(config, report):
         for (key, value) in report["response"].items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow", "Location", "ETag"]:
                 server_response += f'{key}: {value}\r\n'
-            if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Server Response being created: \n {server_response}\n')
+            sys.stdout.write(f'Server Response being created: \n {server_response}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
             server_response += f'\r\n{report["response"]["payload"]}\r\n'
         else:
             server_response += f'\r\n'
-        if config["SERVER"]["debug_mode"]: sys.stdout.write(f'Server Response: \n {server_response}\n')
+        sys.stdout.write(f'Server Response: \n {server_response}\n')
         return server_response.encode()
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
