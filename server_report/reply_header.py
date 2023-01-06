@@ -43,7 +43,7 @@ def return_mime_type(config, file_path=None):
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
         else:
             with open(file_path, "rb") as fobj:
-                response["payload"] = fobj.read()
+                response["payload"] = fobj.read().encode()
             response["file_length"] = len(response["payload"])
             statinfo = os.stat(file_path)
             last_modified = datetime.utcfromtimestamp(statinfo.st_mtime)
