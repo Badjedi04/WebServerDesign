@@ -72,7 +72,7 @@ def start_client(conn, addr, config):
                 for header in response_header:
                     server_report = parser.get_request_header(header, config)
                     sys.stdout.write("Server Data Parsed\n")
-                    server_response = responder.handle_server_response(config, server_report)
+                    server_response = responder.handle_server_request(config, server_report)
                     if server_response:
                         conn.send(server_response)
                         if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
