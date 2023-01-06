@@ -29,6 +29,7 @@ def close_connection(conn, timeout=False, config=None):
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+    timeout=False
     if timeout:
         report = {}
         report["response"] = {}
@@ -61,10 +62,7 @@ def start_client(conn, addr, config):
         try:
             data = conn.recv(1024)  # receive data from client
             if data:
-                if connection_timeout is not None:
-                    connection_timeout.cancel()
-                connection_timeout = Timer(config["SERVER"]["timeout"], close_connection, args=(conn, True, config))
-                connection_timeout.start()                
+            
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
                 server_report_header = data.decode()
@@ -75,12 +73,9 @@ def start_client(conn, addr, config):
                     server_response = responder.handle_server_request(config, server_report)
                     if server_response:
                         conn.send(server_response)
-                        if "Connection" in server_report["request"] and server_report["request"]["Connection"] == "close":
-                            sys.stdout.write("Connection close called due to Connection:close header\n")
-                            connection_timeout.cancel()
-                            close_connection(conn)
-                    else:
-                        conn.send(str.encode("null"))
+
+                        close_connection(conn)
+
                 sys.stdout.write("Server response sent\n")
                 sys.stdout.write("???????????????????????????????????????????????????????????????????????????????\n")
                 break
