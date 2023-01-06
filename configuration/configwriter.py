@@ -5,9 +5,9 @@ import constants
     Function to write configuraation file
     Parameters:
 
-    Returns:   
-"""
+    Returns:
 
+"""
 def create_config_file():
     config = configparser.ConfigParser()
     config["SERVER"] = {}
@@ -15,6 +15,7 @@ def create_config_file():
     config["SERVER"]["port"] = "80"
     config["SERVER"]["connections"] = "4"
     config["SERVER"]["timeout"] = "10"
+
 
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
@@ -27,7 +28,6 @@ def create_config_file():
     config["HEADERS"]["mime_types"] = "text/plain,text/html,text/xml,image/png,image/jpeg,"\
                                         "image/gif,application/pdf,application/vnd.ms-powerpoint,"\
                                         "application/vnd.ms-word,message/http,application/octet-stream" 
-
     config["STATUS_CODE"] = {}
     config["STATUS_CODE"]["400"] = "Bad Response"
     config["STATUS_CODE"]["200"] = "OK"
