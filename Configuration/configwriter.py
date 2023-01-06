@@ -1,18 +1,24 @@
 import configparser
 
+import utils.constants as constants
+
 """
     Function to write configuraation file
     Parameters:
-
     Returns:
-
 """
 def create_config_file():
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(strict=False)
     config["SERVER"] = {}
     config["SERVER"]["ip_addr"] = "0.0.0.0" 
     config["SERVER"]["port"] = "80"
     config["SERVER"]["connections"] = "4"
+    config["SERVER"]["timeout"] = "5"
+    config["SERVER"]["debug_mode"] = "True"
+
+    config["MAPPING"] = {}
+    config["MAPPING"]["root_dir"] = "/var/www"
+    config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
 
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
@@ -34,3 +40,13 @@ def create_config_file():
     config["STATUS_CODE"]["304"] = "Not Modified"
     config["STATUS_CODE"]["408"] = "Request Timeout"
     config["STATUS_CODE"]["412"] = "Precondition Failed"
+    config["STATUS_CODE"]["408"] = "Timeout"
+
+    config["REDIRECT"] = {}
+    config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"
+    config["REDIRECT"]["301"] = "^(.*)/mercury/(.*)$ $1/ford/$2"
+
+#[VirtualURI]
+#.well-known: logs
+    with open(constants.CONFIG, "w") as fobj:
+        config.write(fobj)
