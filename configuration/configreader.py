@@ -19,7 +19,6 @@ def read_config_file():
     except Exception as e:
         sys.stderr.write(f'read_config_file: error: {e}\n')
 
-
 def convert_to_int(value):
     try:
         return int(value)
