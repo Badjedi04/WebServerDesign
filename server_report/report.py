@@ -3,10 +3,13 @@ import server_report.reply_header as reply_header
 import server_report.responder as responder
 
 def handle_server_response(config, report):
+    sys.stdout.write(f'handle_server_response called:\n')
     if "response" in report:
+        sys.stdout.write(f'handle_server_response if called:\n')
         report = reply_header.create_response_header(config, report)
         return server_reply(config, report)
     else:
+        sys.stdout.write(f'handle_server_response else called:\n')
         report = responder.handle_server_request(config, report)
         return server_reply(config, report)
 

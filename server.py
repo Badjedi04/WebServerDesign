@@ -3,7 +3,7 @@ import sys
 from threading import Thread, Timer
 
 import parser_request as parser
-import server_report.responder as responder
+import server_report.report as server_report
 
 """
 Function to start Server
@@ -39,7 +39,7 @@ def close_connection(conn, timeout=False, config=None):
         report["response"]["Server"] = config["HEADERS"]["server"]
         report["response"]["Connection"] = "close" 
         
-        conn.send(responder.server_reply(config, report))
+        conn.send(server_report.server_reply(config, report))
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     if timeout:
@@ -51,7 +51,7 @@ def close_connection(conn, timeout=False, config=None):
         report["response"]["Server"] = config["HEADERS"]["server"]
         report["response"]["Connection"] = "close" 
         
-        conn.send(responder.server_reply(config, report))
+        conn.send(server_report.server_reply(config, report))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
@@ -70,7 +70,7 @@ def start_client(conn, addr, config):
                 for header in response_header:
                     server_report = parser.get_request_header(header, config)
                     sys.stdout.write("Server Data Parsed\n")
-                    server_response = responder.handle_server_request(config, server_report)
+                    server_response = server_report.handle_server_response(config, server_report)
                     if server_response:
                         conn.send(server_response)
 
