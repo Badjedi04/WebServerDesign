@@ -39,7 +39,6 @@ def create_config_file():
     config["STATUS_CODE"]["304"] = "Not Modified"
     config["STATUS_CODE"]["408"] = "Request Timeout"
     config["STATUS_CODE"]["412"] = "Precondition Failed"
-    config["STATUS_CODE"]["408"] = "Timeout"
 
     config["REDIRECT"] = {}
     config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"
