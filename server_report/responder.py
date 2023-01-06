@@ -1,8 +1,6 @@
-import json
 import os
 import sys
 
-import constants
 import server_report.reply_header as reply_header
 
 def handle_server_request(config, report):

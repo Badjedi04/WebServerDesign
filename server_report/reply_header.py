@@ -1,9 +1,7 @@
-import json
 import sys
 from datetime import datetime
 import os
 
-import constants
 
 def create_response_header(config, report):
     try:
@@ -43,7 +41,7 @@ def return_mime_type(config, file_path=None):
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
         else:
             with open(file_path, "rb") as fobj:
-                response["payload"] = fobj.read().decode("utf-8")
+                response["payload"] = fobj.read()
             response["file_length"] = len(response["payload"])
             statinfo = os.stat(file_path)
             last_modified = datetime.utcfromtimestamp(statinfo.st_mtime)

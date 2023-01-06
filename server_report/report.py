@@ -20,6 +20,7 @@ def server_reply(config, report):
         Last-Modified: Sat, 20 Oct 2018 02:33:21 GMT
         Content-Length: 1936
         """
+        sys.stdout.write(f'server_reply called:\n')
         server_response = ""
         server_response += f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n'
         for (key, value) in report["response"].items():
@@ -31,6 +32,6 @@ def server_reply(config, report):
         else:
             server_response += f'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
-        return server_response.encode('utf-8')
+        return server_response
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
