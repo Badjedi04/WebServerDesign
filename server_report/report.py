@@ -31,6 +31,6 @@ def server_reply(config, report):
         else:
             server_response += f'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
-        return server_response.decode()
+        return server_response.encode('utf-8')
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
