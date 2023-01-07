@@ -221,6 +221,11 @@ def perform_content_negotiation(report, config):
         lang_values = list(config_language.values())
         encoding_value = list(config_encoding.values())
 
+        sys.stdout.write(f'perform_content_negotiation: charset: {config_charset}\n')
+        sys.stdout.write(f'perform_content_negotiation: lang: {config_language}\n')
+        sys.stdout.write(f'perform_content_negotiation: encoding: {config_encoding}\n')
+
+
         list_headers = [False, False, False]
         list_file_match = [False, False, False]
         
@@ -230,15 +235,18 @@ def perform_content_negotiation(report, config):
             list_headers[1] = True
         if "accept_encoding" in report["response"]:
             list_headers[2] = True
-                
+        
+        sys.stdout.write(f'perform_content_negotiation: list_headers: {list_headers}\n')
         dir_path = report["request"]["path"].rsplit("/", 1)
         
         negotiation_file, encoding_match, language_match, charset_match = None
 
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
+                sys.stdout.write(f'perform_content_negotiation: file: {fname}\n')
                 if list_headers[0]:
                     for key, value in config_charset.items():
+                        sys.stdout.write(f'perform_content_negotiation: accept_charset check: negotiation file: {charset_match}\n')
                         if fname == (dir_path[1] + "." + key):
                             if charset_match and charset_values[0] == value:
                                 report["response"]["status_code"] = "300"
@@ -250,6 +258,7 @@ def perform_content_negotiation(report, config):
                                 list_file_match[0] = True
                 if list_headers[1]:
                     for key, value in config_language.items():
+                        sys.stdout.write(f'perform_content_negotiation: accept_language check: negotiation file: {language_match}\n')
                         if fname == (dir_path[1] + "." + key):
                             if language_match and lang_values[0] == value:
                                 report["response"]["status_code"] = "300"
@@ -263,6 +272,7 @@ def perform_content_negotiation(report, config):
                     for key, value in config_encoding.items():
                             if fname == (dir_path[1] + "." + key):
                                 if encoding_match and encoding_value[0] == value:
+                                    sys.stdout.write(f'perform_content_negotiation: accept_encoding check: negotiation file: {encoding_match}\n')
                                     report["response"]["status_code"] = "300"
                                     report["response"]["alternate"] = True
                                     sys.stdout.write("Accept-Encoding: Both the files exists\n")
@@ -271,6 +281,7 @@ def perform_content_negotiation(report, config):
                                     encoding_match = fname
                                     list_file_match[2] = True
                 
+                sys.stdout.write(f'perform_content_negotiation: list_file_match : {list_file_match}  list_headers: {list_headers}\n')
                 if list_file_match == list_headers:
                     report ["request"]["path"] = os.path.join(roots, fname)
                     report["response"]["status_code"] = "200"
