@@ -25,12 +25,12 @@ def server_reply(config, report):
         server_response += f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n'
         for (key, value) in report["response"].items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Encoding", "Content-Type", "Content-Language", "Content-Range", "Transfer-Encoding", "Vary", "Alternates", "Connection", "Allow", "Location", "ETag"]:
-                server_response += f'{key}: {value.encode()}\r\n'
+                server_response += b'{key}: {value}\r\n'
             sys.stdout.write(f'Server Response being created: \n {server_response}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
-            server_response += f'\r\n{report["response"]["payload"]}'
+            server_response += b'\r\n' + report["response"]["payload"]
         else:
-            server_response += f'\r\n'
+            server_response += b'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
         return server_response
     except Exception as e:
