@@ -176,20 +176,21 @@ def perform_accept_negotiation(report, config):
                                 if key[-1] == "*":
                                     file_mime_type = return_mime_type(fname.split(".")[1], config)
                                     file_mime_type = file_mime_type.split("/")[0] + "/*"
-                                    if float(accept_values[file_mime_type]) == float(value):
+                                    negotiation_mime_type = return_mime_type(negotiation_file.split(".")[1], config).split("/")[0] + "/*"
+                                    if float(accept_values[file_mime_type]) == float(accept_values[negotiation_mime_type]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
                                         #return report
-                                    elif float(accept_values[file_mime_type]) < float(value):
+                                    elif float(accept_values[file_mime_type]) < float(accept_values[negotiation_mime_type]):
                                         negotiation_file = fname
                                         is_ambiguous = False
 
                                 else:
-                                    if float(accept_values[return_mime_type(fname.split(".")[1], config)]) == float(value):
+                                    if float(accept_values[return_mime_type(fname.split(".")[1], config)]) == float(accept_values[negotiation_mime_type]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
                                         #return report
-                                    elif float(accept_values[return_mime_type(fname.split(".")[1], config)]) < float(value):
+                                    elif float(accept_values[return_mime_type(fname.split(".")[1], config)]) < float(accept_values[negotiation_mime_type]):
                                         negotiation_file = fname
                                         is_ambiguous = False
                             else:
