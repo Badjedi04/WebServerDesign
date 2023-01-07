@@ -67,7 +67,7 @@ def start_client(conn, addr, config):
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
-                server_report_header = data.decode()
+                response_header = data.decode()
                 response_header = decompose_headers(response_header, config)
                 for header in response_header:
                     server_report = parser.get_request_header(header, config)
