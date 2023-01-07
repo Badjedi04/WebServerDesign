@@ -220,8 +220,8 @@ def check_accept_charset_header(report, config=None):
                 charset_splitter = charset_choice.split(";")    
                 dict_charset[charset_splitter[0]] = charset_splitter[1].split("=")[1]
             formatted_d = []
-            for d in dict_charset:
-                formatted_d.append(d.strip())
+            for key, value in dict_charset.items():
+                formatted_d[key.strip()] = value
             sorted_d = dict( sorted(formatted_d.items(), key=operator.itemgetter(1),reverse=True))
             report["response"]["accept_charset"] = sorted_d
             if "status_code" not in report["response"]:
@@ -244,8 +244,8 @@ def check_accept_encoding_header(report, config=None):
                 encoding_splitter = encoding_choice.split(";")    
                 dict_encoding[encoding_splitter[0]] = encoding_splitter[1].split("=")[1]
             formatted_d = []
-            for d in dict_encoding:
-                formatted_d.append(d.strip())
+            for key, value in dict_encoding.items():
+                formatted_d[key.strip()] = value
             sorted_d = dict( sorted(formatted_d.items(), key=operator.itemgetter(1),reverse=True))
             report["response"]["accept_encoding"] = sorted_d
             if "status_code" not in report["response"]:
@@ -268,8 +268,8 @@ def check_accept_language_header(report, config=None):
                 language_splitter = language_choice.split(";")
                 dict_language[language_splitter[0]] = language_splitter[1].split("=")[1]
             formatted_d = []
-            for d in dict_language:
-                formatted_d.append(d.strip())
+            for key, value in dict_language.items():
+                formatted_d[key.strip()] = value
             sorted_d = dict( sorted(formatted_d.items(), key=operator.itemgetter(1),reverse=True))
             report["response"]["accept_language"] = sorted_d
             if "status_code" not in report["response"]:
@@ -292,8 +292,8 @@ def check_accept_header(report, config=None):
                 accept_splitter = accept_choice.split(";")    
                 dict_accept[accept_splitter[0]] = accept_splitter[1].split("=")[1]
             formatted_d = []
-            for d in dict_accept:
-                formatted_d.append(d.strip())
+            for key, value in dict_accept.items():
+                formatted_d[key.strip()] = value
             sorted_d = dict(sorted(formatted_d.items(), key=operator.itemgetter(1),reverse=True))
 
             report["response"]["accept"] = sorted_d
