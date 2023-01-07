@@ -212,6 +212,7 @@ Function to match Accept_Charset header
 """
 def check_accept_charset_header(report, config=None):
     try:
+
         if "Accept-Charset" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
             dict_charset = {}
             charset_choices = report["request"]["Accept-Charset"].split(",")
@@ -264,7 +265,7 @@ def check_accept_language_header(report, config=None):
             dict_language = {}
             language_choices = report["request"]["Accept-Language"].split(",")
             for language_choice in language_choices:
-                language_splitter = language_choice.split(";")    
+                language_splitter = language_choice.split(";")
                 dict_language[language_splitter[0]] = language_splitter[1].split("=")[1]
             formatted_d = []
             for d in dict_language:
