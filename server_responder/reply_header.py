@@ -166,6 +166,7 @@ def perform_accept_negotiation(report, config):
                 sys.stdout.write(f'perform_accept_negotiation: file:{fname}\n')
                 file_ext = return_mime_type(fname.split(".")[1], config)
                 sys.stdout.write(f'perform_accept_negotiation: ext:{file_ext}\n')
+                is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
                     if fname.split(".")[0] == dir_path[1]:
                         sys.stdout.write(f'perform_accept_negotiation: File match: {fname}\n')
@@ -176,35 +177,39 @@ def perform_accept_negotiation(report, config):
                                     file_mime_type = return_mime_type(negotiation_file.split(".")[1], config)
                                     file_mime_type = file_mime_type.split("/")[0] + "/*"
                                     if float(accept_values[file_mime_type]) == float(value):
-                                        report["response"]["status_code"] = "300"
-                                        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
-                                        report["response"]["alternate"] = True
+                                        is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        return report
+                                        #return report
                                     elif float(accept_values[file_mime_type]) < float(value):
                                         negotiation_file = fname
+                                        is_ambiguous = False
 
                                 else:
                                     if float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) == float(value):
-                                        report["response"]["status_code"] = "300"
-                                        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
-                                        report["response"]["alternate"] = True
+                                        is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        return report
+                                        #return report
                                     elif float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) < float(value):
                                         negotiation_file = fname
+                                        is_ambiguous = False
                             else:
                                 negotiation_file = fname
+                                is_ambiguous = False
         sys.stdout.write(f'perform_accept_negotiation: file_negotiation end : {negotiation_file}\n')
-        if negotiation_file:        
+        
+        if is_ambiguous:
+            report["response"]["status_code"] = "300"
+            report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+            report["response"]["alternate"] = True
+        elif negotiation_file:        
             report ["request"]["path"] = os.path.join(dir_path[0], negotiation_file)
             report["response"]["status_code"] = "200"
             report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
             report = create_file_headers(config, report)
             sys.stdout.write(f'perform_accept_negotiation: Content Negotiation file found: {report ["request"]["path"]}\n')
-            return report 
-        report["response"]["status_code"] = "416"
-        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+        else: 
+            report["response"]["status_code"] = "416"
+            report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
     except Exception as e:
         sys.stderr.write(f'perform_accept_negotiation: error {e}\n')
     return report
@@ -241,6 +246,7 @@ def perform_content_negotiation(report, config):
         
         negotiation_file, encoding_match, language_match, charset_match = None
 
+        is_ambiguous = False
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
                 sys.stdout.write(f'perform_content_negotiation: file: {fname}\n')
@@ -249,11 +255,11 @@ def perform_content_negotiation(report, config):
                         sys.stdout.write(f'perform_content_negotiation: accept_charset check: negotiation file: {charset_match}\n')
                         if fname == (dir_path[1] + "." + key):
                             if charset_match and charset_values[0] == value:
-                                report["response"]["status_code"] = "300"
-                                report["response"]["alternate"] = True
+                                is_ambiguous = True
                                 sys.stdout.write("Accept-Charset: Both the files exists\n")
-                                return report
+                                #return report
                             else:
+                                is_ambiguous = False
                                 charset_match = fname
                                 list_file_match[0] = True
                 if list_headers[1]:
@@ -261,32 +267,36 @@ def perform_content_negotiation(report, config):
                         sys.stdout.write(f'perform_content_negotiation: accept_language check: negotiation file: {language_match}\n')
                         if fname == (dir_path[1] + "." + key):
                             if language_match and lang_values[0] == value:
-                                report["response"]["status_code"] = "300"
-                                report["response"]["alternate"] = True
+                                is_ambiguous = True
                                 sys.stdout.write("Accept-Language: Both the files exists\n")
-                                return report
+                                #return report
                             else:
+                                is_ambiguous = False
                                 language_match = fname
                                 list_file_match[1] = True
                 if list_headers[2]:
                     for key, value in config_encoding.items():
-                            if fname == (dir_path[1] + "." + key):
-                                if encoding_match and encoding_value[0] == value:
-                                    sys.stdout.write(f'perform_content_negotiation: accept_encoding check: negotiation file: {encoding_match}\n')
-                                    report["response"]["status_code"] = "300"
-                                    report["response"]["alternate"] = True
-                                    sys.stdout.write("Accept-Encoding: Both the files exists\n")
-                                    return report
-                                else:
-                                    encoding_match = fname
-                                    list_file_match[2] = True
+                        sys.stdout.write(f'perform_content_negotiation: accept_encoding check: negotiation file: {encoding_match}\n')
+                        if fname == (dir_path[1] + "." + key):
+                            if encoding_match and encoding_value[0] == value:
+                                is_ambiguous = True
+                                sys.stdout.write("Accept-Encoding: Both the files exists\n")
+                                #return report
+                            else:
+                                is_ambiguous = False
+                                encoding_match = fname
+                                list_file_match[2] = True
                 
                 sys.stdout.write(f'perform_content_negotiation: list_file_match : {list_file_match}  list_headers: {list_headers}\n')
-                if list_file_match == list_headers:
+                if is_ambiguous:
+                    report["response"]["status_code"] = "300"
+                    report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+                    report["response"]["alternate"] = True
+                elif list_file_match == list_headers:
                     report ["request"]["path"] = os.path.join(roots, fname)
                     report["response"]["status_code"] = "200"
                     sys.stdout.write(f'perform_content_negotiation: Content Negotiation file found: {report ["request"]["path"]}\n')
-                    return report 
+                    #return report 
         report["response"]["status_code"] = "416"
     except Exception as e:
         sys.stderr.write(f'perform_content_negotiation: error {e}\n')
