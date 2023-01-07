@@ -171,14 +171,28 @@ def perform_accept_negotiation(report, config):
                         sys.stdout.write(f'perform_accept_negotiation: File match: {fname}\n')
                         if file_ext == key  or (key[-1] == "*" and file_ext.split("/")[0] == key.split("/")[0]):
                             sys.stdout.write(f'perform_accept_negotiation: file type match\n')
-                            if negotiation_file and (key[-1] == "*" or (float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) == float(value))):
-                                report["response"]["status_code"] = "300"
-                                report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
-                                report["response"]["alternate"] = True
-                                sys.stdout.write("Accept: Both the files exists\n")
-                                return report
-                            elif negotiation_file and float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) > float(value):
-                                continue
+                            if negotiation_file: 
+                                if key[-1] == "*":
+                                    file_mime_type = return_mime_type(negotiation_file.split(".")[1], config)
+                                    file_mime_type = file_mime_type.split("/")[0] + "/*"
+                                    if float(accept_values[file_mime_type]) == float(value):
+                                        report["response"]["status_code"] = "300"
+                                        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+                                        report["response"]["alternate"] = True
+                                        sys.stdout.write("Accept: Both the files exists\n")
+                                        return report
+                                    elif float(accept_values[file_mime_type]) < float(value):
+                                        negotiation_file = fname
+
+                                else:
+                                    if float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) == float(value):
+                                        report["response"]["status_code"] = "300"
+                                        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
+                                        report["response"]["alternate"] = True
+                                        sys.stdout.write("Accept: Both the files exists\n")
+                                        return report
+                                    elif float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) < float(value):
+                                        negotiation_file = fname
                             else:
                                 negotiation_file = fname
         sys.stdout.write(f'perform_accept_negotiation: file_negotiation end : {negotiation_file}\n')
