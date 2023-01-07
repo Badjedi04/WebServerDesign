@@ -174,7 +174,7 @@ def perform_accept_negotiation(report, config):
                             sys.stdout.write(f'perform_accept_negotiation: file type match\n')
                             if negotiation_file: 
                                 if key[-1] == "*":
-                                    file_mime_type = return_mime_type(negotiation_file.split(".")[1], config)
+                                    file_mime_type = return_mime_type(fname.split(".")[1], config)
                                     file_mime_type = file_mime_type.split("/")[0] + "/*"
                                     if float(accept_values[file_mime_type]) == float(value):
                                         is_ambiguous = True
@@ -185,11 +185,11 @@ def perform_accept_negotiation(report, config):
                                         is_ambiguous = False
 
                                 else:
-                                    if float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) == float(value):
+                                    if float(accept_values[return_mime_type(fname.split(".")[1], config)]) == float(value):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
                                         #return report
-                                    elif float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]) < float(value):
+                                    elif float(accept_values[return_mime_type(fname.split(".")[1], config)]) < float(value):
                                         negotiation_file = fname
                                         is_ambiguous = False
                             else:
@@ -208,7 +208,7 @@ def perform_accept_negotiation(report, config):
             report = create_file_headers(config, report)
             sys.stdout.write(f'perform_accept_negotiation: Content Negotiation file found: {report ["request"]["path"]}\n')
         else: 
-            report["response"]["status_code"] = "416"
+            report["response"]["status_code"] = "406"
             report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
     except Exception as e:
         sys.stderr.write(f'perform_accept_negotiation: error {e}\n')
@@ -297,7 +297,8 @@ def perform_content_negotiation(report, config):
                     report["response"]["status_code"] = "200"
                     sys.stdout.write(f'perform_content_negotiation: Content Negotiation file found: {report ["request"]["path"]}\n')
                     #return report 
-        report["response"]["status_code"] = "416"
+                else:
+                    report["response"]["status_code"] = "406"
     except Exception as e:
         sys.stderr.write(f'perform_content_negotiation: error {e}\n')
     return report
