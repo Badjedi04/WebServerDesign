@@ -248,6 +248,7 @@ def check_accept_encoding_header(report, config=None):
         sys.stderr.write(f'check_accept_encoding_header: error: {e}\n')
     return report
 
+
 '''
 Function to check Accept_Language header
 '''
@@ -267,6 +268,7 @@ def check_accept_language_header(report, config=None):
     except Exception as e:
         sys.stderr.write(f'check_accept_language_header: error: {e}\n')
     return report
+
 
 '''
 Function to check Accept header
