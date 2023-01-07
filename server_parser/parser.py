@@ -1,8 +1,6 @@
 import sys 
 import urllib.parse as url_parse
 
-import utils.utils as utils
-
 def get_request_header(request_header, config):
     try:
         sys.stdout.write(f'Print request_header: \n{request_header}\n')
@@ -87,7 +85,7 @@ def header_validate(request_header, config):
 
 """
 """    
-def parse_header(request_header,config):
+def parse_header(request_header,config=None):
     try:
         dict_request = {"request":{}}
         dict_request["request"]["raw_header"] = request_header
@@ -111,4 +109,4 @@ def parse_header(request_header,config):
         sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
         return dict_request
     except Exception as e:
-        sys.stderr.write(f'parse_header: error: {e}\n')
+        sys.stderr.write(f'parse_header: error: {e}\n') 
