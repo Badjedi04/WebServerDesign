@@ -240,7 +240,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[0]:
                     for key, value in config_charset.items():
                         if fname == (dir_path[1] + "." + key):
-                            if charset_match and (key[-1] == "*" or charset_values[0] == value):
+                            if charset_match and charset_values[0] == value:
                                 report["response"]["status_code"] = "300"
                                 report["response"]["alternate"] = True
                                 sys.stdout.write("Accept-Charset: Both the files exists\n")
@@ -251,7 +251,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[1]:
                     for key, value in config_language.items():
                         if fname == (dir_path[1] + "." + key):
-                            if language_match and (key[-1] == "*" or lang_values[0] == value):
+                            if language_match and lang_values[0] == value:
                                 report["response"]["status_code"] = "300"
                                 report["response"]["alternate"] = True
                                 sys.stdout.write("Accept-Language: Both the files exists\n")
@@ -262,7 +262,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[2]:
                     for key, value in config_encoding.items():
                             if fname == (dir_path[1] + "." + key):
-                                if encoding_match and (key[-1] == "*" or encoding_value[0] == value):
+                                if encoding_match and encoding_value[0] == value:
                                     report["response"]["status_code"] = "300"
                                     report["response"]["alternate"] = True
                                     sys.stdout.write("Accept-Encoding: Both the files exists\n")
@@ -270,6 +270,7 @@ def perform_content_negotiation(report, config):
                                 else:
                                     encoding_match = fname
                                     list_file_match[2] = True
+                
                 if list_file_match == list_headers:
                     report ["request"]["path"] = os.path.join(roots, fname)
                     report["response"]["status_code"] = "200"
