@@ -186,11 +186,11 @@ def perform_accept_negotiation(report, config):
                                         is_ambiguous = False
 
                                 else:
-                                    if float(accept_values[return_mime_type(fname.split(".")[1], config)]) == float(accept_values[negotiation_mime_type]):
+                                    if float(accept_values[return_mime_type(fname.split(".")[1], config)]) == float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
                                         #return report
-                                    elif float(accept_values[return_mime_type(fname.split(".")[1], config)]) < float(accept_values[negotiation_mime_type]):
+                                    elif float(accept_values[return_mime_type(fname.split(".")[1], config)]) < float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]):
                                         negotiation_file = fname
                                         is_ambiguous = False
                             else:
