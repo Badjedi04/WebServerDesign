@@ -61,3 +61,63 @@ def read_redirect():
         return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
+
+
+def read_accept_encoding_config_file():
+    try:
+        dict_config = {}
+        config = configparser.ConfigParser()
+        config.read("acceptencoding.ini")
+        for section in config.sections(): 
+            sys.stdout.write(f'read_accept_encoding_config_file: section: {section}\n')
+            for (key, value) in config[section].items():
+                sys.stdout.write(f'read_accept_encoding_config_file: {key}: {value}\n')
+                dict_config[key] = value
+        return dict_config
+    except Exception as e:
+        sys.stderr.write(f'read_accept_encoding_config_file: error: {e}\n')
+
+
+def read_charset_encoding_config_file():
+    try:
+        dict_config = {}
+        config = configparser.ConfigParser()
+        config.read("charsetencoding.ini")
+        for section in config.sections(): 
+            sys.stdout.write(f'read_charset_encoding_config_file: section: {section}\n')
+            for (key, value) in config[section].items():
+                sys.stdout.write(f'read_charset_encoding_config_file: {key}: {value}\n')
+                dict_config[key] = value
+        return dict_config
+    except Exception as e:
+        sys.stderr.write(f'read_charset_encoding_config_file: error: {e}\n')
+
+
+def read_content_encoding_config_file():
+    try:
+        dict_config = {}
+        config = configparser.ConfigParser()
+        config.read("contentencoding.ini")
+        for section in config.sections(): 
+            sys.stdout.write(f'read_content_encoding_config_file: section: {section}\n')
+            for (key, value) in config[section].items():
+                sys.stdout.write(f'read_content_encoding_config_file: {key}: {value}\n')
+                dict_config[key] = value
+        return dict_config
+    except Exception as e:
+        sys.stderr.write(f'read_content_encoding_config_file: error: {e}\n')
+
+
+def read_lang_encoding_config_file():
+    try:
+        dict_config = {}
+        config = configparser.ConfigParser()
+        config.read("langencoding.ini")
+        for section in config.sections(): 
+            sys.stdout.write(f'read_lang_encoding_config_file: section: {section}\n')
+            for (key, value) in config[section].items():
+                sys.stdout.write(f'read_lang_encoding_config_file: {key}: {value}\n')
+                dict_config[key] = value
+        return dict_config
+    except Exception as e:
+        sys.stderr.write(f'read_lang_encoding_config_file: error: {e}\n')
