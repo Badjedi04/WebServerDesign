@@ -33,18 +33,6 @@ def close_connection(conn, timeout=False, config=None):
         report = {}
         report["response"] = {}
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
-        report["response"]["status_code"] = "418"
-        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
-        report["response"]["Server"] = config["HEADERS"]["server"]
-        report["response"]["Connection"] = "close" 
-        
-        conn.send(responder.server_reply(config, report))
-    sys.stdout.write("Going to close connection\n")
-    sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
-    if timeout:
-        report = {}
-        report["response"] = {}
-        report["response"]["http_version"] = config["HEADERS"]["http_version"]
         report["response"]["status_code"] = "408"
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
@@ -67,8 +55,8 @@ def start_client(conn, addr, config):
                 connection_timeout.start()                
                 sys.stdout.write("*********************************************************************************\n")
                 sys.stdout.write("Server Data received\n")
-                server_report_header = data.decode()
-                response_header = decompose_headers(response_header, config)
+                response_header = data.decode()
+                response_header = decompose_headers(response_header)
                 for header in response_header:
                     server_report = parser.get_request_header(header, config)
                     sys.stdout.write("Server Data Parsed\n")
@@ -88,7 +76,7 @@ def start_client(conn, addr, config):
             sys.stderr.write(f'start_client:error: {e}\n')
 
 
-def decompose_headers(response_header, config):
+def decompose_headers(response_header):
     sys.stdout.write(f'decompose_headers called\n')
     list_header_splitter = response_header.splitlines()
     list_header = []

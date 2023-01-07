@@ -1,7 +1,9 @@
 import os
 import sys
 import re
+import hashlib
 from datetime import datetime
+import operator
 
 import server_responder.reply_header as reply_header
 import utils.utils as utils
@@ -34,16 +36,21 @@ def check_file_path(report, config):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
         report = check_file_redirects(report, config)
-        report = check_if_modified_header(report, config)
-        report = check_if_match_header(report, config)
+        report = check_if_modified_header(report)
+        report = check_if_match_header(report)
+        report = check_range_request(report)
     else:
-        report["response"]["status_code"] = "404"
+        report = check_accept_file_path(report,config)
+        report = check_accept_header(report, config)
+        report = check_accept_charset_header(report, config)
+        report = check_accept_encoding_header(report, config)
+        report = check_accept_language_header(report, config)
     return report
 
 """
 Function to match If-Unmodified-Since and If-Modified-Since headers
 """
-def check_if_modified_header(report, config):
+def check_if_modified_header(report):
     try:
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Unmodified-Since"])
@@ -69,7 +76,7 @@ def check_if_modified_header(report, config):
 """
 Function to match If-Match and If-None-Match headers
 """
-def check_if_match_header(report, config):
+def check_if_match_header(report):
 
     if "If-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:
@@ -163,3 +170,120 @@ def check_file_redirects(report, config):
         return report
     except Exception as e:
         sys.stderr.write(f'check_file_redirects: error: {e}\n')
+
+
+"""
+Function to match Range_header
+"""    
+def check_range_request(report, config=None):
+    try:
+        sys.stdout.write(f'check_range_request: \n')
+        if "Range" in report["request"] and report["request"]["method"] == "GET":
+            sys.stdout.write(f'check_range_request: True\n')
+            ranges = report["request"]["Range"].split("=")[1].split("-")
+            if len(ranges) == 2:
+                report["response"]["range"] = ranges
+                report["response"]["status_code"] = "206"
+    except Exception as e:
+        sys.stderr.write(f'check_range_request: error: {e}\n')
+    return report
+
+"""
+Function to check accept multiple choices file
+"""
+def check_accept_file_path(report, config=None):
+    try:
+        sys.stdout.write(f'check_accept_file_path: start\n')
+        if report["request"]["method"] in ["HEAD", "GET"]:
+            dir_path = report["request"]["path"].rsplit("/", 1)
+            for roots, dirs, files in os.walk(dir_path[0]):
+                for fname in files:
+                    if fname.split(".")[0] == dir_path[1]:
+                        report["response"]["status_code"] = "300"
+                        report["response"]["alternate"] = True
+                        return report
+        report["response"]["status_code"] = "404"
+    except Exception as e:
+        sys.stderr.write(f'check_accept_file_path: error: {e}\n')
+    return report
+
+"""
+Function to match Accept_Charset header
+"""
+def check_accept_charset_header(report, config=None):
+    try:
+        if "Accept-Charset" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
+            dict_charset = {}
+            charset_choices = report["request"]["Accept-Charset"].split(",")
+            for charset_choice in charset_choices:
+                charset_splitter = charset_choice.split(";")    
+                dict_charset[charset_splitter[0]] = charset_splitter[1].split("=")[1]
+            sorted_d = dict( sorted(dict_charset.items(), key=operator.itemgetter(1),reverse=True))
+            report["response"]["accept_charset"] = sorted_d
+            if "status_code" not in report["response"]:
+                report["response"]["status_code"] = "XXX"
+        sys.stdout.write(f'check_accept_charset_header: done\n')
+    except Exception as e:
+        sys.stderr.write(f'check_accept_charset_header: error: {e}\n')
+    return report
+
+
+"""
+Function to check Accept_Encoding header
+"""
+def check_accept_encoding_header(report, config=None):
+    try:
+        if "Accept-Encoding" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
+            dict_encoding = {}
+            encoding_choices = report["request"]["Accept-Encoding"].split(",")
+            for encoding_choice in encoding_choices:
+                encoding_splitter = encoding_choice.split(";")    
+                dict_encoding[encoding_splitter[0]] = encoding_splitter[1].split("=")[1]
+            sorted_d = dict( sorted(dict_encoding.items(), key=operator.itemgetter(1),reverse=True))
+            report["response"]["accept_encoding"] = sorted_d
+            if "status_code" not in report["response"]:
+                report["response"]["status_code"] = "XXX"        
+            sys.stdout.write(f'check_accept_encoding_header: done\n')
+    except Exception as e:
+        sys.stderr.write(f'check_accept_encoding_header: error: {e}\n')
+    return report
+
+'''
+Function to check Accept_Language header
+'''
+def check_accept_language_header(report, config=None):
+    try:
+        if "Accept-Language" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
+            dict_language = {}
+            language_choices = report["request"]["Accept-Language"].split(",")
+            for language_choice in language_choices:
+                language_splitter = language_choice.split(";")    
+                dict_language[language_splitter[0]] = language_splitter[1].split("=")[1]
+            sorted_d = dict( sorted(dict_language.items(), key=operator.itemgetter(1),reverse=True))
+            report["response"]["accept_language"] = sorted_d
+            if "status_code" not in report["response"]:
+                report["response"]["status_code"] = "XXX"
+        sys.stdout.write(f'check_accept_language_header: done\n')
+    except Exception as e:
+        sys.stderr.write(f'check_accept_language_header: error: {e}\n')
+    return report
+
+'''
+Function to check Accept header
+'''
+def check_accept_header(report, config=None):
+    try:
+        if "Accept" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
+            dict_accept = {}
+            accept_choices = report["request"]["Accept"].split(",")
+            for accept_choice in accept_choices:
+                accept_splitter = accept_choice.split(";")    
+                dict_accept[accept_splitter[0]] = accept_splitter[1].split("=")[1]
+            sorted_d = dict( sorted(dict_accept.items(), key=operator.itemgetter(1),reverse=True))
+            report["response"]["accept"] = sorted_d
+            if "status_code" not in report["response"]:
+                report["response"]["status_code"] = "XXX"
+        sys.stdout.write(f'check_accept_header: done\n')
+    except Exception as e:
+        sys.stderr.write(f'check_accept_header: error: {e}\n')
+    return report
