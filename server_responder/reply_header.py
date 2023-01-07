@@ -35,6 +35,7 @@ def create_response_header(config, report):
                     report = perform_accept_negotiation(report, config)
                 elif "accept_encoding" in report["response"] or "accept_charset" in report["response"] or "accept_language" in report["response"]:
                     report = perform_content_negotiation(report, config)
+                
                 if "alternate" in report["response"]:                    
                     report = create_alternate_headers(report, config) 
 
