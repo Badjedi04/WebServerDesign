@@ -5,17 +5,20 @@ from threading import Thread, Timer
 import server_parser.parser as parser
 import server_responder.responder as responder
 
-"""
+'''
 Function to start Server
 Parameters:
     ip_addr (str): IP Address
     port (int): Port Number
 Returns:
-"""
+'''
+
+
 def run_server(config):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((config["SERVER"]["ip_addr"], config["SERVER"]["port"]))
     wait_for_connections(server_socket, config)
+
 
 def wait_for_connections(server_socket, config):
     while True:

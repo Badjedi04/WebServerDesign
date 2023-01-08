@@ -7,6 +7,9 @@ import utils.utils as utils
 import server_responder.dynamic_html as dynamic_html
 import configuration.configreader as configreader
 
+'''
+Function create response header
+'''
 def create_response_header(config, report):
     try:
         sys.stdout.write(f'create_response_header: Begin Report\n{report}\n')
@@ -62,6 +65,9 @@ def create_response_header(config, report):
     return report
 
 
+'''
+Function to create file header
+'''
 def create_file_headers(config, report):
     try:
         
@@ -100,9 +106,9 @@ def create_file_headers(config, report):
         sys.stderr.write(f'create_file_headers: error {e}\n')
     return report
 
-"""
+'''
 Function to get file extention, content-lang, content-encode
-"""
+'''
 def get_file_info(fname, config):
     response = {}
     file_split = fname.split(".")
@@ -141,9 +147,9 @@ def get_file_info(fname, config):
     return response
 
 
-"""
+'''
 Function to set content type, content-encode and file extention
-"""
+'''
 def set_file_headers(report, config):
     sys.stdout.write(f'set_file_headers start\n')
     response = get_file_info(report["request"]["path"], config)
@@ -158,9 +164,9 @@ def set_file_headers(report, config):
     return report
 
 
-"""
+'''
 Function to create alternate headers
-"""
+'''
 def create_alternate_headers(report, config):
     sys.stdout.write(f'create_alternate_headers called\n')
     try:
@@ -177,6 +183,9 @@ def create_alternate_headers(report, config):
     return report
 
 
+'''
+Function to perform accept negotiation
+'''
 def perform_accept_negotiation(report, config):
     try:
         sys.stdout.write(f'perform_accept_negotiation called\n')
@@ -250,6 +259,9 @@ def perform_accept_negotiation(report, config):
     return report
 
 
+'''
+Function to perform content negotiation
+'''
 def perform_content_negotiation(report, config):
     try:
         sys.stdout.write(f'perform_content_negotiation: called\n')
@@ -345,9 +357,10 @@ def perform_content_negotiation(report, config):
         sys.stderr.write(f'perform_content_negotiation: error {e}\n')
     return report
 
-"""
+
+'''
 Function to return mime type
-"""
+'''
 def return_mime_type(file_ext, config):
     if file_ext == "txt":
         return config["HEADERS"]["mime_types"][0]

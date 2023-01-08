@@ -4,6 +4,8 @@ import re
 import hashlib
 from datetime import datetime
 import operator
+import base64
+import time
 
 import server_responder.reply_header as reply_header
 import utils.utils as utils
@@ -29,9 +31,9 @@ def handle_server_request(config, report):
         sys.stderr.write(f'handle_server_request: error: {e}\n')
 
 
-"""
+'''
 This function is responsible for returning status code and redirect path on the basis of file path 
-"""
+'''
 def check_file_path(report, config):
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
@@ -45,11 +47,13 @@ def check_file_path(report, config):
         report = check_accept_charset_header(report, config)
         report = check_accept_encoding_header(report, config)
         report = check_accept_language_header(report, config)
+        report = check_authorization(report, config)
     return report
 
-"""
+
+'''
 Function to match If-Unmodified-Since and If-Modified-Since headers
-"""
+'''
 def check_if_modified_header(report):
     try:
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
@@ -73,9 +77,9 @@ def check_if_modified_header(report):
         sys.stderr.write(f'check_if_modified_header: error: {e}\n')
 
 
-"""
+'''
 Function to match If-Match and If-None-Match headers
-"""
+'''
 def check_if_match_header(report):
 
     if "If-Match" in report["request"]:
@@ -100,9 +104,10 @@ def check_if_match_header(report):
                 report["response"]["status_code"] = "412"
     return report
 
-"""
+
+'''
 Function to set host path
-"""
+'''
 def fix_host_path(report, config):
     if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
         sys.stdout.write(f'handle_server_request: path: path starts with ptomar\n')
@@ -118,9 +123,9 @@ def fix_host_path(report, config):
     return report
 
 
-"""
+'''
 Function to check redirects
-"""
+'''
 def check_file_redirects(report, config):
     try:
         # Check 301 redirects
@@ -172,9 +177,9 @@ def check_file_redirects(report, config):
         sys.stderr.write(f'check_file_redirects: error: {e}\n')
 
 
-"""
+'''
 Function to match Range_header
-"""    
+'''   
 def check_range_request(report, config=None):
     try:
         sys.stdout.write(f'check_range_request: \n')
@@ -188,9 +193,10 @@ def check_range_request(report, config=None):
         sys.stderr.write(f'check_range_request: error: {e}\n')
     return report
 
-"""
+
+'''
 Function to check accept multiple choices file
-"""
+'''
 def check_accept_file_path(report, config=None):
     try:
         sys.stdout.write(f'check_accept_file_path: start\n')
@@ -207,9 +213,10 @@ def check_accept_file_path(report, config=None):
         sys.stderr.write(f'check_accept_file_path: error: {e}\n')
     return report
 
-"""
+
+'''
 Function to match Accept_Charset header
-"""
+'''
 def check_accept_charset_header(report, config=None):
     try:
 
@@ -232,9 +239,9 @@ def check_accept_charset_header(report, config=None):
     return report
 
 
-"""
+'''
 Function to check Accept_Encoding header
-"""
+'''
 def check_accept_encoding_header(report, config=None):
     try:
         if "Accept-Encoding" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
@@ -303,3 +310,221 @@ def check_accept_header(report, config=None):
     except Exception as e:
         sys.stderr.write(f'check_accept_header: error: {e}\n')
     return report
+
+
+'''
+Function to check Authorization
+'''
+def check_authorization(self, report=None, authorization_info=None):
+        sys.stdout.write("check_authorization: " + str(authorization_info)+ "\n") 
+        if report["request"]["authorization"] is None:
+            report["response"]["status_code"] = "401"
+            report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                                                     + authorization_info["realm"]
+            if authorization_info["authorization_type"] == "Digest":
+                nonce = generate_nonce(report)
+                opaque = generate_opaque(report)
+                report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
+                                                          nonce + "\"" + ",opaque=\"" + opaque + "\""
+                write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+        else:
+            if report["request"]["authorization"].split(" ")[0] == "Basic" and \
+                    report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
+                request_authorization = base64.b64decode(report["request"]["authorization"].split(" ")[-1]) \
+                    .decode("utf-8")
+                temp_split = request_authorization.split(":")
+                temp_split[1] = hashlib.md5(temp_split[1].encode()).hexdigest()
+                request_authorization = temp_split[0] + ":" + temp_split[1]
+                for users in authorization_info["users"]:
+                    if users == request_authorization:
+                        return report
+                report["response"]["status_code"] = "401"
+                report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                                                         + authorization_info["realm"]
+            elif report["request"]["authorization"].split(" ")[0] == "Digest" and \
+                    report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
+                auth_response = read_authorization_file(report)
+                if auth_response is None:
+                    report["response"]["status_code"] = "401"
+                    report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                                                             + authorization_info["realm"]
+                    if authorization_info["authorization_type"] == "Digest":
+                        nonce = generate_nonce(report)
+                        opaque = generate_opaque(report)
+                        report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
+                                                                  nonce + "\"" + ",opaque=\"" + opaque + "\""
+                        write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+
+                else:
+                    report["response"]["authorization_info"] = "qop= auth, rspauth=\"" + \
+                                                               generate_response_message_digest(report, 
+                                                                                                       auth_response) \
+                                                               + "\", cnonce=\"" + auth_response["cnonce"] + "\", nc=" \
+                                                               + auth_response["nc"]
+
+            else:
+                report["response"]["status_code"] = "401"
+                report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                                                         + authorization_info["realm"]
+                if authorization_info["authorization_type"] == "Digest":
+                    nonce = generate_nonce(report)
+                    opaque = generate_opaque(report)
+                    report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
+                                                              nonce + "\"" + ",opaque=\"" + opaque + "\""
+                    write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+        return report
+
+
+'''
+Function to generate response message digest
+'''
+def generate_response_message_digest(report, authorization_info):
+    sys.stdout.write("__generate_request_message_digest")
+    auth_info = check_authorization_directory(config_instance,
+                                                config_instance.root_folder
+                                                + report["request"]["path"])
+    for users in auth_info["users"]:
+        if users.split(":")[0] == authorization_info["username"]:
+            a1 = users.split(":")[-1]
+    a2 = hashlib.md5((":" + authorization_info["uri"]).encode()).hexdigest()
+    a3 = a1 + ":" + authorization_info["nonce"] + ":" + authorization_info["nc"] + ":" \
+            + authorization_info["cnonce"]+ ":" + authorization_info["qop"] + ":" + a2
+
+    return hashlib.md5(a3.encode()).hexdigest()
+
+
+'''
+Function to write to authorization file
+'''
+def write_authorization_file(report, nonce, nc, authorization_info, qop, opaque):
+    sys.stdout.write("__write_authorization_file")
+    if os.path.exists(config_instance.debug_folder + "/DigestAuthorizationInfo.txt"):
+        file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "w")
+    else:
+        file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "w")
+    file_authorization.write("user: " + "|url:" + report["request"]["path"] + "|nonce:" + nonce + "|nc:" + str(nc)
+                                + "|realm:" + authorization_info["realm"] + "|qop:" + qop + "|opaque:" + opaque + "\n")
+    file_authorization.close()
+
+
+'''
+Function to match nonce, realm, nc, url and qop from previous request
+'''
+def read_authorization_file(report):
+    sys.stdout.write("__read_authorization_file")
+    auth_string = report["request"]["authorization"]
+    auth_string = auth_string.split(", ")
+    authorization_info = {}
+    for info in auth_string:
+        split = info.split("=")
+        if "username" in split[0]:
+            authorization_info["username"] = remove_quotes(split[1])
+        elif "realm" in split[0]:
+            authorization_info["realm"] = remove_quotes(split[1])
+        elif "uri" in split[0]:
+            authorization_info["uri"] = remove_quotes(split[1])
+        elif "qop" in split[0]:
+            authorization_info["qop"] = remove_quotes(split[1])
+        elif "cnonce" in split[0]:
+            authorization_info["cnonce"] = remove_quotes(split[1])
+        elif "nonce" in split[0]:
+            authorization_info["nonce"] = remove_quotes(split[1])
+        elif "nc" in split[0]:
+            authorization_info["nc"] = remove_quotes(split[1])
+        elif "response" in split[0]:
+            authorization_info["response"] = remove_quotes(split[1])
+        elif "opaque" in split[0]:
+            authorization_info["opaque"] = remove_quotes(split[1])
+    sys.stdout.write("read_authorization_file: authorization_info: " + str(authorization_info))
+    if os.path.exists(config_instance.debug_folder + "/DigestAuthorizationInfo.txt"):
+        file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "r")
+        for line in file_authorization:
+            file_info = {}
+            line_split = line.split("|")
+            for split_text in line_split:
+                pair = split_text.split(":")
+                if "user" in pair[0]:
+                    file_info["username"] = remove_quotes(pair[1])
+                elif "url" in pair[0]:
+                    file_info["url"] = remove_quotes(pair[1])
+                elif "nonce" in pair[0]:
+                    file_info["nonce"] = remove_quotes(pair[1])
+                elif "nc" in pair[0]:
+                    file_info["nc"] = remove_quotes(pair[1])
+                elif "qop" in pair[0]:
+                    file_info["qop"] = remove_quotes(pair[1].rstrip())
+                elif "realm" in pair[0]:
+                    file_info["realm"] = pair[1]
+                elif "opaque" in pair[0]:
+                    file_info["opaque"] = pair[1].rstrip()
+            sys.stdout.write("read_authorization_file: file_info: " + str(file_info))
+            sys.stdout.write("read_authorization_file: auth nonce: " + authorization_info["nonce"])
+            sys.stdout.write("read_authorization_file: file nonce: " + file_info["nonce"])
+            sys.stdout.write("read_authorization_file: auth realm: " + authorization_info["realm"])
+            sys.stdout.write("read_authorization_file: file realm: " +
+                                        remove_quotes(file_info["realm"]))
+            if authorization_info["nonce"] == file_info["nonce"] and authorization_info["realm"] == \
+                    remove_quotes(file_info["realm"]):
+                sys.stdout.write("read_authorization_file: Nonce and Realm matched")
+                sys.stdout.write("read_authorization_file: Match Ncount: "
+                                            + str(int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1)))
+                if int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1):
+                    sys.stdout.write("read_authorization_file: auth response: "
+                                                + authorization_info["response"])
+                    sys.stdout.write("read_authorization_file: generated response: "
+                                                + str(generate_request_message_digest(authorization_info,
+                                                                                            report)))
+                    if authorization_info["response"] == \
+                            generate_request_message_digest(authorization_info, report):
+                        return authorization_info
+    return None
+
+
+'''
+Function to generate request message digest
+'''
+def generate_request_message_digest(authorization_info, report):
+    sys.stdout.write("generate_request_message_digest")
+    auth_info = check_authorization_directory(config_instance,
+                                                        config_instance.root_folder
+                                                        + report["request"]["path"])
+    for users in auth_info["users"]:
+        if users.split(":")[0] == authorization_info["username"]:
+            a1 = users.split(":")[-1]
+    a2 = hashlib.md5((report["request"]["method"] + ":" + authorization_info["uri"]).encode()).hexdigest()
+    a3 = a1 + ":" + authorization_info["nonce"] + ":" + authorization_info["nc"] + ":" \
+            + authorization_info["cnonce"]+ ":" + authorization_info["qop"] + ":" + a2
+    return hashlib.md5(a3.encode()).hexdigest()
+
+
+'''
+Function to remove double and single quotes
+'''
+def remove_quotes(self, auth_string):
+    sys.stdout.write("remove_quotes")
+    if "\"" in auth_string:
+        auth_string = auth_string.replace("\"", "")
+    if "'" in auth_string:
+        auth_string = auth_string.replace("'", "")
+    return auth_string
+
+
+'''
+Function to generate noonce string
+'''
+def generate_nonce(report):
+    nonce = base64.b64encode((str(time.time()) + " " + hashlib.md5((str(time.time()) +
+                                                                    hashlib.md5(report["request"]["path"]
+                                                                                .encode()).hexdigest() +
+                                                                    config_instance.private_key).encode())
+                                .hexdigest()).encode())
+    return nonce.decode("utf-8")
+
+
+'''
+Function to generate opaque string
+'''
+def generate_opaque(report):
+    opaque = hashlib.md5((report["request"]["path"] + ":" + config_instance.private_key).encode()) \
+        .hexdigest()
+    return opaque

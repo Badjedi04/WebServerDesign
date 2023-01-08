@@ -83,8 +83,9 @@ def header_validate(request_header, config):
         sys.stderr.write(f'header_validate: error {e}\n')
 
 
-"""
-"""    
+'''
+Function to create parse header
+'''  
 def parse_header(request_header,config=None):
     try:
         dict_request = {"request":{}}
