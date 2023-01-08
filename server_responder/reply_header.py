@@ -289,7 +289,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[0]:
                     for key, value in config_charset.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_charset check: negotiation file: {charset_match}\n')
-                        if math.isclose(float(report["response"]["accept_charset"][value]), 0.0):
+                        if value in report["response"]["accept_charset"] and math.isclose(float(report["response"]["accept_charset"][value]), 0.0):
                             continue
                         if fname == (dir_path[1] + "." + key):
                             if charset_match and charset_values[0] == value:
@@ -303,7 +303,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[1]:
                     for key, value in config_language.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_language check: negotiation file: {language_match}\n')
-                        if math.isclose(float(report["response"]["accept_language"][value]), 0.0):
+                        if value in report["response"]["accept_language"] and math.isclose(float(report["response"]["accept_language"][value]), 0.0):
                             continue
                         if fname == (dir_path[1] + "." + key):
                             if language_match and lang_values[0] == value:
@@ -317,7 +317,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[2]:
                     for key, value in config_encoding.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_encoding check: negotiation file: {encoding_match}\n')
-                        if math.isclose(float(report["response"]["accept_encoding"][value]), 0.0):
+                        if value in report["response"]["accept_encoding"] and math.isclose(float(report["response"]["accept_encoding"][value]), 0.0):
                             continue
                         if fname == (dir_path[1] + "." + key):
                             if encoding_match and encoding_value[0] == value:
