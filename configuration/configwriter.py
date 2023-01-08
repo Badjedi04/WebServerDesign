@@ -43,6 +43,7 @@ def create_config_file():
     config["STATUS_CODE"]["500"] = "Internal Server Error"
     config["STATUS_CODE"]["501"] = "Not Implemented"
     config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
+    config["STATUS_CODE"]["401"] = "Unauthorized"
 
     config["REDIRECT"] = {}
     config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"
