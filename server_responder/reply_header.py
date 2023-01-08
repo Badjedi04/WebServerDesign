@@ -121,19 +121,23 @@ def get_file_info(fname, config):
             if s == key:
                 sys.stdout.write(f'get_file_info lang key: {key} match\n')
                 response["language"] = value
+                response["language_type"] = key
         for key, value in config["CONTENT_ENCODING"].items(): 
             sys.stdout.write(f'get_file_info encoding key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info encoding key: {key} match\n')
                 response["encoding"] = value
+                response["encoding_type"] = key
         for key, value in config["CHARSET_ENCODING"].items(): 
             sys.stdout.write(f'get_file_info charset key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info charset key: {key} match\n')
+                response["charset_type"] = key
                 response["charset"] = value
     if "ext" not in response:
         response["ext"] = config["HEADERS"]["mime_types"][10] 
         response["file_ext"] = file_split[1] if len(file_split) > 1 else None
+    sys.stdout.write(f'get_file_info response: {response}\n')
     return response
 
 
@@ -141,6 +145,7 @@ def get_file_info(fname, config):
 Function to set content type, content-encode and file extention
 """
 def set_file_headers(report, config):
+    sys.stdout.write(f'set_file_headers start\n')
     response = get_file_info(report["request"]["path"], config)
     if "ext" in response:
          report["response"]["Content-Type"] = response["ext"]
@@ -187,6 +192,8 @@ def perform_accept_negotiation(report, config):
                 sys.stdout.write(f'perform_accept_negotiation: file_negotiation: {negotiation_file}\n')
                 sys.stdout.write(f'perform_accept_negotiation: file:{fname}\n')
                 file_ext = get_file_info(fname, config)["file_ext"]
+                if not file_ext:
+                    continue
                 sys.stdout.write(f'perform_accept_negotiation: ext:{file_ext}\n')
                 is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
@@ -199,9 +206,9 @@ def perform_accept_negotiation(report, config):
                             sys.stdout.write(f'perform_accept_negotiation: file type match\n')
                             if negotiation_file: 
                                 if key[-1] == "*":
-                                    file_mime_type = return_mime_type(fname.split(".")[1], config)
+                                    file_mime_type = return_mime_type(file_ext, config)
                                     file_mime_type = file_mime_type.split("/")[0] + "/*"
-                                    negotiation_mime_type = return_mime_type(negotiation_file.split(".")[1], config).split("/")[0] + "/*"
+                                    negotiation_mime_type = get_file_info(negotiation_file, config)["ext"].split("/")[0] + "/*"
                                     if float(accept_values[file_mime_type]) == float(accept_values[negotiation_mime_type]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
@@ -211,11 +218,11 @@ def perform_accept_negotiation(report, config):
                                         is_ambiguous = False
 
                                 else:
-                                    if float(accept_values[return_mime_type(fname.split(".")[1], config)]) == float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]):
+                                    if float(accept_values[return_mime_type(file_ext, config)]) == float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
                                         #return report
-                                    elif float(accept_values[return_mime_type(fname.split(".")[1], config)]) > float(accept_values[return_mime_type(negotiation_file.split(".")[1], config)]):
+                                    elif float(accept_values[return_mime_type(file_ext, config)]) > float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         negotiation_file = fname
                                         is_ambiguous = False
                             else:
@@ -278,6 +285,7 @@ def perform_content_negotiation(report, config):
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
                 sys.stdout.write(f'perform_content_negotiation: file: {fname}\n')
+                file_info = get_file_info(fname, config)
                 if list_headers[0]:
                     for key, value in config_charset.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_charset check: negotiation file: {charset_match}\n')
