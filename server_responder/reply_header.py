@@ -117,19 +117,19 @@ def get_file_info(fname, config):
 
         sys.stdout.write(f'get_file_info file ext: {s}\n')
         for key, value in config["LANGUAGE_ENCODING"].items():
-            sys.stdout.write(f'get_file_info lang key: {key}\n')
+            #sys.stdout.write(f'get_file_info lang key: {key}\n')
             if s == key:
                 sys.stdout.write(f'get_file_info lang key: {key} match\n')
                 response["language"] = value
                 response["language_type"] = key
         for key, value in config["CONTENT_ENCODING"].items(): 
-            sys.stdout.write(f'get_file_info encoding key: {key}\n')
+            #sys.stdout.write(f'get_file_info encoding key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info encoding key: {key} match\n')
                 response["encoding"] = value
                 response["encoding_type"] = key
         for key, value in config["CHARSET_ENCODING"].items(): 
-            sys.stdout.write(f'get_file_info charset key: {key}\n')
+            #sys.stdout.write(f'get_file_info charset key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info charset key: {key} match\n')
                 response["charset_type"] = key
@@ -191,10 +191,10 @@ def perform_accept_negotiation(report, config):
             for fname in files:
                 sys.stdout.write(f'perform_accept_negotiation: file_negotiation: {negotiation_file}\n')
                 sys.stdout.write(f'perform_accept_negotiation: file:{fname}\n')
-                file_ext = get_file_info(fname, config)["file_ext"]
-                if not file_ext:
+                file_info = get_file_info(fname, config)
+                if not file_info["ext"]:
                     continue
-                sys.stdout.write(f'perform_accept_negotiation: ext:{file_ext}\n')
+                sys.stdout.write(f'perform_accept_negotiation: ext:{file_info["file_ext"]}\n')
                 is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
                     sys.stdout.write(f'perform_accept_negotiation: value: {report["response"]["accept"][key]}\n')
@@ -202,11 +202,11 @@ def perform_accept_negotiation(report, config):
                         continue
                     if fname.split(".")[0] == dir_path[1]:
                         sys.stdout.write(f'perform_accept_negotiation: File match: {fname}\n')
-                        if file_ext == key  or (key[-1] == "*" and file_ext.split("/")[0] == key.split("/")[0]):
+                        if file_info["ext"] == key  or (key[-1] == "*" and file_info["ext"].split("/")[0] == key.split("/")[0]):
                             sys.stdout.write(f'perform_accept_negotiation: file type match\n')
                             if negotiation_file: 
                                 if key[-1] == "*":
-                                    file_mime_type = return_mime_type(file_ext, config)
+                                    file_mime_type = return_mime_type(file_info["file_ext"], config)
                                     file_mime_type = file_mime_type.split("/")[0] + "/*"
                                     negotiation_mime_type = get_file_info(negotiation_file, config)["ext"].split("/")[0] + "/*"
                                     if float(accept_values[file_mime_type]) == float(accept_values[negotiation_mime_type]):
@@ -218,11 +218,11 @@ def perform_accept_negotiation(report, config):
                                         is_ambiguous = False
 
                                 else:
-                                    if float(accept_values[return_mime_type(file_ext, config)]) == float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
+                                    if float(accept_values[return_mime_type(file_info["file_ext"], config)]) == float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
                                         #return report
-                                    elif float(accept_values[return_mime_type(file_ext, config)]) > float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
+                                    elif float(accept_values[return_mime_type(file_info["file_ext"], config)]) > float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         negotiation_file = fname
                                         is_ambiguous = False
                             else:
