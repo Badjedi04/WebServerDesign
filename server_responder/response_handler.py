@@ -315,7 +315,7 @@ def check_accept_header(report, config=None):
 '''
 Function to check Authorization
 '''
-def check_authorization(self, report=None, authorization_info=None):
+def check_authorization(report=None, authorization_info=None):
         sys.stdout.write("check_authorization: " + str(authorization_info)+ "\n") 
         if report["request"]["authorization"] is None:
             report["response"]["status_code"] = "401"
@@ -379,7 +379,7 @@ def check_authorization(self, report=None, authorization_info=None):
 Function to generate response message digest
 '''
 def generate_response_message_digest(report, authorization_info):
-    sys.stdout.write("__generate_request_message_digest")
+    sys.stdout.write("generate_request_message_digest")
     auth_info = check_authorization_directory(config_instance,
                                                 config_instance.root_folder
                                                 + report["request"]["path"])
@@ -397,7 +397,7 @@ def generate_response_message_digest(report, authorization_info):
 Function to write to authorization file
 '''
 def write_authorization_file(report, nonce, nc, authorization_info, qop, opaque):
-    sys.stdout.write("__write_authorization_file")
+    sys.stdout.write("write_authorization_file")
     if os.path.exists(config_instance.debug_folder + "/DigestAuthorizationInfo.txt"):
         file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "w")
     else:
@@ -411,7 +411,7 @@ def write_authorization_file(report, nonce, nc, authorization_info, qop, opaque)
 Function to match nonce, realm, nc, url and qop from previous request
 '''
 def read_authorization_file(report):
-    sys.stdout.write("__read_authorization_file")
+    sys.stdout.write("read_authorization_file")
     auth_string = report["request"]["authorization"]
     auth_string = auth_string.split(", ")
     authorization_info = {}
@@ -500,7 +500,7 @@ def generate_request_message_digest(authorization_info, report):
 '''
 Function to remove double and single quotes
 '''
-def remove_quotes(self, auth_string):
+def remove_quotes(auth_string):
     sys.stdout.write("remove_quotes")
     if "\"" in auth_string:
         auth_string = auth_string.replace("\"", "")
