@@ -24,7 +24,7 @@ def server_reply(config, report):
         server_response = str(f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n').encode('utf-8')
         for (key, value) in report["response"].items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Encoding", "Content-Type", "Content-Language", "Content-Range", "Transfer-Encoding", "Vary", "Alternates", "Connection", "Allow", "Location", "ETag"]:
-                temp = key + ": "  + value + "\r\n"
+                temp = key + ": "  + str(value) + "\r\n"
                 server_response += temp.encode('utf-8')
             sys.stdout.write(f'Server Response being created: \n {key}: {value}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
