@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime
 import os
+import math
 
 import utils.utils as utils
 import server_responder.dynamic_html as dynamic_html
@@ -168,7 +169,8 @@ def perform_accept_negotiation(report, config):
                 sys.stdout.write(f'perform_accept_negotiation: ext:{file_ext}\n')
                 is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
-                    if float(report["response"]["accept"][value]) == 0.0:
+                    sys.stdout.write(f'perform_accept_negotiation: value: {float(report["response"]["accept"][value])}\n')
+                    if math.isclose(float(report["response"]["accept"][value]), 0.0):
                         continue
                     if fname.split(".")[0] == dir_path[1]:
                         sys.stdout.write(f'perform_accept_negotiation: File match: {fname}\n')
@@ -257,7 +259,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[0]:
                     for key, value in config_charset.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_charset check: negotiation file: {charset_match}\n')
-                        if float(report["response"]["accept_charset"][value]) == 0.0:
+                        if math.isclose(float(report["response"]["accept_charset"][value]), 0.0):
                             continue
                         if fname == (dir_path[1] + "." + key):
                             if charset_match and charset_values[0] == value:
@@ -271,7 +273,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[1]:
                     for key, value in config_language.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_language check: negotiation file: {language_match}\n')
-                        if float(report["response"]["accept_language"][value]) == 0.0:
+                        if math.isclose(float(report["response"]["accept_language"][value]), 0.0):
                             continue
                         if fname == (dir_path[1] + "." + key):
                             if language_match and lang_values[0] == value:
@@ -285,7 +287,7 @@ def perform_content_negotiation(report, config):
                 if list_headers[2]:
                     for key, value in config_encoding.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_encoding check: negotiation file: {encoding_match}\n')
-                        if float(report["response"]["accept_encoding"][value]) == 0.0:
+                        if math.isclose(float(report["response"]["accept_encoding"][value]), 0.0):
                             continue
                         if fname == (dir_path[1] + "." + key):
                             if encoding_match and encoding_value[0] == value:
