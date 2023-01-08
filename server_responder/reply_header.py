@@ -41,12 +41,12 @@ def create_response_header(config, report):
 
                 if report["response"]["status_code"] in ["300", "416", "406"]:
                     if report["request"]["method"] == "GET":
-                        report["response"]["payload"] = dynamic_html.create_error_page(report)
+                        report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                     report["response"]["Transfer-Encoding"] = "chunked"
                     report["response"]["Content-Type"] = "text/html" 
 
             elif report["response"]["status_code"] not in ["200", "304"] and  report["request"]["method"] == "GET":
-                report["response"]["payload"] = dynamic_html.create_error_page(report)
+                report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                 report["response"]["Transfer-Encoding"] = "chunked"
                 report["response"]["Content-Type"] = "text/html"
             
