@@ -74,7 +74,7 @@ def create_file_headers(config, report):
             report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][1]
             report["response"]["payload"] = dynamic_html.create_directory_listing(report, config)      
         else:
-            report = get_file_info(report, config)
+            report = set_file_headers(report, config)
             with open(file_path, "rb") as fobj:
                 file_length = len(fobj.read())
             with open(file_path, "rb") as fobj:
@@ -103,33 +103,54 @@ def create_file_headers(config, report):
 """
 Function to get file extention, content-lang, content-encode
 """
-def get_file_info(report, config):
-    file_split = report["request"]["path"].split(".")
+def get_file_info(fname, config):
+    response = {}
+    file_split = fname.split(".")
     sys.stdout.write(f'get_file_info: {file_split}\n')
 
     for idx, s in enumerate(file_split):
         s = s.lower()
-        if idx == 1:
-            report["response"]["Content-Type"] = return_mime_type(s, config)
-            continue
-        elif idx > 1:
-            sys.stdout.write(f'get_file_info file ext: {s}\n')
-            for key, value in config["LANGUAGE_ENCODING"].items():
-                sys.stdout.write(f'get_file_info lang key: {key}\n')
-                if s == key:
-                    sys.stdout.write(f'get_file_info lang key: {key} match\n')
-                    report["response"]["Content-Language"] = value
-            for key, value in config["CONTENT_ENCODING"].items(): 
-                sys.stdout.write(f'get_file_info encoding key: {key}\n')
-                if key == s:
-                    sys.stdout.write(f'get_file_info encoding key: {key} match\n')
-                    report["response"]["Content-Encoding"] = value
-            for key, value in config["CHARSET_ENCODING"].items(): 
-                sys.stdout.write(f'get_file_info charset key: {key}\n')
-                if key == s:
-                    sys.stdout.write(f'get_file_info charset key: {key} match\n')
-                    report["response"]["Content-Type"] += f'; charset={value}'
-    return report 
+        for mime in config["HEADERS"]["mime_types"]:
+            if return_mime_type(s, config):
+                response["ext"] = return_mime_type(s, config)
+                response["file_ext"] = s
+
+        sys.stdout.write(f'get_file_info file ext: {s}\n')
+        for key, value in config["LANGUAGE_ENCODING"].items():
+            sys.stdout.write(f'get_file_info lang key: {key}\n')
+            if s == key:
+                sys.stdout.write(f'get_file_info lang key: {key} match\n')
+                response["language"] = value
+        for key, value in config["CONTENT_ENCODING"].items(): 
+            sys.stdout.write(f'get_file_info encoding key: {key}\n')
+            if key == s:
+                sys.stdout.write(f'get_file_info encoding key: {key} match\n')
+                response["encoding"] = value
+        for key, value in config["CHARSET_ENCODING"].items(): 
+            sys.stdout.write(f'get_file_info charset key: {key}\n')
+            if key == s:
+                sys.stdout.write(f'get_file_info charset key: {key} match\n')
+                response["charset"] = value
+    if "ext" not in response:
+        response["ext"] = config["HEADERS"]["mime_types"][10] 
+        response["file_ext"] = file_split[1] if len(file_split) > 1 else None
+    return response
+
+
+"""
+Function to set content type, content-encode and file extention
+"""
+def set_file_headers(report, config):
+    response = get_file_info(report["request"]["path"], config)
+    if "ext" in response:
+         report["response"]["Content-Type"] = response["ext"]
+    if  "language" in response:
+        report["response"]["Content-Language"] = response["language"]
+    if "encoding" in response:
+        report["response"]["Content-Encoding"] = response["encoding"]
+    if "charset" in response:
+         report["response"]["Content-Type"] += f'; charset={response["charset"]}'
+    return report
 
 
 """
@@ -165,7 +186,7 @@ def perform_accept_negotiation(report, config):
             for fname in files:
                 sys.stdout.write(f'perform_accept_negotiation: file_negotiation: {negotiation_file}\n')
                 sys.stdout.write(f'perform_accept_negotiation: file:{fname}\n')
-                file_ext = return_mime_type(fname.split(".")[1], config)
+                file_ext = get_file_info(fname, config)["file_ext"]
                 sys.stdout.write(f'perform_accept_negotiation: ext:{file_ext}\n')
                 is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
@@ -341,4 +362,4 @@ def return_mime_type(file_ext, config):
     elif file_ext in ["http"]:
         return config["HEADERS"]["mime_types"][9] 
     else:
-        return config["HEADERS"]["mime_types"][10]  
+        return None 
