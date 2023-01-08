@@ -169,8 +169,8 @@ def perform_accept_negotiation(report, config):
                 sys.stdout.write(f'perform_accept_negotiation: ext:{file_ext}\n')
                 is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
-                    sys.stdout.write(f'perform_accept_negotiation: value: {float(report["response"]["accept"][value])}\n')
-                    if math.isclose(float(report["response"]["accept"][value]), 0.0):
+                    sys.stdout.write(f'perform_accept_negotiation: value: {report["response"]["accept"][key]}\n')
+                    if math.isclose(float(report["response"]["accept"][key]), 0.0):
                         continue
                     if fname.split(".")[0] == dir_path[1]:
                         sys.stdout.write(f'perform_accept_negotiation: File match: {fname}\n')
@@ -218,6 +218,7 @@ def perform_accept_negotiation(report, config):
             report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
     except Exception as e:
         sys.stderr.write(f'perform_accept_negotiation: error {e}\n')
+    sys.stderr.write(f'perform_accept_negotiation: report {report}\n')   
     return report
 
 
