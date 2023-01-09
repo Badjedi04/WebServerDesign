@@ -2,14 +2,18 @@ import os
 import sys
 
 def check_authorization_directory(config, path):
-    authorization_info = None
-    while authorization_info is None and path != config["MAPPING"]["root_dir"]:
-        if os.path.isdir(path):
-            authorization_info = fill_authorization(config, path)
-        if authorization_info is None:
-            path = path.rsplit("/", 1)[0]
-        else:
-            return authorization_info
+    try:
+        authorization_info = None
+        while authorization_info is None and path != config["MAPPING"]["root_dir"]:
+            if os.path.isdir(path):
+                authorization_info = fill_authorization(config, path)
+            if authorization_info is None:
+                path = path.rsplit("/", 1)[0]
+            else:
+                sys.stdout.write(f'check_authorization_directory : authorization_info {authorization_info}\n ')
+                return authorization_info
+    except Exception as e:
+        sys.stderr.write(f'check_authorization_directory : error {e}\n')
     return None
 
 

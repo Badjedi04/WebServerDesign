@@ -323,12 +323,15 @@ def check_accept_header(report, config=None):
 Function to check Authorization
 '''
 def check_authorization(config, report=None, authorization_info=None):
-        sys.stdout.write("check_authorization: " + str(authorization_info)+ "\n") 
+    try:
+        sys.stdout.write("check_authorization: " + "\n") 
         if report["request"]["authorization"] is None:
+            sys.stdout.write(f'authorization_check : authorization {authorization}\n')
             report["response"]["status_code"] = "401"
             report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]
             if authorization_info["authorization_type"] == "Digest":
+                sys.stdout.write(f'authorization_info : Digest {authorization_info}\n')
                 nonce = generate_nonce(report)
                 opaque = generate_opaque(report)
                 report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
@@ -352,10 +355,12 @@ def check_authorization(config, report=None, authorization_info=None):
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
                 auth_response = read_authorization_file(report, config)
                 if auth_response is None:
+                    sys.stdout.write(f'auth_response : none {auth_response}\n')
                     report["response"]["status_code"] = "401"
                     report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                              + authorization_info["realm"]
                     if authorization_info["authorization_type"] == "Digest":
+
                         nonce = generate_nonce(report)
                         opaque = generate_opaque(report)
                         report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
@@ -380,13 +385,15 @@ def check_authorization(config, report=None, authorization_info=None):
                                                               nonce + "\"" + ",opaque=\"" + opaque + "\""
                     authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
         return report
+    except Exception as e:
+        sys.stderr.write(f'check_authorization : error {e}\n')
 
 
 '''
 Function to generate response message digest
 '''
 def generate_response_message_digest(report, authorization_info, config):
-    sys.stdout.write("generate_request_message_digest")
+    sys.stdout.write("generate_request_message_digest\n")
     auth_info = authorization.check_authorization_directory(config, report["request"]["path"])
     for users in auth_info["users"]:
         if users.split(":")[0] == authorization_info["username"]:
