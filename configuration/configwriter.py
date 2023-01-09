@@ -18,8 +18,8 @@ def create_config_file():
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
     config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
-    config["MAPPING"]["DEFAULT_AUTHORIZATION_FILE"] = "WeMustProtectThisHouse!"
-    config["MAPPING"]["PRIVATE_KEY"] = "ptomar"
+    config["MAPPING"]["default_authorization_file"] = "WeMustProtectThisHouse!"
+    config["MAPPING"]["private_key"] = "ptomar"
 
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"

@@ -512,7 +512,7 @@ def generate_nonce(report, config):
     nonce = base64.b64encode((str(time.time()) + " " + hashlib.md5((str(time.time()) +
                                                                     hashlib.md5(report["request"]["path"]
                                                                                 .encode()).hexdigest() +
-                                                                    config["MAPPING"]["PRIVATE_KEY"]).encode())
+                                                                    config["MAPPING"]["private_key"]).encode())
                                 .hexdigest()).encode())
     return nonce.decode("utf-8")
 
@@ -521,7 +521,7 @@ def generate_nonce(report, config):
 Function to generate opaque string
 '''
 def generate_opaque(report, config):
-    opaque = hashlib.md5((report["request"]["path"] + ":" + config["MAPPING"]["PRIVATE_KEY"]).encode()) \
+    opaque = hashlib.md5((report["request"]["path"] + ":" + config["MAPPING"]["private_key"]).encode()) \
         .hexdigest()
     return opaque
 
