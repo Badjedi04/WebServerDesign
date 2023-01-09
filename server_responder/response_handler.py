@@ -324,22 +324,24 @@ Function to check Authorization
 '''
 def check_authorization(config, report=None, authorization_info=None):
     try:
-        sys.stdout.write("check_authorization: " + "\n") 
+        sys.stdout.write(f'check_authorization:  {authorization_info}\n') 
         if report["request"]["authorization"] is None:
-            sys.stdout.write(f'authorization_check : authorization {authorization_info}\n')
+            sys.stdout.write(f'authorization_check : auth is none\n')
             report["response"]["status_code"] = "401"
             report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]
             if authorization_info["authorization_type"] == "Digest":
-                sys.stdout.write(f'authorization_info : Digest {authorization_info}\n')
+                sys.stdout.write(f'authorization_check : auth type is digest\n')
                 nonce = generate_nonce(report, config)
                 opaque = generate_opaque(report, config)
                 report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                           nonce + "\"" + ",opaque=\"" + opaque + "\""
                 authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
         else:
+            sys.stdout.write(f'authorization_check : auth is not none\n')
             if report["request"]["authorization"].split(" ")[0] == "Basic" and \
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
+                sys.stdout.write(f'authorization_check : auth is basic\n')
                 request_authorization = base64.b64decode(report["request"]["authorization"].split(" ")[-1]) \
                     .decode("utf-8")
                 temp_split = request_authorization.split(":")
@@ -353,6 +355,7 @@ def check_authorization(config, report=None, authorization_info=None):
                                                          + authorization_info["realm"]
             elif report["request"]["authorization"].split(" ")[0] == "Digest" and \
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
+                sys.stdout.write(f'authorization_check : auth is digest\n')
                 auth_response = read_authorization_file(report, config)
                 if auth_response is None:
                     sys.stdout.write(f'auth_response : none {auth_response}\n')
@@ -375,6 +378,7 @@ def check_authorization(config, report=None, authorization_info=None):
                                                                + auth_response["nc"]
 
             else:
+                sys.stdout.write(f'authorization_check : auth is not basic or digest\n')
                 report["response"]["status_code"] = "401"
                 report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                          + authorization_info["realm"]
