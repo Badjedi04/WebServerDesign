@@ -82,7 +82,7 @@ def create_config_file():
 
     config["AUTHORIZATION"] = {}
     config["AUTHORIZATION"]["authorization-type"] = "Basic"
-    config["AUTHORIZATION"]["realm"] =  "Lane Stadium"
+    config["AUTHORIZATION"]["realm"] = "Lane Stadium"
 
 
     with open(constants.CONFIG, "w") as fobj:
