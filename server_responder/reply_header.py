@@ -33,7 +33,7 @@ def create_response_header(config, report):
                 else:
                     report = create_file_headers(config, report)
             
-            elif report["response"]["status_code"] == "401":
+            elif report["response"]["status_code"] in ["400", "401"]:
                 report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                 report["response"]["Transfer-Encoding"] = "chunked"
                 report["response"]["Content-Type"] = "text/html"
