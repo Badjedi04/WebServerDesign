@@ -325,8 +325,8 @@ Function to check Authorization
 def check_authorization(config, report=None, authorization_info=None):
     try:
         sys.stdout.write(f'check_authorization:  {authorization_info}\n') 
-        if report["request"]["authorization"] is None:
-            sys.stdout.write(f'authorization_check : auth is none\n')
+        if "authorization" not in report["request"]:
+            sys.stdout.write(f'authorization_check : auth does not exist is request\n')
             report["response"]["status_code"] = "401"
             report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]
