@@ -21,7 +21,7 @@ def fill_authorization(config_instance, path):
     authorization_info = get_auth_structure()
     list_users = []
     for files in os.listdir(path):
-        if files == config_instance.authorization_file:
+        if files == config_instance["MAPPING"]["DEFAULT_AUTHORIZATION_FILE"]:
             file_open = open(os.path.join(path, files), "r")
             for line in file_open:
                 line = line.rstrip()
