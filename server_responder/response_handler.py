@@ -44,10 +44,10 @@ def check_file_path(report, config):
     if authinfo:
         report = check_authorization(config, report, authinfo)
     if "authorization" in report["request"]:
-        report["response"]["status_code"] = "404"
+        report["response"]["status_code"] = "401"
         report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
 
-    elif os.path.exists(report["request"]["path"]):
+    if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
         report = check_file_redirects(report, config)
         report = check_if_modified_header(report)
