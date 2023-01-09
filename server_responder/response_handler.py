@@ -331,13 +331,13 @@ def check_authorization(config, report=None, authorization_info=None):
         if "authorization" not in report["request"]:
             sys.stdout.write(f'authorization_check : auth does not exist is request\n')
             report["response"]["status_code"] = "401"
-            report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+            report["response"]["WWW-Authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]
             if authorization_info["authorization_type"] == "Digest":
                 sys.stdout.write(f'authorization_check : auth type is digest\n')
                 nonce = generate_nonce(report, config)
                 opaque = generate_opaque(report, config)
-                report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
+                report["response"]["WWW-Authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                           nonce + "\"" + ",opaque=\"" + opaque + "\""
                 authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
         else:
@@ -354,7 +354,7 @@ def check_authorization(config, report=None, authorization_info=None):
                     if users == request_authorization:
                         return report
                 report["response"]["status_code"] = "401"
-                report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                report["response"]["WWW-Authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                          + authorization_info["realm"]
             elif report["request"]["authorization"].split(" ")[0] == "Digest" and \
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
@@ -363,13 +363,13 @@ def check_authorization(config, report=None, authorization_info=None):
                 if auth_response is None:
                     sys.stdout.write(f'auth_response : none {auth_response}\n')
                     report["response"]["status_code"] = "401"
-                    report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                    report["response"]["WWW-Authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                              + authorization_info["realm"]
                     if authorization_info["authorization_type"] == "Digest":
 
                         nonce = generate_nonce(report, config)
                         opaque = generate_opaque(report, config)
-                        report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
+                        report["response"]["WWW-Authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                                   nonce + "\"" + ",opaque=\"" + opaque + "\""
                         authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
 
@@ -383,12 +383,12 @@ def check_authorization(config, report=None, authorization_info=None):
             else:
                 sys.stdout.write(f'authorization_check : auth is not basic or digest\n')
                 report["response"]["status_code"] = "401"
-                report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
+                report["response"]["WWW-Authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                          + authorization_info["realm"]
                 if authorization_info["authorization_type"] == "Digest":
                     nonce = generate_nonce(report, config)
                     opaque = generate_opaque(report, config)
-                    report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
+                    report["response"]["WWW-Authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                               nonce + "\"" + ",opaque=\"" + opaque + "\""
                     authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
         return report
