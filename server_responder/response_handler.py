@@ -326,7 +326,7 @@ def check_authorization(config, report=None, authorization_info=None):
     try:
         sys.stdout.write("check_authorization: " + "\n") 
         if report["request"]["authorization"] is None:
-            sys.stdout.write(f'authorization_check : authorization {authorization}\n')
+            sys.stdout.write(f'authorization_check : authorization {authorization_info}\n')
             report["response"]["status_code"] = "401"
             report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]
