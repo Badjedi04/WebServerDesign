@@ -18,6 +18,8 @@ def create_config_file():
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
     config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
+    config["MAPPING"]["DEFAULT_AUTHORIZATION_FILE"] = "WeMustProtectThisHouse!"
+    config["MAPPING"]["PRIVATE_KEY"] = "ptomar"
 
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
@@ -70,6 +72,17 @@ def create_config_file():
     config["LANGUAGE_ENCODING"]["ja"] = "ja"
     config["LANGUAGE_ENCODING"]["ko"] = "ko"
     config["LANGUAGE_ENCODING"]["ru"] = "ru"
+
+
+    config["CREDENTIALS"] = {}
+    config["CREDENTIALS"]["mln"] = "d3b07384d113edec49eaa6238ad5ff00"
+    config["CREDENTIALS"]["bda"] = "c157a79031e1c40f85931829bc5fc552"
+    config["CREDENTIALS"]["jbollen"] = "66e0459d0abbc8cd8bd9a88cd226a9b2"
+
+
+    config["AUTHORIZATION"] = {}
+    config["AUTHORIZATION"]["authorization-type"] = "Basic"
+    config["AUTHORIZATION"]["realm"] =  "Lane Stadium"
 
 
     with open(constants.CONFIG, "w") as fobj:

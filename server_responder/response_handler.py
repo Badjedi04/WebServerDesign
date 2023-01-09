@@ -9,7 +9,7 @@ import time
 
 import server_responder.reply_header as reply_header
 import utils.utils as utils
-from configuration import configreader
+import server_responder.authorization as authorization
 
 def handle_server_request(config, report):
     try:
@@ -24,7 +24,11 @@ def handle_server_request(config, report):
             # Check if file is present or not
             report = check_file_path(report, config)
          
-        elif report["request"]["method"] in ["OPTIONS", "TRACE"]:   
+        elif report["request"]["method"] in ["OPTIONS", "TRACE"]:  
+            if report["request"]["method"] == "OPTIONS":
+                authorization_info = authorization.check_authorization_directory(config, report["request"]["path"])
+                if authorization_info:
+                    report = check_authorization(config, report, authorization_info)
             report["response"]["status_code"] = "200" 
         return reply_header.create_response_header(config, report)
     except Exception as e:
@@ -35,6 +39,10 @@ def handle_server_request(config, report):
 This function is responsible for returning status code and redirect path on the basis of file path 
 '''
 def check_file_path(report, config):
+    authinfo = authorization.check_authorization_directory(config, report["request"]["path"])
+    if authinfo:
+        report = check_authorization(config, report, authinfo)
+
     if os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
         report = check_file_redirects(report, config)
@@ -47,7 +55,6 @@ def check_file_path(report, config):
         report = check_accept_charset_header(report, config)
         report = check_accept_encoding_header(report, config)
         report = check_accept_language_header(report, config)
-        report = check_authorization(report, config)
     return report
 
 
@@ -315,7 +322,7 @@ def check_accept_header(report, config=None):
 '''
 Function to check Authorization
 '''
-def check_authorization(report=None, authorization_info=None):
+def check_authorization(config, report=None, authorization_info=None):
         sys.stdout.write("check_authorization: " + str(authorization_info)+ "\n") 
         if report["request"]["authorization"] is None:
             report["response"]["status_code"] = "401"
@@ -326,7 +333,7 @@ def check_authorization(report=None, authorization_info=None):
                 opaque = generate_opaque(report)
                 report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                           nonce + "\"" + ",opaque=\"" + opaque + "\""
-                write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+                authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
         else:
             if report["request"]["authorization"].split(" ")[0] == "Basic" and \
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
@@ -343,7 +350,7 @@ def check_authorization(report=None, authorization_info=None):
                                                          + authorization_info["realm"]
             elif report["request"]["authorization"].split(" ")[0] == "Digest" and \
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
-                auth_response = read_authorization_file(report)
+                auth_response = read_authorization_file(report, config)
                 if auth_response is None:
                     report["response"]["status_code"] = "401"
                     report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
@@ -353,7 +360,7 @@ def check_authorization(report=None, authorization_info=None):
                         opaque = generate_opaque(report)
                         report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                                   nonce + "\"" + ",opaque=\"" + opaque + "\""
-                        write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+                        authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
 
                 else:
                     report["response"]["authorization_info"] = "qop= auth, rspauth=\"" + \
@@ -367,22 +374,20 @@ def check_authorization(report=None, authorization_info=None):
                 report["response"]["www_authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                          + authorization_info["realm"]
                 if authorization_info["authorization_type"] == "Digest":
-                    nonce = generate_nonce(report)
-                    opaque = generate_opaque(report)
+                    nonce = generate_nonce(report, config)
+                    opaque = generate_opaque(report, config)
                     report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                               nonce + "\"" + ",opaque=\"" + opaque + "\""
-                    write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+                    authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
         return report
 
 
 '''
 Function to generate response message digest
 '''
-def generate_response_message_digest(report, authorization_info):
+def generate_response_message_digest(report, authorization_info, config):
     sys.stdout.write("generate_request_message_digest")
-    auth_info = check_authorization_directory(config_instance,
-                                                config_instance.root_folder
-                                                + report["request"]["path"])
+    auth_info = authorization.check_authorization_directory(config, report["request"]["path"])
     for users in auth_info["users"]:
         if users.split(":")[0] == authorization_info["username"]:
             a1 = users.split(":")[-1]
@@ -394,24 +399,10 @@ def generate_response_message_digest(report, authorization_info):
 
 
 '''
-Function to write to authorization file
-'''
-def write_authorization_file(report, nonce, nc, authorization_info, qop, opaque):
-    sys.stdout.write("write_authorization_file")
-    if os.path.exists(config_instance.debug_folder + "/DigestAuthorizationInfo.txt"):
-        file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "w")
-    else:
-        file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "w")
-    file_authorization.write("user: " + "|url:" + report["request"]["path"] + "|nonce:" + nonce + "|nc:" + str(nc)
-                                + "|realm:" + authorization_info["realm"] + "|qop:" + qop + "|opaque:" + opaque + "\n")
-    file_authorization.close()
-
-
-'''
 Function to match nonce, realm, nc, url and qop from previous request
 '''
-def read_authorization_file(report):
-    sys.stdout.write("read_authorization_file")
+def read_authorization_file(report, config):
+    sys.stdout.write("read_authorization_file\n")
     auth_string = report["request"]["authorization"]
     auth_string = auth_string.split(", ")
     authorization_info = {}
@@ -436,8 +427,8 @@ def read_authorization_file(report):
         elif "opaque" in split[0]:
             authorization_info["opaque"] = remove_quotes(split[1])
     sys.stdout.write("read_authorization_file: authorization_info: " + str(authorization_info))
-    if os.path.exists(config_instance.debug_folder + "/DigestAuthorizationInfo.txt"):
-        file_authorization = open(config_instance.debug_folder + "/DigestAuthorizationInfo.txt", "r")
+    if os.path.exists(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt"):
+        file_authorization = open(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt", "r")
         for line in file_authorization:
             file_info = {}
             line_split = line.split("|")
@@ -475,7 +466,7 @@ def read_authorization_file(report):
                                                 + str(generate_request_message_digest(authorization_info,
                                                                                             report)))
                     if authorization_info["response"] == \
-                            generate_request_message_digest(authorization_info, report):
+                            generate_request_message_digest(authorization_info, report, config):
                         return authorization_info
     return None
 
@@ -483,11 +474,9 @@ def read_authorization_file(report):
 '''
 Function to generate request message digest
 '''
-def generate_request_message_digest(authorization_info, report):
-    sys.stdout.write("generate_request_message_digest")
-    auth_info = check_authorization_directory(config_instance,
-                                                        config_instance.root_folder
-                                                        + report["request"]["path"])
+def generate_request_message_digest(authorization_info, report, config):
+    sys.stdout.write("generate_request_message_digest\n")
+    auth_info = authorization.check_authorization_directory(config, report["request"]["path"])
     for users in auth_info["users"]:
         if users.split(":")[0] == authorization_info["username"]:
             a1 = users.split(":")[-1]
@@ -512,11 +501,11 @@ def remove_quotes(auth_string):
 '''
 Function to generate noonce string
 '''
-def generate_nonce(report):
+def generate_nonce(report, config):
     nonce = base64.b64encode((str(time.time()) + " " + hashlib.md5((str(time.time()) +
                                                                     hashlib.md5(report["request"]["path"]
                                                                                 .encode()).hexdigest() +
-                                                                    config_instance.private_key).encode())
+                                                                    config["MAPPING"]["PRIVATE_KEY"]).encode())
                                 .hexdigest()).encode())
     return nonce.decode("utf-8")
 
@@ -524,7 +513,10 @@ def generate_nonce(report):
 '''
 Function to generate opaque string
 '''
-def generate_opaque(report):
-    opaque = hashlib.md5((report["request"]["path"] + ":" + config_instance.private_key).encode()) \
+def generate_opaque(report, config):
+    opaque = hashlib.md5((report["request"]["path"] + ":" + config["MAPPING"]["PRIVATE_KEY"]).encode()) \
         .hexdigest()
     return opaque
+
+
+
