@@ -43,7 +43,8 @@ def check_file_path(report, config):
     authinfo = authorization.check_authorization_directory(config, report["request"]["path"])
     if authinfo:
         report = check_authorization(config, report, authinfo)
-    if "authorization" in report["request"]:
+
+    if "authorization" not in report["request"]:
         report["response"]["status_code"] = "401"
         report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
 
