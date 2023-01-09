@@ -25,6 +25,7 @@ def header_validate(request_header, config):
         sys.stdout.write(f'Request Header size: {len(line_splitter)}\n')
         sys.stdout.write(f'Request Header : {line_splitter}\n')
         is_host_present = False
+        is_authorization_double_present = False 
         if len(line_splitter[-1]) > 0:
             sys.stdout.write("Last line is not empty\n")
             is_host_present = True 
@@ -73,10 +74,17 @@ def header_validate(request_header, config):
                 elif line_splitter[0] == "Host":
                     is_host_present = True 
                 
+                elif line_splitter[0] == "Authorization":
+                    if not is_authorization_double_present:
+                        sys.stdout.write("Double authorization \n")
+                        is_authorization_double_present = True
+                        report["response"]["status_code"] = "400"
+                        break
+
                 else:
                     sys.stdout.write("All OK \n")
                                               
-        if not is_host_present:
+        if not is_host_present and is_authorization_double_present:
             report["response"]["status_code"] = "400"
         return report   
     except Exception as e:
