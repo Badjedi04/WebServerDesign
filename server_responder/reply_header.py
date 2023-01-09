@@ -24,6 +24,7 @@ def create_response_header(config, report):
         if now:
             report["response"]["Date"] = now
         if "request" in report and report["request"]:
+        
             if report["response"]["status_code"] in ["200", "206"]: 
                 if report["request"]["method"] == "OPTIONS":
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
@@ -33,7 +34,7 @@ def create_response_header(config, report):
                 else:
                     report = create_file_headers(config, report)
             
-            elif report["response"]["status_code"] in ["400", "401"]:
+            elif report["response"]["status_code"] in ["401"]:
                 report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                 report["response"]["Transfer-Encoding"] = "chunked"
                 report["response"]["Content-Type"] = "text/html"
@@ -62,6 +63,10 @@ def create_response_header(config, report):
             
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
+        elif report["response"]["status_code"] in ["400"]:
+                report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
+                report["response"]["Transfer-Encoding"] = "chunked"
+                report["response"]["Content-Type"] = "text/html"
         sys.stdout.write(f'create_response_header: Report\n{report}\n') 
         if "path" not in report["response"]:
             report["response"]["path"] = report["request"]["path"]
