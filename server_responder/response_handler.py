@@ -332,11 +332,11 @@ def check_authorization(config, report=None, authorization_info=None):
                                                      + authorization_info["realm"]
             if authorization_info["authorization_type"] == "Digest":
                 sys.stdout.write(f'authorization_info : Digest {authorization_info}\n')
-                nonce = generate_nonce(report)
-                opaque = generate_opaque(report)
+                nonce = generate_nonce(report, config)
+                opaque = generate_opaque(report, config)
                 report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                           nonce + "\"" + ",opaque=\"" + opaque + "\""
-                authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+                authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
         else:
             if report["request"]["authorization"].split(" ")[0] == "Basic" and \
                     report["request"]["authorization"].split(" ")[0] == authorization_info["authorization_type"]:
@@ -361,8 +361,8 @@ def check_authorization(config, report=None, authorization_info=None):
                                                              + authorization_info["realm"]
                     if authorization_info["authorization_type"] == "Digest":
 
-                        nonce = generate_nonce(report)
-                        opaque = generate_opaque(report)
+                        nonce = generate_nonce(report, config)
+                        opaque = generate_opaque(report, config)
                         report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                                   nonce + "\"" + ",opaque=\"" + opaque + "\""
                         authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
@@ -383,7 +383,7 @@ def check_authorization(config, report=None, authorization_info=None):
                     opaque = generate_opaque(report, config)
                     report["response"]["www_authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                               nonce + "\"" + ",opaque=\"" + opaque + "\""
-                    authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque)
+                    authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
         return report
     except Exception as e:
         sys.stderr.write(f'check_authorization : error {e}\n')
