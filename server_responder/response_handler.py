@@ -43,10 +43,9 @@ def check_file_path(report, config):
     authinfo = authorization.check_authorization_directory(config, report["request"]["path"])
     if authinfo:
         report = check_authorization(config, report, authinfo)
-
+    sys.stdout.write(f'check_file_path: \n report: {report}\n')
     if "staus_code" in report["response"] and report["response"]["status_code"] == "401":
-        report["response"]["status_code"] = "401"
-        pass
+        continue
 
     elif os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
