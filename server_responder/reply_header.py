@@ -32,6 +32,12 @@ def create_response_header(config, report):
                     report["response"]["payload"] = report["request"]["raw_header"]
                 else:
                     report = create_file_headers(config, report)
+            
+            elif report["response"]["status_code"] == "401":
+                report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
+                report["response"]["Transfer-Encoding"] = "chunked"
+                report["response"]["Content-Type"] = "text/html"
+            
             elif "alternate" in report["response"] or "accept" in report["response"] or "accept_encoding" in report["response"] or "accept_charset" in report["response"] or "accept_language" in report["response"]:
                 sys.stdout.write("create_response_header: content-negotiation case called\n")
                     
