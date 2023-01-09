@@ -10,6 +10,7 @@ import time
 import server_responder.reply_header as reply_header
 import utils.utils as utils
 import server_responder.authorization as authorization
+import server_responder.dynamic_html as dynamic_html
 
 def handle_server_request(config, report):
     try:
@@ -42,8 +43,11 @@ def check_file_path(report, config):
     authinfo = authorization.check_authorization_directory(config, report["request"]["path"])
     if authinfo:
         report = check_authorization(config, report, authinfo)
+    if "authorization" in report["response"]:
+        report["response"]["status_code"] = "404"
+        report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
 
-    if os.path.exists(report["request"]["path"]):
+    elif os.path.exists(report["request"]["path"]):
         report["response"]["status_code"] = "200"
         report = check_file_redirects(report, config)
         report = check_if_modified_header(report)
