@@ -18,6 +18,8 @@ def create_config_file():
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
     config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
+    config["MAPPING"]["default_authorization_file"] = "WeMustProtectThisHouse!"
+    config["MAPPING"]["private_key"] = "ptomar"
 
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
@@ -43,6 +45,7 @@ def create_config_file():
     config["STATUS_CODE"]["500"] = "Internal Server Error"
     config["STATUS_CODE"]["501"] = "Not Implemented"
     config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
+    config["STATUS_CODE"]["401"] = "Unauthorized"
 
     config["REDIRECT"] = {}
     config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"
@@ -69,6 +72,17 @@ def create_config_file():
     config["LANGUAGE_ENCODING"]["ja"] = "ja"
     config["LANGUAGE_ENCODING"]["ko"] = "ko"
     config["LANGUAGE_ENCODING"]["ru"] = "ru"
+
+
+    config["CREDENTIALS"] = {}
+    config["CREDENTIALS"]["mln"] = "d3b07384d113edec49eaa6238ad5ff00"
+    config["CREDENTIALS"]["bda"] = "c157a79031e1c40f85931829bc5fc552"
+    config["CREDENTIALS"]["jbollen"] = "66e0459d0abbc8cd8bd9a88cd226a9b2"
+
+
+    config["AUTHORIZATION"] = {}
+    config["AUTHORIZATION"]["authorization-type"] = "Basic"
+    config["AUTHORIZATION"]["realm"] = "Lane Stadium"
 
 
     with open(constants.CONFIG, "w") as fobj:
