@@ -21,17 +21,17 @@ def server_reply(config, report):
         Last-Modified: Sat, 20 Oct 2018 02:33:21 GMT
         Content-Length: 1936
         """
-        server_response = str(f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n').encode('utf-8')
+        server_response = ""
+        server_response += f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n'
         for (key, value) in report["response"].items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow", "Location", "ETag"]:
-                temp = key + ": "  + str(value) + "\r\n"
-                server_response += temp.encode('utf-8')
-            sys.stdout.write(f'Server Response being created: \n {key}: {value}\n')
+                server_response += f'{key}: {value}\r\n'
+            sys.stdout.write(f'Server Response being created: \n {server_response}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
-            server_response += b'\r\n' + report["response"]["payload"]
+            server_response += f'\r\n{report["response"]["payload"]}\r\n'
         else:
-            server_response += b'\r\n'
+            server_response += f'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
-        return server_response
+        return server_response.encode()
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
