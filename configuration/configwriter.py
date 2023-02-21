@@ -22,7 +22,7 @@ def create_config_file():
     config["MAPPING"]["private_key"] = "ptomar"
 
     config["HEADERS"] = {} 
-    config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
+    config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE,DELETE,PUT,POST"
     config["HEADERS"]["http_version"] = "1.1"
     config["HEADERS"]["server"] = "cs_ptoma001_server"
     config["HEADERS"]["mime_types"] = "text/plain,text/html,text/xml,image/png,image/jpeg,"\
@@ -30,17 +30,22 @@ def create_config_file():
                                         "application/vnd.ms-word,message/http,application/octet-stream" 
     config["STATUS_CODE"] = {}
     config["STATUS_CODE"]["200"] = "OK"
+    config["STATUS_CODE"]["201"] = "Created"
     config["STATUS_CODE"]["206"] = "Partial Content"
     config["STATUS_CODE"]["300"] = "Multiple Choice"
     config["STATUS_CODE"]["301"] = "Moved Permanently"
     config["STATUS_CODE"]["302"] = "Found"
     config["STATUS_CODE"]["304"] = "Not Modified"
-    config["STATUS_CODE"]["400"] = "Bad Response"
+    config["STATUS_CODE"]["400"] = "Bad Request"
     config["STATUS_CODE"]["403"] = "Forbidden"
     config["STATUS_CODE"]["404"] = "Not Found"
+    config["STATUS_CODE"]["405"] = "Method Not Allowed"
     config["STATUS_CODE"]["406"] = "Not Acceptable"
     config["STATUS_CODE"]["408"] = "Request Timeout"
+    config["STATUS_CODE"]["411"] = "Length Required"
     config["STATUS_CODE"]["412"] = "Precondition Failed"
+    config["STATUS_CODE"]["413"] = "Request Entity Too Large"
+    config["STATUS_CODE"]["414"] = "Request-URI Too Long"
     config["STATUS_CODE"]["416"] = "Requested Range Not Satisfiable"
     config["STATUS_CODE"]["500"] = "Internal Server Error"
     config["STATUS_CODE"]["501"] = "Not Implemented"
