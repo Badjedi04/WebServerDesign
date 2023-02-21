@@ -27,7 +27,7 @@ def create_config_file():
                                         "image/gif,application/pdf,application/vnd.ms-powerpoint,"\
                                         "application/vnd.ms-word,message/http,application/octet-stream" 
     config["STATUS_CODE"] = {}
-    config["STATUS_CODE"]["400"] = "Bad Response"
+    config["STATUS_CODE"]["400"] = "Bad Request"
     config["STATUS_CODE"]["200"] = "OK"
     config["STATUS_CODE"]["403"] = "Forbidden"
     config["STATUS_CODE"]["404"] = "Not Found"
