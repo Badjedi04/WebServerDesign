@@ -35,7 +35,7 @@ def create_config_file():
     config["STATUS_CODE"]["301"] = "Moved Permanently"
     config["STATUS_CODE"]["302"] = "Found"
     config["STATUS_CODE"]["304"] = "Not Modified"
-    config["STATUS_CODE"]["400"] = "Bad Response"
+    config["STATUS_CODE"]["400"] = "Bad Request"
     config["STATUS_CODE"]["403"] = "Forbidden"
     config["STATUS_CODE"]["404"] = "Not Found"
     config["STATUS_CODE"]["406"] = "Not Acceptable"
