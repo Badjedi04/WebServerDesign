@@ -109,32 +109,3 @@ def parse_header(request_header):
         return dict_request
     except Exception as e:
         sys.stderr.write(f'parse_header: error: {e}\n')
-
-"""
-
-"""    
-def parse_header(request_header):
-    try:
-        dict_request = {"request":{}}
-        dict_request["request"]["raw_header"] = request_header
-        line_splitter = request_header.splitlines()
-        for index, line in enumerate(line_splitter):
-            sys.stdout.write(f'Line  \n {line}\n')
-            if line.strip():
-                if index > 0:
-                    line_splitter = line.split(":")
-                    sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
-                    dict_request["request"][line_splitter[0]] = line_splitter[1].strip()
-                else:
-                    line_splitter = line.split()
-                    sys.stdout.write(f'Line Splitter \n {line_splitter}\n')
-                    dict_request["request"]["method"] = line_splitter[0]
-                    dict_request["request"]["path"] = url_parse.unquote(line_splitter[1], encoding='utf-8', errors='replace')
-                    dict_request["request"]["http_version"] = line_splitter[2]
-
-        if "Connection" not in dict_request:
-            dict_request["request"]["Connection"] = None
-        sys.stdout.write(f'Print request dictionary \n {dict_request}\n')
-        return dict_request
-    except Exception as e:
-        sys.stderr.write(f'parse_header: error: {e}\n')
