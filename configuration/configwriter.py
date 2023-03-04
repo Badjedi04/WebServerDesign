@@ -2,7 +2,7 @@ import configparser
 import constants
 
 """
-    Function to write configuraation file
+    Function to write configuration file
     Parameters:
 
     Returns:
