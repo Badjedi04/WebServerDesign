@@ -34,9 +34,11 @@ def server_reply(config, report):
         else:
             server_response += b'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
+
         #127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
-        log_line=f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"]}" {report["response"]["status_code"]} {report["response"]["Content-Length"]}'
-        sys.stdout.write(f'log_line:\n')
+        log_line = f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"]}" {report["response"]["status_code"]} {report["response"]["Content-Length"]}'
+
+        sys.stdout.write(f'{log_line}\n')
         return server_response
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
