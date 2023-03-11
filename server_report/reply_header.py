@@ -46,6 +46,8 @@ def return_mime_type(config, file_path=None):
             sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
         else:
+            if config["MAPPING"]["access_log"] in file_path:
+                file_path = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
             with open(file_path, "rb") as fobj:
                 response["payload"] = fobj.read()
             response["file_length"] = len(response["payload"])
@@ -57,7 +59,7 @@ def return_mime_type(config, file_path=None):
 
             sys.stdout.write(f'File Ext: {file_ext}\n')
 
-            if file_ext == "txt":
+            if file_ext in ["txt", "log"]:
                 response["mime_type"] = config["HEADERS"]["mime_types"][0]
             elif file_ext == "html":
                 response["mime_type"] = config["HEADERS"]["mime_types"][1] 

@@ -1,6 +1,8 @@
 import sys
+import os
 import server_report.reply_header as reply_header
 import server_report.responder as responder
+
 
 def handle_server_response(config, report):
     sys.stdout.write(f'handle_server_response called:\n')
@@ -35,13 +37,13 @@ def server_reply(config, report):
             server_response += b'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
 
-        '''
         #127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
         
         log_line = f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")}" {report["response"]["status_code"]} {report["response"]["Content-Length"]}'
-        
+        log_file = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
+        with open(log_file, "a+") as fobj:
+            fobj.write(f'{log_line}\n')
         sys.stdout.write(f'{log_line}\n')
-        '''
         
         return server_response
     except Exception as e:

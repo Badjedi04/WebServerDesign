@@ -18,6 +18,10 @@ def handle_server_request(config, report):
                 report["response"]["status_code"] = "200"
                 sys.stdout.write(f'handle_server_request: 200 \n')
                 return reply_header.create_response_header(config, report)
+            elif  config["MAPPING"]["access_log"] in report["request"]["path"]:
+                report["response"]["status_code"] = "200"
+                sys.stdout.write(f'handle_server_request: 200 \n')
+                return reply_header.create_response_header(config, report)
             else:
                 sys.stdout.write(f'handle_server_request: 404 \n')
                 report["response"]["status_code"] = "404"
