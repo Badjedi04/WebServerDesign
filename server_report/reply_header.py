@@ -14,15 +14,15 @@ def create_response_header(config, report):
             if report["response"]["status_code"] == "200":
                 if report["request"]["method"] == "OPTIONS":
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
-                elif report["request"]["method"] == "TRACE":
+                if report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
                     report["response"]["payload"] = report["request"]["raw_header"]
                 else:
                     response = return_mime_type(config, report["request"]["path"])
                     report["response"]["Content-Type"] = f'{response["mime_type"]}'
                     '''
-                    if "log_line" in response:
-                        report["response"]["access_log"] = response["log_line"]
+                    if "access_log" in response:
+                        report["response"]["log_line"] = response["access_log"]
                     '''
                     if "file_length" in response:
                         report["response"]["Content-Length"] = response["file_length"]
