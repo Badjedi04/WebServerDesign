@@ -12,7 +12,7 @@ def create_response_header(config, report):
         report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
         if "request" in  report and report["request"]:
             if report["response"]["status_code"] == "200":
-                if report["request"]["method"] == "OPTIONS" or "TRACE":
+                if report["request"]["method"] == "OPTIONS":
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
                 
                 elif report["request"]["method"] == "TRACE":
