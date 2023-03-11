@@ -38,8 +38,10 @@ def server_reply(config, report):
         sys.stdout.write(f'Server Response: \n {server_response}\n')
 
         #127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
-        
-        log_line = f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")}" {report["response"]["status_code"]} {report["response"]["Content-Length"]}'
+        #172.18.0.2 - - [11/Mar/2023:23:53:12 +0000] "GET http://cs531-cs_cbrad022/a1-test/2/index.html HTTP/1.1" 200 1936
+        if "Content-Length" not in report["response"]:
+            report["response"]["Content-Length"] = 0
+        log_line = f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
         log_file = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
         with open(log_file, "a+") as fobj:
             fobj.write(f'{log_line}\n')
