@@ -20,6 +20,8 @@ def create_response_header(config, report):
                 else:
                     response = return_mime_type(config, report["request"]["path"])
                     report["response"]["Content-Type"] = f'{response["mime_type"]}'
+                    if "log_line" in response:
+                        report["response"]["access_log"] = response["log_line"]
                     if "file_length" in response:
                         report["response"]["Content-Length"] = response["file_length"]
                     if "last_modified" in response:
