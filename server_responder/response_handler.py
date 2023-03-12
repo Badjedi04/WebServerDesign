@@ -14,6 +14,7 @@ def handle_server_request(config, report):
 
         # If method is GET or HEAD
         if report["request"]["method"] in ["GET", "HEAD"]:
+            
             # Map the host path to the local path
             # If host path starts with https://cs531....
             report = fix_host_path(report, config)
@@ -39,6 +40,10 @@ def check_file_path(report, config):
         report = check_file_redirects(report, config)
         report = check_if_modified_header(report, config)
         report = check_if_match_header(report, config)
+    elif  config["MAPPING"]["access_log"] in report["request"]["path"]:
+            report["response"]["status_code"] = "200"
+            sys.stdout.write(f'handle_server_request: 200 \n')
+            return reply_header.create_response_header(config, report)
     else:
         report["response"]["status_code"] = "404"
     return report

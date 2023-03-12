@@ -67,7 +67,6 @@ def header_validate(request_header, config):
                 
                 elif line_splitter[0] == "Host":
                     is_host_present = True 
-                
                 else:
                     sys.stdout.write("All OK \n")
                                               
