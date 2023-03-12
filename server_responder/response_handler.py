@@ -12,8 +12,10 @@ import utils.utils as utils
 import server_responder.authorization as authorization
 import server_responder.dynamic_html as dynamic_html
 
+
 def handle_server_request(config, report):
     try:
+        sys.stdout.write("handle_server_request: called \n")
         report["response"] = {}
         report["request"]["orig_path"] = report["request"]["path"]
 
@@ -27,9 +29,9 @@ def handle_server_request(config, report):
             if "status_code" not in report["response"]: 
                 # Check if file is present or not
                 report = check_file_path(report, config)
-         
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:  
             if report["request"]["method"] == "OPTIONS":
+                sys.stdout.write("handle_server_request: options method \n")
                 authorization_info = authorization.check_authorization_directory(config, report["request"]["path"])
                 if authorization_info:
                     report = check_authorization(config, report, authorization_info)
