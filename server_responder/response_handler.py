@@ -12,6 +12,8 @@ from configuration import configreader
 def handle_server_request(config, report):
     try:
         report["response"] = {}
+        report["request"]["orig_path"] = report["request"]["path"]
+
         # If method is GET or HEAD
         if report["request"]["method"] in ["GET", "HEAD"]:
             # Map the host path to the local path
@@ -19,8 +21,9 @@ def handle_server_request(config, report):
             report = fix_host_path(report, config)
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             
-            # Check if file is present or not
-            report = check_file_path(report, config)
+            if "status_code" not in report["response"]: 
+                # Check if file is present or not
+                report = check_file_path(report, config)
          
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:   
             report["response"]["status_code"] = "200" 
@@ -39,6 +42,10 @@ def check_file_path(report, config):
         report = check_if_modified_header(report)
         report = check_if_match_header(report)
         report = check_range_request(report)
+    elif  config["MAPPING"]["access_log"] in report["request"]["path"]:
+            report["response"]["status_code"] = "200"
+            sys.stdout.write(f'handle_server_request: 200 \n')
+            return reply_header.create_response_header(config, report)
     else:
         report = check_accept_file_path(report,config)
         report = check_accept_header(report, config)
@@ -110,8 +117,10 @@ def fix_host_path(report, config):
     else:
         sys.stdout.write(f'handle_server_request: path: absolute path\n')
         report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
-    
-    if os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
+    if os.path.isdir(report["request"]["path"]) and report["request"]["path"][-1] != "/":
+        report["response"]["status_code"] = "301"
+        report["response"]["Location"] = report["request"]["path"] + "/"
+    elif os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
         report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
     elif report["request"]["path"] == (config["MAPPING"]["root_dir"] + "/"):
         report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
@@ -142,7 +151,7 @@ def check_file_redirects(report, config):
                         redirect_path += redirect_match.group(count_dollars) + "/"
                     else:
                         redirect_path += j + "/"
-                report["response"]["status_code"] = "302"
+                report["response"]["status_code"] = "301"
                 report["response"]["Location"] = config["MAPPING"]["host_path"] + redirect_path[:-1]
                 return report
         # Check 302 redirects

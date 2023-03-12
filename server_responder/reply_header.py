@@ -26,7 +26,7 @@ def create_response_header(config, report):
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
                 elif report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
-                    report["response"]["payload"] = report["request"]["raw_header"]
+                    report["response"]["payload"] = report["request"]["raw_header"].encode()
                 else:
                     report = create_file_headers(config, report)
             elif "alternate" in report["response"] or "accept" in report["response"] or "accept_encoding" in report["response"] or "accept_charset" in report["response"] or "accept_language" in report["response"]:
@@ -72,7 +72,7 @@ def create_file_headers(config, report):
         elif os.path.isdir(file_path):
             sys.stdout.write(f'Mime Type returned is dir: {config["HEADERS"]["mime_types"][1]}\n')
             report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][1]
-            report["response"]["payload"] = dynamic_html.create_directory_listing(report, config)      
+            report["response"]["payload"] = dynamic_html.create_directory_listing(report, config).encode()      
         else:
             report = set_file_headers(report, config)
             with open(file_path, "rb") as fobj:
