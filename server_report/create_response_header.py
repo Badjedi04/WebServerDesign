@@ -48,7 +48,7 @@ def server_reply(config, report):
             report["request"]["orig_path"] = "-"
             report["request"]["method"] = "-"
         current_date = datetime.utcnow().strftime("%d/%b/%Y:%H:%M:%S %z")
-        log_line = f'127.0.0.1 user-identifier cs_ptoma001 [{current_date} +0000] {report["request"]["method"]} {report["request"]["orig_path"]}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
+        log_line = f'127.0.0.1 - - [{current_date} +0000] "{report["request"]["method"]} {report["request"]["orig_path"]}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
         log_file = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
         with open(log_file, "a+") as fobj:
             fobj.write(f'{log_line}\n')
