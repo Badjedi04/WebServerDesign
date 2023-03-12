@@ -6,6 +6,7 @@ import server_report.reply_header as reply_header
 def handle_server_request(config, report):
     try:
         report["response"] = {}
+        report["request"]["orig_path"] = report["request"]["path"]
         if report["request"]["method"] in ["GET", "HEAD"]:
             if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
                 sys.stdout.write(f'handle_server_request: path: path starts with ptomar\n')
