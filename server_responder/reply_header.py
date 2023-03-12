@@ -33,7 +33,7 @@ def create_response_header(config, report):
                     if "payload" in mime_response and report["request"]["method"] == "GET":
                         report["response"]["payload"] = mime_response["payload"]
             elif report["response"]["status_code"] not in ["200", "304"] and  report["request"]["method"] == "GET":
-                report["response"]["payload"] = dynamic_html.create_error_page(report)
+                report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
         sys.stdout.write(f'Report\n{report}\n') 
