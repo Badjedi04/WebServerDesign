@@ -42,6 +42,7 @@ def server_reply(config, report):
         if "Content-Length" not in report["response"]:
             report["response"]["Content-Length"] = 0
         if "request" not in report:
+            report ["request"]  = {}
             report["request"]["path"] = "-"
             report["request"]["method"] = "-"
         log_line = f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
