@@ -11,6 +11,7 @@ def handle_server_request(config, report):
     try:
         report["response"] = {}
         # If method is GET or HEAD
+        report["request"]["orig_path"] = report["request"]["path"]
         if report["request"]["method"] in ["GET", "HEAD"]:
             # Map the host path to the local path
             # If host path starts with https://cs531....

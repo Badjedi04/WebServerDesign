@@ -18,7 +18,9 @@ def create_config_file():
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
     config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
-
+    config["MAPPING"]["access_log"] =  "/.well-known/access.log"
+    config["MAPPING"]["log_file"] =  "access.log"
+    
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
     config["HEADERS"]["http_version"] = "1.1"
