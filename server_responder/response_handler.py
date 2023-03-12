@@ -20,8 +20,9 @@ def handle_server_request(config, report):
             report = fix_host_path(report, config)
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             
-            # Check if file is present or not
-            report = check_file_path(report, config)
+            if "status_code" not in report["response"]: 
+                # Check if file is present or not
+                report = check_file_path(report, config)
          
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:   
             report["response"]["status_code"] = "200" 
