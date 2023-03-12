@@ -27,8 +27,6 @@ def wait_for_connections(server_socket, config):
 def close_connection(conn, timeout=False, config=None):
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
-    sys.stdout.write("Going to close connection\n")
-    sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     if timeout:
         report = {}
         report["response"] = {}
@@ -39,7 +37,7 @@ def close_connection(conn, timeout=False, config=None):
         report["response"]["Connection"] = "close" 
         
         conn.send(responder.server_reply(config, report))
-    sys.stdout.write("Going to close connection\n")
+    sys.stdout.write("Connection closed\n")
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
