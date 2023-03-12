@@ -25,6 +25,8 @@ def create_config_file():
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
     config["HEADERS"]["http_version"] = "1.1"
     config["HEADERS"]["server"] = "cs_ptoma001_server"
+    config["MAPPING"]["access_log"] =  "/.well-known/access.log"
+    config["MAPPING"]["log_file"] =  "access.log"
     config["HEADERS"]["mime_types"] = "text/plain,text/html,text/xml,image/png,image/jpeg,"\
                                         "image/gif,application/pdf,application/vnd.ms-powerpoint,"\
                                         "application/vnd.ms-word,message/http,application/octet-stream" 
