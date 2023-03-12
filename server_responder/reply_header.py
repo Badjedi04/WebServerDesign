@@ -10,9 +10,7 @@ def create_response_header(config, report):
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
-        now = utils.convert_datetime_to_string(datetime.utcnow())
-        now = datetime.utcnow()
-        report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        report["response"]["Date"] = utils.convert_datetime_to_string(datetime.utcnow())
         if "request" in  report and report["request"]:
             if report["response"]["status_code"] == "200":
                 if report["request"]["method"] == "OPTIONS":
@@ -20,7 +18,8 @@ def create_response_header(config, report):
 
                 elif report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
-                    report["response"]["payload"] = report["request"]["raw_header"].encode()
+                    report["response"]["payload"] = report["request"]["raw_header"]
+                
                 else:
                     mime_response = return_mime_type(config, report)
                     sys.stdout.write(f'Mime Response\n{mime_response}\n')
@@ -69,7 +68,7 @@ def return_mime_type(config, report):
 
             sys.stdout.write(f'File Ext: {file_ext}\n')
 
-            if file_ext == "txt":
+            if file_ext in ["txt", "log"]:
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][0]
             elif file_ext == "html":
                 mime_response["mime_type"] = config["HEADERS"]["mime_types"][1] 
