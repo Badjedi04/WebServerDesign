@@ -71,7 +71,7 @@ def header_validate(request_header, config):
                 else:
                     sys.stdout.write("All OK \n")
                                               
-        if not is_host_present:
+        if not is_host_present and "status_code" not in report["response"]:
             report["response"]["status_code"] = "400"
         return report   
     except Exception as e:
