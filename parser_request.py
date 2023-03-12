@@ -68,7 +68,8 @@ def header_validate(request_header, config):
                     break
                 if line_splitter[0] == "Host":
                     is_host_present = True 
-        if not is_host_present:
+        
+        if not is_host_present and "status_code" not in report["response"]:
             report["response"]["status_code"] = "400"
 
         return report   
