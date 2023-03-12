@@ -20,7 +20,7 @@ def create_config_file():
     config["MAPPING"]["host_path"] = "http://cs531-cs_ptoma001"
     config["MAPPING"]["access_log"] =  "/.well-known/access.log"
     config["MAPPING"]["log_file"] =  "access.log"
-    
+
     config["HEADERS"] = {} 
     config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
     config["HEADERS"]["http_version"] = "1.1"
@@ -41,6 +41,7 @@ def create_config_file():
     config["STATUS_CODE"]["304"] = "Not Modified"
     config["STATUS_CODE"]["408"] = "Request Timeout"
     config["STATUS_CODE"]["412"] = "Precondition Failed"
+    
 
     config["REDIRECT"] = {}
     config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"

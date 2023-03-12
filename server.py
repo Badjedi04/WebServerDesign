@@ -29,7 +29,7 @@ def close_connection(conn, timeout=False, config=None):
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     sys.stdout.write("Going to close connection\n")
     sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
-    if timeout:
+    if timeout and False:
         report = {}
         report["response"] = {}
         report["response"]["http_version"] = config["HEADERS"]["http_version"]
@@ -40,17 +40,6 @@ def close_connection(conn, timeout=False, config=None):
         
         conn.send(responder.server_reply(config, report))
     sys.stdout.write("Going to close connection\n")
-    sys.stdout.write("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
-    if timeout:
-        report = {}
-        report["response"] = {}
-        report["response"]["http_version"] = config["HEADERS"]["http_version"]
-        report["response"]["status_code"] = "408"
-        report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
-        report["response"]["Server"] = config["HEADERS"]["server"]
-        report["response"]["Connection"] = "close" 
-        
-        conn.send(responder.server_reply(config, report))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
