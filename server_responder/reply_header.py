@@ -11,15 +11,16 @@ def create_response_header(config, report):
         report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
         report["response"]["Server"] = config["HEADERS"]["server"]
         now = utils.convert_datetime_to_string(datetime.utcnow())
-        if now:
-            report["response"]["Date"] = now
+        now = datetime.utcnow()
+        report["response"]["Date"] = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
         if "request" in  report and report["request"]:
             if report["response"]["status_code"] == "200":
                 if report["request"]["method"] == "OPTIONS":
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
+
                 elif report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
-                    report["response"]["payload"] = report["request"]["raw_header"]
+                    report["response"]["payload"] = report["request"]["raw_header"].encode()
                 else:
                     mime_response = return_mime_type(config, report)
                     sys.stdout.write(f'Mime Response\n{mime_response}\n')
@@ -53,6 +54,9 @@ def return_mime_type(config, report):
             mime_response["mime_type"] = config["HEADERS"]["mime_types"][1]
             mime_response["payload"] = dynamic_html.create_directory_listing(report, config)      
         else:
+            if config["MAPPING"]["access_log"] in file_path:
+                file_path = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
+                
             with open(file_path, "rb") as fobj:
                 mime_response["payload"] = fobj.read()
             mime_response["file_length"] = len(mime_response["payload"])

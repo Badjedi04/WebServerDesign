@@ -24,6 +24,7 @@ def handle_server_request(config, report):
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:   
             report["response"]["status_code"] = "200" 
         return reply_header.create_response_header(config, report)
+    
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')
 
