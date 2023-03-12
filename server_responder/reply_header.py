@@ -30,7 +30,7 @@ def create_response_header(config, report):
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
                 elif report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
-                    report["response"]["payload"] = report["request"]["raw_header"]
+                    report["response"]["payload"] = report["request"]["raw_header"].encode()
                 else:
                     report = create_file_headers(config, report)
             
@@ -67,9 +67,9 @@ def create_response_header(config, report):
                 report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                 report["response"]["Transfer-Encoding"] = "chunked"
                 report["response"]["Content-Type"] = "text/html"
-        sys.stdout.write(f'create_response_header: Report\n{report}\n') 
         if "path" not in report["response"]:
             report["response"]["path"] = report["request"]["path"]
+        sys.stdout.write(f'create_response_header: Report\n{report}\n') 
         return report
     except Exception as e:
         sys.stderr.write(f'create_response_header: error {e}\n')

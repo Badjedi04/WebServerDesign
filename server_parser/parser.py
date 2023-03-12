@@ -78,7 +78,7 @@ def header_validate(request_header, config):
                 else:
                     sys.stdout.write("All OK \n")
                                               
-        if not is_host_present and "status_code" not in report["response"] and is_authorization_double_present >= 2:
+        if (not is_host_present and "status_code" not in report["response"]) or is_authorization_double_present >= 2:
             report["response"]["status_code"] = "400"
         return report   
     except Exception as e:
