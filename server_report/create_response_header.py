@@ -45,7 +45,7 @@ def server_reply(config, report):
             report["response"]["Content-Length"] = 0
         if "request" not in report:
             report ["request"]  = {}
-            report["request"]["path"] = "-"
+            report["request"]["orig_path"] = "-"
             report["request"]["method"] = "-"
         current_date = datetime.utcnow().strftime("%d/%b/%Y:%H:%M:%S %z")
         log_line = f'127.0.0.1 user-identifier cs_ptoma001 [{current_date}] +0000 {report["request"]["method"]} {report["request"]["orig_path"]}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
