@@ -18,7 +18,7 @@ def create_response_header(config, report):
 
                 elif report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
-                    report["response"]["payload"] = report["request"]["raw_header"]
+                    report["response"]["payload"] = report["request"]["raw_header"].encode()
                 
                 else:
                     mime_response = return_mime_type(config, report)
