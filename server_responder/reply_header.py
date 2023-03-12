@@ -51,7 +51,7 @@ def return_mime_type(config, report):
         elif os.path.isdir(file_path):
             sys.stdout.write(f'Mime Type returned is dir: {config["HEADERS"]["mime_types"][1]}\n')
             mime_response["mime_type"] = config["HEADERS"]["mime_types"][1]
-            mime_response["payload"] = dynamic_html.create_directory_listing(report, config)      
+            mime_response["payload"] = dynamic_html.create_directory_listing(report, config).encode()      
         else:
             if config["MAPPING"]["access_log"] in file_path:
                 file_path = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
