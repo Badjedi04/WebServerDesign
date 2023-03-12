@@ -28,12 +28,13 @@ def server_reply(config, report):
         server_response += f'HTTP/{config["HEADERS"]["http_version"]} {report["response"]["status_code"]} {report["response"]["status_text"]}\r\n'
         for (key, value) in report["response"].items():
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Type", "Connection", "Allow", "Location", "ETag"]:
-                server_response += f'{key}: {value}\r\n'
+                temp = key + ": "  + str(value) + "\r\n"
+                server_response += temp.encode('utf-8')
             sys.stdout.write(f'Server Response being created: \n {server_response}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
-            server_response += f'\r\n{report["response"]["payload"]}\r\n'
+            server_response += b'\r\n' + report["response"]["payload"]
         else:
-            server_response += f'\r\n'
+            server_response += b'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
 
         #127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
@@ -50,6 +51,6 @@ def server_reply(config, report):
         with open(log_file, "a+") as fobj:
             fobj.write(f'{log_line}\n')
         sys.stdout.write(f'{log_line}\n')
-        return server_response.encode()
+        return server_response
     except Exception as e:
         sys.stderr.write(f'server_reply: error {e}\n')
