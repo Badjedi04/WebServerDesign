@@ -75,6 +75,8 @@ def create_file_headers(config, report):
             report["response"]["payload"] = dynamic_html.create_directory_listing(report, config).encode()      
         else:
             report = set_file_headers(report, config)
+            if config["MAPPING"]["access_log"] in file_path:
+                file_path = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
             with open(file_path, "rb") as fobj:
                 file_length = len(fobj.read())
             with open(file_path, "rb") as fobj:
@@ -349,7 +351,7 @@ def perform_content_negotiation(report, config):
 Function to return mime type
 """
 def return_mime_type(file_ext, config):
-    if file_ext == "txt":
+    if file_ext in ["txt", "log"]:
         return config["HEADERS"]["mime_types"][0]
     elif file_ext == "html":
         return config["HEADERS"]["mime_types"][1] 
