@@ -13,7 +13,7 @@ def create_config_file():
     config["SERVER"]["ip_addr"] = "0.0.0.0" 
     config["SERVER"]["port"] = "80"
     config["SERVER"]["connections"] = "4"
-    config["SERVER"]["timeout"] = "10"
+    config["SERVER"]["timeout"] = "3"
 
     config["MAPPING"] = {}
     config["MAPPING"]["root_dir"] = "/var/www"
@@ -41,7 +41,7 @@ def create_config_file():
     config["STATUS_CODE"]["304"] = "Not Modified"
     config["STATUS_CODE"]["408"] = "Request Timeout"
     config["STATUS_CODE"]["412"] = "Precondition Failed"
-    
+
 
     config["REDIRECT"] = {}
     config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"
