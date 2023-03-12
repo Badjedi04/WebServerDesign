@@ -111,8 +111,10 @@ def fix_host_path(report, config):
     else:
         sys.stdout.write(f'handle_server_request: path: absolute path\n')
         report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
-    
-    if os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
+    if os.path.isdir(report["request"]["path"]) and report["request"]["path"][-1] != "/":
+        report["response"]["status_code"] = "301"
+        report["response"]["Location"] = report["request"]["path"] + "/"
+    elif os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
         report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
     elif report["request"]["path"] == (config["MAPPING"]["root_dir"] + "/"):
         report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
@@ -143,7 +145,7 @@ def check_file_redirects(report, config):
                         redirect_path += redirect_match.group(count_dollars) + "/"
                     else:
                         redirect_path += j + "/"
-                report["response"]["status_code"] = "302"
+                report["response"]["status_code"] = "301"
                 report["response"]["Location"] = config["MAPPING"]["host_path"] + redirect_path[:-1]
                 return report
         # Check 302 redirects
