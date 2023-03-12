@@ -1,5 +1,7 @@
 import sys
 import os
+from datetime import datetime
+
 import server_report.reply_header as reply_header
 import server_report.responder as responder
 
@@ -45,7 +47,8 @@ def server_reply(config, report):
             report ["request"]  = {}
             report["request"]["path"] = "-"
             report["request"]["method"] = "-"
-        log_line = f'127.0.0.1 - - [{report["response"]["Date"]}] "{report["request"]["method"]} {report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
+        current_date = datetime.strptime(datetime.now(), "%d/%b/%Y:%H:%M:%S %z")
+        log_line = f'127.0.0.1 - - [{current_date}] "{report["request"]["method"]} {report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")}" {report["response"]["status_code"]} {str(report["response"]["Content-Length"])}'
         log_file = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
         with open(log_file, "a+") as fobj:
             fobj.write(f'{log_line}\n')
