@@ -394,7 +394,7 @@ def check_authorization(config, report=None, authorization_info=None):
                 else:
                     report["response"]["authorization_info"] = "qop= auth, rspauth=\"" + \
                                                                generate_response_message_digest(report, 
-                                                                                                       auth_response) \
+                                                                                                       auth_response, config) \
                                                                + "\", cnonce=\"" + auth_response["cnonce"] + "\", nc=" \
                                                                + auth_response["nc"]
 
