@@ -3,14 +3,13 @@ import sys
 
 def check_authorization_directory(config, path):
     try:
-        sys.stdout.write("check_authorization_directory called \n")
+        sys.stdout.write("check_authorization_directory path: {path} \n")
         authorization_info = None
         while authorization_info is None and path != config["MAPPING"]["root_dir"]:
             if os.path.isdir(path):            
                 authorization_info = fill_authorization(config, path)
             if authorization_info is None:
                 path = path.rsplit("/", 1)[0]
-                sys.stdout.write(f'check_authorization_directory path set: {path}\n')
             else:
                 sys.stdout.write(f'check_authorization_directory : authorization_info {authorization_info}\n ')
                 return authorization_info

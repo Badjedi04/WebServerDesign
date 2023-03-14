@@ -32,7 +32,11 @@ def handle_server_request(config, report):
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:  
             if report["request"]["method"] == "OPTIONS":
                 sys.stdout.write("handle_server_request: options method \n")
-                authorization_info = authorization.check_authorization_directory(config, report["request"]["path"])
+                if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
+                    path = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
+                else:
+                    path = path = report["request"]["path"]
+                authorization_info = authorization.check_authorization_directory(config, path)
                 sys.stdout.write("handle_server_request: options method: authorization_info: {authorization_info}\n")
                 if authorization_info:
                     report = check_authorization(config, report, authorization_info)
