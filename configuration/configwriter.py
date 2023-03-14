@@ -22,7 +22,7 @@ def create_config_file():
     config["MAPPING"]["private_key"] = "ptomar"
 
     config["HEADERS"] = {} 
-    config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE,DELETE,PUT,POST"
+    config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
     config["HEADERS"]["http_version"] = "1.1"
     config["HEADERS"]["server"] = "cs_ptoma001_server"
     config["MAPPING"]["access_log"] =  "/.well-known/access.log"
