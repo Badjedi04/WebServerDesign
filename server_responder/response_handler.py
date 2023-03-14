@@ -204,10 +204,11 @@ Function to match Range_header
 '''   
 def check_range_request(report, config=None):
     try:
-        sys.stdout.write(f'check_range_request: \n')
-        if "Range" in report["request"] and report["request"]["method"] == "GET":
+        sys.stdout.write(f'check_range_request: called\n')
+        if "Range" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
             sys.stdout.write(f'check_range_request: True\n')
             ranges = report["request"]["Range"].split("=")[1].split("-")
+            sys.stdout.write(f'check_range_request: ranges: {ranges}\n')
             if len(ranges) == 2:
                 report["response"]["range"] = ranges
                 report["response"]["status_code"] = "206"
@@ -341,7 +342,7 @@ def check_authorization(config, report=None, authorization_info=None):
     try:
         sys.stdout.write(f'check_authorization:  {authorization_info}\n') 
         if "Authorization" not in report["request"]:
-            sys.stdout.write(f'authorization_check : auth does not exist is request\n')
+            sys.stdout.write(f'authorization_check : auth does not exist in request\n')
             report["response"]["status_code"] = "401"
             report["response"]["WWW-Authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]

@@ -97,13 +97,16 @@ def create_file_headers(config, report):
             with open(file_path, "rb") as fobj:
                 file_length = len(fobj.read())
             with open(file_path, "rb") as fobj:
-                if "range" in report["response"]:
+                if "range" in report["response"] and report["response"]["range"][0] <= file_length <= report["response"]["range"][1]:
                     sys.stdout.write(f'Read file in partial GET: {report["response"]["range"]}\n')
                     fobj.seek(int(report["response"]["range"][0]))
                     diff = int(report["response"]["range"][1]) - int(report["response"]["range"][0]) + 1
                     sys.stdout.write(f'create_file_headers: {diff}\n')
                     report["response"]["payload"] = fobj.read(diff)
                     report["response"]["Content-Range"] = f'bytes {report["response"]["range"][0]}-{report["response"]["range"][1]}/{file_length}'
+                elif "range" in report["response"]:
+                    report["response"]["status_code"] = "416"
+                    report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
                 else:
                     report["response"]["payload"] = fobj.read()
             report["response"]["Content-Length"] = len(report["response"]["payload"])
@@ -136,19 +139,19 @@ def get_file_info(fname, config):
 
         sys.stdout.write(f'get_file_info file ext: {s}\n')
         for key, value in config["LANGUAGE_ENCODING"].items():
-            sys.stdout.write(f'get_file_info lang key: {key}\n')
+            #sys.stdout.write(f'get_file_info lang key: {key}\n')
             if s == key:
                 sys.stdout.write(f'get_file_info lang key: {key} match\n')
                 response["language"] = value
                 response["language_type"] = key
         for key, value in config["CONTENT_ENCODING"].items(): 
-            sys.stdout.write(f'get_file_info encoding key: {key}\n')
+            #sys.stdout.write(f'get_file_info encoding key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info encoding key: {key} match\n')
                 response["encoding"] = value
                 response["encoding_type"] = key
         for key, value in config["CHARSET_ENCODING"].items(): 
-            sys.stdout.write(f'get_file_info charset key: {key}\n')
+            # sys.stdout.write(f'get_file_info charset key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info charset key: {key} match\n')
                 response["charset_type"] = key
@@ -156,7 +159,7 @@ def get_file_info(fname, config):
     if "ext" not in response:
         response["ext"] = config["HEADERS"]["mime_types"][10] 
         response["file_ext"] = file_split[1] if len(file_split) > 1 else None
-    sys.stdout.write(f'get_file_info response: {response}\n')
+    sys.stdout.write(f'get_file_info: file: {fname}: response: {response}\n')
     return response
 
 
