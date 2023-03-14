@@ -35,7 +35,7 @@ def handle_server_request(config, report):
                 if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
                     path = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
                 else:
-                    path = path = report["request"]["path"]
+                    path = path = os.path.join(config["MAPPING"]["root_dir"], report["request"]["path"])
                 authorization_info = authorization.check_authorization_directory(config, path)
                 sys.stdout.write("handle_server_request: options method: authorization_info: {authorization_info}\n")
                 if authorization_info:
