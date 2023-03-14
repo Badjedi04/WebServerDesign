@@ -40,7 +40,8 @@ def handle_server_request(config, report):
                 sys.stdout.write("handle_server_request: options method: authorization_info: {authorization_info}\n")
                 if authorization_info:
                     report = check_authorization(config, report, authorization_info)
-            report["response"]["status_code"] = "200" 
+            if "status_code" not in report["response"]:
+                report["response"]["status_code"] = "200" 
         return reply_header.create_response_header(config, report)
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')
@@ -408,6 +409,7 @@ def check_authorization(config, report=None, authorization_info=None):
                     report["response"]["WWW-Authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                               nonce + "\"" + ",opaque=\"" + opaque + "\""
                     authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
+        sys.stdout.write(f'check_authorization : final_response : \n{report}\n')
         return report
     except Exception as e:
         sys.stderr.write(f'check_authorization : error {e}\n')
@@ -457,7 +459,7 @@ def read_authorization_file(report, config):
             authorization_info["response"] = remove_quotes(split[1])
         elif "opaque" in split[0]:
             authorization_info["opaque"] = remove_quotes(split[1])
-    sys.stdout.write("read_authorization_file: authorization_info: " + str(authorization_info))
+    sys.stdout.write(f'read_authorization_file: authorization_info: {authorization_info}\n')
     if os.path.exists(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt"):
         file_authorization = open(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt", "r")
         for line in file_authorization:
@@ -495,7 +497,7 @@ def read_authorization_file(report, config):
                                                 + authorization_info["response"])
                     sys.stdout.write("read_authorization_file: generated response: "
                                                 + str(generate_request_message_digest(authorization_info,
-                                                                                            report)))
+                                                                                            report, config)))
                     if authorization_info["response"] == \
                             generate_request_message_digest(authorization_info, report, config):
                         return authorization_info
@@ -521,11 +523,11 @@ def generate_request_message_digest(authorization_info, report, config):
 Function to remove double and single quotes
 '''
 def remove_quotes(auth_string):
-    sys.stdout.write("remove_quotes")
     if "\"" in auth_string:
         auth_string = auth_string.replace("\"", "")
     if "'" in auth_string:
         auth_string = auth_string.replace("'", "")
+    sys.stdout.write("remove_quotes: {auth_string} \n")
     return auth_string
 
 

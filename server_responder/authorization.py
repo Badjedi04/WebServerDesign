@@ -3,7 +3,7 @@ import sys
 
 def check_authorization_directory(config, path):
     try:
-        sys.stdout.write("check_authorization_directory path: {path} \n")
+        sys.stdout.write(f"check_authorization_directory path: {path} \n")
         authorization_info = None
         while authorization_info is None and path != config["MAPPING"]["root_dir"]:
             if os.path.isdir(path):            
