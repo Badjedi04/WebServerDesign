@@ -97,7 +97,7 @@ def create_file_headers(config, report):
             with open(file_path, "rb") as fobj:
                 file_length = len(fobj.read())
             with open(file_path, "rb") as fobj:
-                if "range" in report["response"] and report["response"]["range"][0] <= file_length <= report["response"]["range"][1]:
+                if "range" in report["response"] and int(report["response"]["range"][0]) <= file_length <= int(report["response"]["range"][1]):
                     sys.stdout.write(f'Read file in partial GET: {report["response"]["range"]}\n')
                     fobj.seek(int(report["response"]["range"][0]))
                     diff = int(report["response"]["range"][1]) - int(report["response"]["range"][0]) + 1
