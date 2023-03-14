@@ -301,7 +301,7 @@ def perform_content_negotiation(report, config):
                                 list_file_match[0] = True
                 if list_headers[1]:
                     for key, value in report["response"]["accept_language"].items():
-                        if key == file_info["language"]:
+                        if "language" in file_info and key == file_info["language"]:
                             sys.stdout.write(f'perform_content_negotiation: accept_language check: file language match: {fname} : {language_match}\n')
                             if math.isclose(float(value), 0.0):
                                 continue
