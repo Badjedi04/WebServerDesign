@@ -191,8 +191,6 @@ def perform_accept_negotiation(report, config):
         is_ambiguous = False
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
-                if is_ambiguous:
-                    continue
                 sys.stdout.write(f'perform_accept_negotiation: file_negotiation: {negotiation_file}\n')
                 sys.stdout.write(f'perform_accept_negotiation: file:{fname}\n')
                 file_info = get_file_info(fname, config)
@@ -281,8 +279,6 @@ def perform_content_negotiation(report, config):
         is_ambiguous = False
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
-                if is_ambiguous:
-                    continue
                 sys.stdout.write(f'perform_content_negotiation: file: {fname}\n')
                 file_info = get_file_info(fname, config)
                 if list_headers[0]:
