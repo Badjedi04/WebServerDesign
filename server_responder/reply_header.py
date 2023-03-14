@@ -30,12 +30,13 @@ def create_response_header(config, report):
                     report["response"]["Allow"] =  ", ".join(config["HEADERS"]["http_methods"])  
                 elif report["request"]["method"] == "TRACE":
                     report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][9]
-                    report["response"]["payload"] = report["request"]["raw_header"]
+                    report["response"]["payload"] = report["request"]["raw_header"].encode()
                 else:
                     report = create_file_headers(config, report)
             
             elif report["response"]["status_code"] in ["401"]:
-                report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
+                if report["request"]["method"] == "GET":
+                    report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                 report["response"]["Transfer-Encoding"] = "chunked"
                 report["response"]["Content-Type"] = "text/html"
             
@@ -67,9 +68,9 @@ def create_response_header(config, report):
                 report["response"]["payload"] = dynamic_html.create_error_page(report).encode()
                 report["response"]["Transfer-Encoding"] = "chunked"
                 report["response"]["Content-Type"] = "text/html"
-        sys.stdout.write(f'create_response_header: Report\n{report}\n') 
         if "path" not in report["response"]:
             report["response"]["path"] = report["request"]["path"]
+        sys.stdout.write(f'create_response_header: Report\n{report}\n') 
         return report
     except Exception as e:
         sys.stderr.write(f'create_response_header: error {e}\n')
@@ -89,19 +90,24 @@ def create_file_headers(config, report):
         elif os.path.isdir(file_path):
             sys.stdout.write(f'Mime Type returned is dir: {config["HEADERS"]["mime_types"][1]}\n')
             report["response"]["Content-Type"] = config["HEADERS"]["mime_types"][1]
-            report["response"]["payload"] = dynamic_html.create_directory_listing(report, config)      
+            report["response"]["payload"] = dynamic_html.create_directory_listing(report, config).encode()     
         else:
             report = set_file_headers(report, config)
+            if config["MAPPING"]["access_log"] in file_path:
+                file_path = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
             with open(file_path, "rb") as fobj:
                 file_length = len(fobj.read())
             with open(file_path, "rb") as fobj:
-                if "range" in report["response"]:
+                if "range" in report["response"] and int(report["response"]["range"][0]) <= file_length <= int(report["response"]["range"][1]):
                     sys.stdout.write(f'Read file in partial GET: {report["response"]["range"]}\n')
                     fobj.seek(int(report["response"]["range"][0]))
                     diff = int(report["response"]["range"][1]) - int(report["response"]["range"][0]) + 1
                     sys.stdout.write(f'create_file_headers: {diff}\n')
                     report["response"]["payload"] = fobj.read(diff)
                     report["response"]["Content-Range"] = f'bytes {report["response"]["range"][0]}-{report["response"]["range"][1]}/{file_length}'
+                elif "range" in report["response"]:
+                    report["response"]["status_code"] = "416"
+                    report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
                 else:
                     report["response"]["payload"] = fobj.read()
             report["response"]["Content-Length"] = len(report["response"]["payload"])
@@ -146,7 +152,7 @@ def get_file_info(fname, config):
                 response["encoding"] = value
                 response["encoding_type"] = key
         for key, value in config["CHARSET_ENCODING"].items(): 
-            #sys.stdout.write(f'get_file_info charset key: {key}\n')
+            # sys.stdout.write(f'get_file_info charset key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info charset key: {key} match\n')
                 response["charset_type"] = key
@@ -154,7 +160,7 @@ def get_file_info(fname, config):
     if "ext" not in response:
         response["ext"] = config["HEADERS"]["mime_types"][10] 
         response["file_ext"] = file_split[1] if len(file_split) > 1 else None
-    sys.stdout.write(f'get_file_info response: {response}\n')
+    sys.stdout.write(f'get_file_info: file: {fname}: response: {response}\n')
     return response
 
 
@@ -232,7 +238,7 @@ def perform_accept_negotiation(report, config):
                                     if float(accept_values[file_mime_type]) == float(accept_values[negotiation_mime_type]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        #return report
+                                        return report
                                     elif float(accept_values[file_mime_type]) > float(accept_values[negotiation_mime_type]):
                                         negotiation_file = fname
                                         is_ambiguous = False
@@ -241,7 +247,7 @@ def perform_accept_negotiation(report, config):
                                     if float(accept_values[return_mime_type(file_info["file_ext"], config)]) == float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        #return report
+                                        return report
                                     elif float(accept_values[return_mime_type(file_info["file_ext"], config)]) > float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         negotiation_file = fname
                                         is_ambiguous = False
@@ -318,7 +324,7 @@ def perform_content_negotiation(report, config):
                             if charset_match and charset_values[0] == value:
                                 is_ambiguous = True
                                 sys.stdout.write("Accept-Charset: Both the files exists\n")
-                                #return report
+                                return report
                             else:
                                 is_ambiguous = False
                                 charset_match = fname
@@ -332,7 +338,7 @@ def perform_content_negotiation(report, config):
                             if language_match and lang_values[0] == value:
                                 is_ambiguous = True
                                 sys.stdout.write("Accept-Language: Both the files exists\n")
-                                #return report
+                                return report
                             else:
                                 is_ambiguous = False
                                 language_match = fname
@@ -346,7 +352,7 @@ def perform_content_negotiation(report, config):
                             if encoding_match and encoding_value[0] == value:
                                 is_ambiguous = True
                                 sys.stdout.write("Accept-Encoding: Both the files exists\n")
-                                #return report
+                                return report
                             else:
                                 is_ambiguous = False
                                 encoding_match = fname
@@ -361,7 +367,7 @@ def perform_content_negotiation(report, config):
             report ["request"]["path"] = os.path.join(roots, fname)
             report["response"]["status_code"] = "200"
             sys.stdout.write(f'perform_content_negotiation: Content Negotiation file found: {report ["request"]["path"]}\n')
-            #return report 
+            return report 
         else:
             report["response"]["status_code"] = "406"
     except Exception as e:
@@ -373,7 +379,7 @@ def perform_content_negotiation(report, config):
 Function to return mime type
 '''
 def return_mime_type(file_ext, config):
-    if file_ext == "txt":
+    if file_ext in ["txt", "log"]:
         return config["HEADERS"]["mime_types"][0]
     elif file_ext == "html":
         return config["HEADERS"]["mime_types"][1] 
@@ -394,4 +400,4 @@ def return_mime_type(file_ext, config):
     elif file_ext in ["http"]:
         return config["HEADERS"]["mime_types"][9] 
     else:
-        return None
+        return None 

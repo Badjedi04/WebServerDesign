@@ -12,9 +12,13 @@ import utils.utils as utils
 import server_responder.authorization as authorization
 import server_responder.dynamic_html as dynamic_html
 
+
 def handle_server_request(config, report):
     try:
+        sys.stdout.write("handle_server_request: called \n")
         report["response"] = {}
+        report["request"]["orig_path"] = report["request"]["path"]
+
         # If method is GET or HEAD
         if report["request"]["method"] in ["GET", "HEAD"]:
             # Map the host path to the local path
@@ -22,15 +26,22 @@ def handle_server_request(config, report):
             report = fix_host_path(report, config)
             sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             
-            # Check if file is present or not
-            report = check_file_path(report, config)
-         
+            if "status_code" not in report["response"]: 
+                # Check if file is present or not
+                report = check_file_path(report, config)
         elif report["request"]["method"] in ["OPTIONS", "TRACE"]:  
             if report["request"]["method"] == "OPTIONS":
-                authorization_info = authorization.check_authorization_directory(config, report["request"]["path"])
+                sys.stdout.write("handle_server_request: options method \n")
+                if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
+                    path = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
+                else:
+                    path = (config["MAPPING"]["root_dir"] + report["request"]["path"])
+                authorization_info = authorization.check_authorization_directory(config, path)
+                sys.stdout.write("handle_server_request: options method: authorization_info: {authorization_info}\n")
                 if authorization_info:
                     report = check_authorization(config, report, authorization_info)
-            report["response"]["status_code"] = "200" 
+            if "status_code" not in report["response"]:
+                report["response"]["status_code"] = "200" 
         return reply_header.create_response_header(config, report)
     except Exception as e:
         sys.stderr.write(f'handle_server_request: error: {e}\n')
@@ -52,6 +63,10 @@ def check_file_path(report, config):
         report = check_if_modified_header(report)
         report = check_if_match_header(report)
         report = check_range_request(report)
+    elif  config["MAPPING"]["access_log"] in report["request"]["path"]:
+            report["response"]["status_code"] = "200"
+            sys.stdout.write(f'handle_server_request: 200 \n')
+            return reply_header.create_response_header(config, report)
     else:
         report = check_accept_file_path(report,config)
         report = check_accept_header(report, config)
@@ -125,8 +140,10 @@ def fix_host_path(report, config):
     else:
         sys.stdout.write(f'handle_server_request: path: absolute path\n')
         report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
-    
-    if os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
+    if os.path.isdir(report["request"]["path"]) and report["request"]["path"][-1] != "/":
+        report["response"]["status_code"] = "301"
+        report["response"]["Location"] = report["request"]["path"] + "/"
+    elif os.path.isdir(report["request"]["path"]) and os.path.exists(os.path.join(report["request"]["path"], "index.html")):
         report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
     elif report["request"]["path"] == (config["MAPPING"]["root_dir"] + "/"):
         report["request"]["path"] = os.path.join(report["request"]["path"], "index.html")
@@ -157,7 +174,7 @@ def check_file_redirects(report, config):
                         redirect_path += redirect_match.group(count_dollars) + "/"
                     else:
                         redirect_path += j + "/"
-                report["response"]["status_code"] = "302"
+                report["response"]["status_code"] = "301"
                 report["response"]["Location"] = config["MAPPING"]["host_path"] + redirect_path[:-1]
                 return report
         # Check 302 redirects
@@ -192,10 +209,11 @@ Function to match Range_header
 '''   
 def check_range_request(report, config=None):
     try:
-        sys.stdout.write(f'check_range_request: \n')
-        if "Range" in report["request"] and report["request"]["method"] == "GET":
+        sys.stdout.write(f'check_range_request: called\n')
+        if "Range" in report["request"] and report["request"]["method"] in ["GET", "HEAD"]:
             sys.stdout.write(f'check_range_request: True\n')
             ranges = report["request"]["Range"].split("=")[1].split("-")
+            sys.stdout.write(f'check_range_request: ranges: {ranges}\n')
             if len(ranges) == 2:
                 report["response"]["range"] = ranges
                 report["response"]["status_code"] = "206"
@@ -329,7 +347,7 @@ def check_authorization(config, report=None, authorization_info=None):
     try:
         sys.stdout.write(f'check_authorization:  {authorization_info}\n') 
         if "Authorization" not in report["request"]:
-            sys.stdout.write(f'authorization_check : auth does not exist is request\n')
+            sys.stdout.write(f'authorization_check : auth does not exist in request\n')
             report["response"]["status_code"] = "401"
             report["response"]["WWW-Authenticate"] = authorization_info["authorization_type"] + " realm=" \
                                                      + authorization_info["realm"]
@@ -374,9 +392,9 @@ def check_authorization(config, report=None, authorization_info=None):
                         authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
 
                 else:
-                    report["response"]["authorization_info"] = "qop= auth, rspauth=\"" + \
+                    report["response"]["Authentication-Info"] = "qop= auth, rspauth=\"" + \
                                                                generate_response_message_digest(report, 
-                                                                                                       auth_response) \
+                                                                                                       auth_response, config) \
                                                                + "\", cnonce=\"" + auth_response["cnonce"] + "\", nc=" \
                                                                + auth_response["nc"]
 
@@ -391,6 +409,7 @@ def check_authorization(config, report=None, authorization_info=None):
                     report["response"]["WWW-Authenticate"] += ", algorithm=MD5, qop= auth, nonce=\"" + \
                                                               nonce + "\"" + ",opaque=\"" + opaque + "\""
                     authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
+        sys.stdout.write(f'check_authorization : final_response : \n{report}\n')
         return report
     except Exception as e:
         sys.stderr.write(f'check_authorization : error {e}\n')
@@ -416,9 +435,9 @@ def generate_response_message_digest(report, authorization_info, config):
 Function to match nonce, realm, nc, url and qop from previous request
 '''
 def read_authorization_file(report, config):
-    sys.stdout.write("read_authorization_file\n")
-    auth_string = report["request"]["authorization"]
+    auth_string = report["request"]["Authorization"]
     auth_string = auth_string.split(", ")
+    sys.stdout.write(f'read_authorization_file auth string: {auth_string}\n')
     authorization_info = {}
     for info in auth_string:
         split = info.split("=")
@@ -440,7 +459,7 @@ def read_authorization_file(report, config):
             authorization_info["response"] = remove_quotes(split[1])
         elif "opaque" in split[0]:
             authorization_info["opaque"] = remove_quotes(split[1])
-    sys.stdout.write("read_authorization_file: authorization_info: " + str(authorization_info))
+    sys.stdout.write(f'read_authorization_file: authorization_info: {authorization_info}\n')
     if os.path.exists(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt"):
         file_authorization = open(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt", "r")
         for line in file_authorization:
@@ -462,23 +481,23 @@ def read_authorization_file(report, config):
                     file_info["realm"] = pair[1]
                 elif "opaque" in pair[0]:
                     file_info["opaque"] = pair[1].rstrip()
-            sys.stdout.write("read_authorization_file: file_info: " + str(file_info))
-            sys.stdout.write("read_authorization_file: auth nonce: " + authorization_info["nonce"])
-            sys.stdout.write("read_authorization_file: file nonce: " + file_info["nonce"])
-            sys.stdout.write("read_authorization_file: auth realm: " + authorization_info["realm"])
+            sys.stdout.write("read_authorization_file: file_info: " + str(file_info) + "\n")
+            sys.stdout.write("read_authorization_file: auth nonce: " + authorization_info["nonce"] + "\n")
+            sys.stdout.write("read_authorization_file: file nonce: " + file_info["nonce"] + "\n")
+            sys.stdout.write("read_authorization_file: auth realm: " + authorization_info["realm"] + "\n")
             sys.stdout.write("read_authorization_file: file realm: " +
-                                        remove_quotes(file_info["realm"]))
+                                        remove_quotes(file_info["realm"]) + "\n")
             if authorization_info["nonce"] == file_info["nonce"] and authorization_info["realm"] == \
                     remove_quotes(file_info["realm"]):
-                sys.stdout.write("read_authorization_file: Nonce and Realm matched")
+                sys.stdout.write("read_authorization_file: Nonce and Realm matched\n")
                 sys.stdout.write("read_authorization_file: Match Ncount: "
-                                            + str(int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1)))
+                                            + str(int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1)) + "\n")
                 if int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1):
-                    sys.stdout.write("read_authorization_file: auth response: "
-                                                + authorization_info["response"])
+                    sys.stdout.write("read_authorization_file: auth response:  +"
+                                                + authorization_info["response"] + "\n")
                     sys.stdout.write("read_authorization_file: generated response: "
                                                 + str(generate_request_message_digest(authorization_info,
-                                                                                            report)))
+                                                                                            report, config)) + "\n")
                     if authorization_info["response"] == \
                             generate_request_message_digest(authorization_info, report, config):
                         return authorization_info
@@ -504,11 +523,11 @@ def generate_request_message_digest(authorization_info, report, config):
 Function to remove double and single quotes
 '''
 def remove_quotes(auth_string):
-    sys.stdout.write("remove_quotes")
     if "\"" in auth_string:
         auth_string = auth_string.replace("\"", "")
     if "'" in auth_string:
         auth_string = auth_string.replace("'", "")
+    sys.stdout.write(f"remove_quotes: {auth_string} \n")
     return auth_string
 
 
