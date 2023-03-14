@@ -392,7 +392,7 @@ def check_authorization(config, report=None, authorization_info=None):
                         authorization.write_authorization_file(report, nonce, 0, authorization_info, "auth", opaque, config)
 
                 else:
-                    report["response"]["authorization_info"] = "qop= auth, rspauth=\"" + \
+                    report["response"]["Authentication-Info"] = "qop= auth, rspauth=\"" + \
                                                                generate_response_message_digest(report, 
                                                                                                        auth_response, config) \
                                                                + "\", cnonce=\"" + auth_response["cnonce"] + "\", nc=" \
@@ -481,23 +481,23 @@ def read_authorization_file(report, config):
                     file_info["realm"] = pair[1]
                 elif "opaque" in pair[0]:
                     file_info["opaque"] = pair[1].rstrip()
-            sys.stdout.write("read_authorization_file: file_info: " + str(file_info))
-            sys.stdout.write("read_authorization_file: auth nonce: " + authorization_info["nonce"])
-            sys.stdout.write("read_authorization_file: file nonce: " + file_info["nonce"])
-            sys.stdout.write("read_authorization_file: auth realm: " + authorization_info["realm"])
+            sys.stdout.write("read_authorization_file: file_info: " + str(file_info) + "\n")
+            sys.stdout.write("read_authorization_file: auth nonce: " + authorization_info["nonce"] + "\n")
+            sys.stdout.write("read_authorization_file: file nonce: " + file_info["nonce"] + "\n")
+            sys.stdout.write("read_authorization_file: auth realm: " + authorization_info["realm"] + "\n")
             sys.stdout.write("read_authorization_file: file realm: " +
-                                        remove_quotes(file_info["realm"]))
+                                        remove_quotes(file_info["realm"]) + "\n")
             if authorization_info["nonce"] == file_info["nonce"] and authorization_info["realm"] == \
                     remove_quotes(file_info["realm"]):
-                sys.stdout.write("read_authorization_file: Nonce and Realm matched")
+                sys.stdout.write("read_authorization_file: Nonce and Realm matched\n")
                 sys.stdout.write("read_authorization_file: Match Ncount: "
-                                            + str(int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1)))
+                                            + str(int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1)) + "\n")
                 if int(authorization_info["nc"], 16) == (int(file_info["nc"]) + 1):
-                    sys.stdout.write("read_authorization_file: auth response: "
-                                                + authorization_info["response"])
+                    sys.stdout.write("read_authorization_file: auth response:  +"
+                                                + authorization_info["response"] + "\n")
                     sys.stdout.write("read_authorization_file: generated response: "
                                                 + str(generate_request_message_digest(authorization_info,
-                                                                                            report, config)))
+                                                                                            report, config)) + "\n")
                     if authorization_info["response"] == \
                             generate_request_message_digest(authorization_info, report, config):
                         return authorization_info
@@ -527,7 +527,7 @@ def remove_quotes(auth_string):
         auth_string = auth_string.replace("\"", "")
     if "'" in auth_string:
         auth_string = auth_string.replace("'", "")
-    sys.stdout.write("remove_quotes: {auth_string} \n")
+    sys.stdout.write(f"remove_quotes: {auth_string} \n")
     return auth_string
 
 
