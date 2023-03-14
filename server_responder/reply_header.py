@@ -281,6 +281,8 @@ def perform_content_negotiation(report, config):
         is_ambiguous = False
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
+                if is_ambiguous:
+                    continue
                 sys.stdout.write(f'perform_content_negotiation: file: {fname}\n')
                 file_info = get_file_info(fname, config)
                 if list_headers[0]:
@@ -298,17 +300,14 @@ def perform_content_negotiation(report, config):
                                 charset_match = fname
                                 list_file_match[0] = True
                 if list_headers[1]:
-                    for key, value in config_language.items():
-                        sys.stdout.write(f'perform_content_negotiation: accept_language check: negotiation file: {language_match}\n')
-                        if value in report["response"]["accept_language"] and math.isclose(float(report["response"]["accept_language"][value]), 0.0):
-                            continue
-                        if fname == (dir_path[1] + "." + key):
-                            if language_match and lang_values[0] == value:
+                    for key, value in report["response"]["accept_language"].items():
+                        if key == file_info["language"]:
+                            sys.stdout.write(f'perform_content_negotiation: accept_language check: file language match: {fname}\n')
+                            if math.isclose(float(report["response"]["accept_language"][value]), 0.0):
+                                continue
+                            elif language_match:
                                 is_ambiguous = True
-                                sys.stdout.write("Accept-Language: Both the files exists\n")
-                                #return report
                             else:
-                                is_ambiguous = False
                                 language_match = fname
                                 list_file_match[1] = True
                 if list_headers[2]:
