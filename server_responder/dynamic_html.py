@@ -4,8 +4,7 @@ import os
 import utils.utils as utils
 
 def create_dynamic_page(title="", heading="", body=""):
-    html_content = """
-        <!DOCTYPE html>
+    html_content = """<!DOCTYPE html>
         <html>
             <head>
                 <title>{{title}}</title>
