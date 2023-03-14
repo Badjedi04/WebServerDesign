@@ -39,8 +39,3 @@ def convert_to_bool(value):
         return False
     else:
         return value
-
-
-
-
-

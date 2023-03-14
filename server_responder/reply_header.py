@@ -134,19 +134,19 @@ def get_file_info(fname, config):
 
         sys.stdout.write(f'get_file_info file ext: {s}\n')
         for key, value in config["LANGUAGE_ENCODING"].items():
-            sys.stdout.write(f'get_file_info lang key: {key}\n')
+            #sys.stdout.write(f'get_file_info lang key: {key}\n')
             if s == key:
                 sys.stdout.write(f'get_file_info lang key: {key} match\n')
                 response["language"] = value
                 response["language_type"] = key
         for key, value in config["CONTENT_ENCODING"].items(): 
-            sys.stdout.write(f'get_file_info encoding key: {key}\n')
+            #sys.stdout.write(f'get_file_info encoding key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info encoding key: {key} match\n')
                 response["encoding"] = value
                 response["encoding_type"] = key
         for key, value in config["CHARSET_ENCODING"].items(): 
-            sys.stdout.write(f'get_file_info charset key: {key}\n')
+            #sys.stdout.write(f'get_file_info charset key: {key}\n')
             if key == s:
                 sys.stdout.write(f'get_file_info charset key: {key} match\n')
                 response["charset_type"] = key
@@ -232,7 +232,7 @@ def perform_accept_negotiation(report, config):
                                     if float(accept_values[file_mime_type]) == float(accept_values[negotiation_mime_type]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        return report
+                                        #return report
                                     elif float(accept_values[file_mime_type]) > float(accept_values[negotiation_mime_type]):
                                         negotiation_file = fname
                                         is_ambiguous = False
@@ -241,7 +241,7 @@ def perform_accept_negotiation(report, config):
                                     if float(accept_values[return_mime_type(file_info["file_ext"], config)]) == float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        return report
+                                        #return report
                                     elif float(accept_values[return_mime_type(file_info["file_ext"], config)]) > float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         negotiation_file = fname
                                         is_ambiguous = False
@@ -318,7 +318,7 @@ def perform_content_negotiation(report, config):
                             if charset_match and charset_values[0] == value:
                                 is_ambiguous = True
                                 sys.stdout.write("Accept-Charset: Both the files exists\n")
-                                return report
+                                #return report
                             else:
                                 is_ambiguous = False
                                 charset_match = fname
@@ -332,7 +332,7 @@ def perform_content_negotiation(report, config):
                             if language_match and lang_values[0] == value:
                                 is_ambiguous = True
                                 sys.stdout.write("Accept-Language: Both the files exists\n")
-                                return report
+                                #return report
                             else:
                                 is_ambiguous = False
                                 language_match = fname
@@ -346,7 +346,7 @@ def perform_content_negotiation(report, config):
                             if encoding_match and encoding_value[0] == value:
                                 is_ambiguous = True
                                 sys.stdout.write("Accept-Encoding: Both the files exists\n")
-                                return report
+                                #return report
                             else:
                                 is_ambiguous = False
                                 encoding_match = fname
@@ -361,7 +361,7 @@ def perform_content_negotiation(report, config):
             report ["request"]["path"] = os.path.join(roots, fname)
             report["response"]["status_code"] = "200"
             sys.stdout.write(f'perform_content_negotiation: Content Negotiation file found: {report ["request"]["path"]}\n')
-            return report 
+            #return report 
         else:
             report["response"]["status_code"] = "406"
     except Exception as e:
@@ -394,4 +394,4 @@ def return_mime_type(file_ext, config):
     elif file_ext in ["http"]:
         return config["HEADERS"]["mime_types"][9] 
     else:
-        return None 
+        return None

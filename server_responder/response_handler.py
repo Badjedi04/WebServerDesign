@@ -531,6 +531,3 @@ def generate_opaque(report, config):
     opaque = hashlib.md5((report["request"]["path"] + ":" + config["MAPPING"]["private_key"]).encode()) \
         .hexdigest()
     return opaque
-
-
-
