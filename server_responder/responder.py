@@ -30,7 +30,7 @@ def server_reply(config, report):
                 server_response += temp.encode('utf-8')
             sys.stdout.write(f'Server Response being created: \n {key}: {value}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
-            server_response += b'\r\n' + report["response"]["payload"]
+            server_response += b'\r\n' + report["response"]["payload"] + b'\r\n'
         #else:
         server_response += b'\r\n'
         sys.stdout.write(f'Server Response: \n {server_response}\n')
