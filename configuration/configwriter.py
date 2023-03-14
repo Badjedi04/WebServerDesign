@@ -22,14 +22,14 @@ def create_config_file():
     config["MAPPING"]["private_key"] = "ptomar"
 
     config["HEADERS"] = {} 
-    config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE"
+    config["HEADERS"]["http_methods"] = "GET,HEAD,OPTIONS,TRACE,DELETE,PUT,POST"
     config["HEADERS"]["http_version"] = "1.1"
     config["HEADERS"]["server"] = "cs_ptoma001_server"
     config["MAPPING"]["access_log"] =  "/.well-known/access.log"
     config["MAPPING"]["log_file"] =  "access.log"
     config["HEADERS"]["mime_types"] = "text/plain,text/html,text/xml,image/png,image/jpeg,"\
                                         "image/gif,application/pdf,application/vnd.ms-powerpoint,"\
-                                        "application/vnd.ms-word,message/http,application/octet-stream" 
+                                        "application/vnd.ms-word,message/http,application/octet-stream,multipart/form-data,application/x-form-www-urlencoded" 
     config["STATUS_CODE"] = {}
     config["STATUS_CODE"]["200"] = "OK"
     config["STATUS_CODE"]["206"] = "Partial Content"
@@ -48,6 +48,11 @@ def create_config_file():
     config["STATUS_CODE"]["501"] = "Not Implemented"
     config["STATUS_CODE"]["505"] = "HTTP Version Not Supported"
     config["STATUS_CODE"]["401"] = "Unauthorized"
+    config["STATUS_CODE"]["201"] = "Created"
+    config["STATUS_CODE"]["405"] = "Method Not Allowed"
+    config["STATUS_CODE"]["411"] = "Length Required"
+    config["STATUS_CODE"]["413"] = "Request Entity Too Large"
+    config["STATUS_CODE"]["414"] = "Request-URI Too Long"
 
     config["REDIRECT"] = {}
     config["REDIRECT"]["302"] = "^(.*)/coolcar.html$ $1/galaxie.html, ^/a2-test/(.*)/1\.[234]/(.*) /a2-test/$1/1.1/$2"
