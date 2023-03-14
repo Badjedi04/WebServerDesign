@@ -5,16 +5,15 @@ import utils.utils as utils
 
 def create_dynamic_page(title="", heading="", body=""):
     html_content = """<!DOCTYPE html>
-        <html>
-            <head>
+    <html>
+        <head>
                 <title>{{title}}</title>
             </head>
             <body>
                 <h1>{{heading}}</h1>
                 {{body}}
             </body>
-        </html>
-    """
+    </html>"""
 
     html_content = Environment().from_string(html_content).render(title=title,
                                                                heading=heading,body=body)
