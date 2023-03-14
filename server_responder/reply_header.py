@@ -188,16 +188,17 @@ def perform_accept_negotiation(report, config):
         sys.stdout.write(f'perform_accept_negotiation: Path: {dir_path}\n')
         negotiation_file = None
 
-        
+        is_ambiguous = False
         for roots, dirs, files in os.walk(dir_path[0]):
             for fname in files:
+                if is_ambiguous:
+                    continue
                 sys.stdout.write(f'perform_accept_negotiation: file_negotiation: {negotiation_file}\n')
                 sys.stdout.write(f'perform_accept_negotiation: file:{fname}\n')
                 file_info = get_file_info(fname, config)
                 if not file_info["ext"]:
                     continue
                 sys.stdout.write(f'perform_accept_negotiation: ext:{file_info["file_ext"]}\n')
-                is_ambiguous = False
                 for key, value in report["response"]["accept"].items():
                     sys.stdout.write(f'perform_accept_negotiation: value: {report["response"]["accept"][key]}\n')
                     if math.isclose(float(report["response"]["accept"][key]), 0.0):
@@ -214,22 +215,16 @@ def perform_accept_negotiation(report, config):
                                     if float(accept_values[file_mime_type]) == float(accept_values[negotiation_mime_type]):
                                         is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        #return report
                                     elif float(accept_values[file_mime_type]) > float(accept_values[negotiation_mime_type]):
                                         negotiation_file = fname
-                                        is_ambiguous = False
 
                                 else:
                                     if float(accept_values[return_mime_type(file_info["file_ext"], config)]) == float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
-                                        is_ambiguous = True
                                         sys.stdout.write("Accept: Both the files exists\n")
-                                        #return report
                                     elif float(accept_values[return_mime_type(file_info["file_ext"], config)]) > float(accept_values[get_file_info(negotiation_file, config)["ext"]]):
                                         negotiation_file = fname
-                                        is_ambiguous = False
                             else:
                                 negotiation_file = fname
-                                is_ambiguous = False
                         sys.stdout.write(f'perform_accept_negotiation: is_ambiguous : {is_ambiguous}\n')
         sys.stdout.write(f'perform_accept_negotiation: file_negotiation end : {negotiation_file}\n')
         
