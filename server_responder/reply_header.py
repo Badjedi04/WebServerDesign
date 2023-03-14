@@ -302,14 +302,16 @@ def perform_content_negotiation(report, config):
                 if list_headers[1]:
                     for key, value in report["response"]["accept_language"].items():
                         if key == file_info["language"]:
-                            sys.stdout.write(f'perform_content_negotiation: accept_language check: file language match: {fname}\n')
-                            if math.isclose(float(report["response"]["accept_language"][value]), 0.0):
+                            sys.stdout.write(f'perform_content_negotiation: accept_language check: file language match: {fname} : {language_match}\n')
+                            if math.isclose(float(value), 0.0):
                                 continue
                             elif language_match:
                                 is_ambiguous = True
                             else:
                                 language_match = fname
                                 list_file_match[1] = True
+                                sys.stdout.write(f'perform_content_negotiation: accept_language check: language match set : {language_match}: {list_file_match}\n')
+                
                 if list_headers[2]:
                     for key, value in config_encoding.items():
                         sys.stdout.write(f'perform_content_negotiation: accept_encoding check: negotiation file: {encoding_match}\n')
@@ -326,6 +328,7 @@ def perform_content_negotiation(report, config):
                                 list_file_match[2] = True
                 
                 sys.stdout.write(f'perform_content_negotiation: list_file_match : {list_file_match}  list_headers: {list_headers}\n')
+        
         if is_ambiguous:
             report["response"]["status_code"] = "300"
             report["response"]["status_text"] = config["STATUS_CODE"][report["response"]["status_code"]]
