@@ -429,9 +429,9 @@ def generate_response_message_digest(report, authorization_info, config):
 Function to match nonce, realm, nc, url and qop from previous request
 '''
 def read_authorization_file(report, config):
-    sys.stdout.write("read_authorization_file\n")
-    auth_string = report["request"]["authorization"]
+    auth_string = report["request"]["Authorization"]
     auth_string = auth_string.split(", ")
+    sys.stdout.write(f'read_authorization_file auth string: {auth_string}\n')
     authorization_info = {}
     for info in auth_string:
         split = info.split("=")
