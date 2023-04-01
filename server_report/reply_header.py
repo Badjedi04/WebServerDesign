@@ -43,7 +43,7 @@ def return_mime_type(config, file_path=None):
     try:
         response = {}
         if file_path is None:
-            sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
+            #sys.stdout.write(f'Mime Type returned for no file: {config["HEADERS"]["mime_types"][1]}\n')
             response["mime_type"] = config["HEADERS"]["mime_types"][1]
         else:
             if config["MAPPING"]["access_log"] in file_path:
@@ -55,9 +55,9 @@ def return_mime_type(config, file_path=None):
             last_modified = datetime.utcfromtimestamp(statinfo.st_mtime)
             response["last_modified"] = last_modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
             file_ext = file_path.split("/")[-1].split(".")[-1]
-            sys.stdout.write(f'Response before mime-type: {response}\n')
+            #sys.stdout.write(f'Response before mime-type: {response}\n')
 
-            sys.stdout.write(f'File Ext: {file_ext}\n')
+            #sys.stdout.write(f'File Ext: {file_ext}\n')
 
             if file_ext in ["txt", "log"]:
                 response["mime_type"] = config["HEADERS"]["mime_types"][0]
