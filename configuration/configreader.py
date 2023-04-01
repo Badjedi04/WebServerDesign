@@ -10,10 +10,10 @@ def read_config_file():
         config.read(constants.CONFIG)
 
         for section in config.sections():
-            sys.stdout.write(f'section: {section}\n')
+            #sys.stdout.write(f'section: {section}\n')
             dict_config[section] = {}
             for (key, value) in config[section].items():
-                sys.stdout.write(f'key: {key}  value: {value}\n')
+                #sys.stdout.write(f'key: {key}  value: {value}\n')
                 dict_config[section][key] = convert_to_int(value)
         return dict_config
     except Exception as e:
@@ -50,14 +50,14 @@ def read_redirect():
         
         config_dict = {}
         for section in config.sections(): 
-            sys.stdout.write(f'read_redirect: section: {section}\n')
+            #sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
-                sys.stdout.write(f'read_redirect: {key}: {value}\n')
+                #sys.stdout.write(f'read_redirect: {key}: {value}\n')
           
                 config_dict[key] = convert_list(value)
-                sys.stdout.write(f'read_redirect: \n{config_dict}\n')
+                #sys.stdout.write(f'read_redirect: \n{config_dict}\n')
         
-        sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
+        #sys.stdout.write(f'read_redirect: Final: \n{config_dict}\n')
         return config
     except Exception as e:
         sys.stderr.write(f'read_redirect: error: {e}\n')
