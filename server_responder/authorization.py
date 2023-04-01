@@ -3,7 +3,7 @@ import sys
 
 def check_authorization_directory(config, path):
     try:
-        sys.stdout.write(f"check_authorization_directory path: {path} \n")
+        #sys.stdout.write(f"check_authorization_directory path: {path} \n")
         authorization_info = None
         while authorization_info is None and path != config["MAPPING"]["root_dir"]:
             if os.path.isdir(path):            
@@ -11,11 +11,11 @@ def check_authorization_directory(config, path):
             if authorization_info is None:
                 path = path.rsplit("/", 1)[0]
             else:
-                sys.stdout.write(f'check_authorization_directory : authorization_info {authorization_info}\n ')
+                #sys.stdout.write(f'check_authorization_directory : authorization_info {authorization_info}\n ')
                 return authorization_info
     except Exception as e:
         sys.stderr.write(f'check_authorization_directory : error {e}\n')
-    sys.stdout.write(f'check_authorization_directory : authorization_info is None\n ')
+    #sys.stdout.write(f'check_authorization_directory : authorization_info is None\n ')
     return None
 
 
@@ -52,7 +52,7 @@ def get_auth_structure():
 Function to write to authorization file
 '''
 def write_authorization_file(report, nonce, nc, authorization_info, qop, opaque, config):
-    sys.stdout.write("write_authorization_file\n")
+    #sys.stdout.write("write_authorization_file\n")
     if os.path.exists(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt"):
         file_authorization = open(config["MAPPING"]["root_dir"] + "/DigestAuthorizationInfo.txt", "w")
     else:
