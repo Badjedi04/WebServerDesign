@@ -28,12 +28,12 @@ def server_reply(config, report):
             if key in ["Date", "Server", "Last-Modified", "Content-Length", "Content-Encoding", "Content-Type", "Content-Language", "Content-Range", "Transfer-Encoding", "Vary", "Alternates", "Connection", "Allow", "Location", "ETag"]:
                 temp = key + ": "  + str(value) + "\r\n"
                 server_response += temp.encode('utf-8')
-            sys.stdout.write(f'Server Response being created: \n {key}: {value}\n')
+            #sys.stdout.write(f'Server Response being created: \n {key}: {value}\n')
         if "payload" in report["response"] and len(report["response"]["payload"]) > 0:
             server_response += b'\r\n' + report["response"]["payload"]
         else:
             server_response += b'\r\n'
-        sys.stdout.write(f'Server Response: \n {server_response}\n')
+        #sys.stdout.write(f'Server Response: \n {server_response}\n')
 
         #127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
         #172.18.0.2 - - [11/Mar/2023:23:53:12 +0000] "GET http://cs531-cs_cbrad022/a1-test/2/index.html HTTP/1.1" 200 1936
@@ -48,7 +48,7 @@ def server_reply(config, report):
         log_file = os.path.join(config["MAPPING"]["root_dir"], config["MAPPING"]["log_file"])
         with open(log_file, "a+") as fobj:
             fobj.write(f'{log_line}\n')
-        sys.stdout.write(f'{log_line}\n')
+        #sys.stdout.write(f'{log_line}\n')
 
         return server_response
     except Exception as e:

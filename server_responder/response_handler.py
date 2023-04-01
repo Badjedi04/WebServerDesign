@@ -19,7 +19,7 @@ def handle_server_request(config, report):
             # Map the host path to the local path
             # If host path starts with https://cs531....
             report = fix_host_path(report, config)
-            sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
+            #sys.stdout.write(f'handle_server_request: path: {report["request"]["path"]}\n')
             
             if "status_code" not in report["response"]: 
                 # Check if file is present or not
@@ -44,7 +44,7 @@ def check_file_path(report, config):
         report = check_range_request(report)
     elif  config["MAPPING"]["access_log"] in report["request"]["path"]:
             report["response"]["status_code"] = "200"
-            sys.stdout.write(f'handle_server_request: 200 \n')
+            #sys.stdout.write(f'handle_server_request: 200 \n')
             return reply_header.create_response_header(config, report)
     else:
         report = check_accept_file_path(report,config)
@@ -61,19 +61,19 @@ def check_if_modified_header(report):
     try:
         if "If-Unmodified-Since" in report["request"] and report["request"]["method"] in ["GET"]:
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Unmodified-Since"])
-            sys.stdout.write(f'If-Unmodified-Since exists \n')
+            #sys.stdout.write(f'If-Unmodified-Since exists \n')
             if not unmodified_time:
                 return report
             if utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]) >= unmodified_time):
                 report["response"]["status_code"] = "412"
-                sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
+                #sys.stdout.write(f'If-Unmodified-Since: file modified after \n')                
         elif "If-Modified-Since" in report["request"] and  "If-None-Match" not in report["request"]:
-            sys.stdout.write(f'If-Modified-Since exists \n')
+            #sys.stdout.write(f'If-Modified-Since exists \n')
             unmodified_time = utils.convert_string_to_datetime(report["request"]["If-Modified-Since"])
             if not unmodified_time:
                 return report
             if  utils.convert_string_to_datetime(utils.get_file_last_modified_time(report["request"]["path"]))  <= unmodified_time:
-                sys.stdout.write(f'If-Modified-Since: file modified after \n')
+                #sys.stdout.write(f'If-Modified-Since: file modified after \n')
                 report["response"]["status_code"] = "304"
         return report
     except Exception as e:
@@ -90,16 +90,16 @@ def check_if_match_header(report):
             file_content = fobj.read()
         file_md5 = utils.convert_to_md5(file_content)
         file_md5 = '"' + file_md5 + '"'
-        sys.stdout.write(f'check_if_match_header: md5 for file {file_md5}\n')
+        #sys.stdout.write(f'check_if_match_header: md5 for file {file_md5}\n')
         if report["request"]["If-Match"] != "*" and file_md5 != report["request"]["If-Match"]:
             report["response"]["status_code"] = "412"
-            sys.stdout.write(f'check_if_match_header: 412 \n')
+            #sys.stdout.write(f'check_if_match_header: 412 \n')
     elif "If-None-Match" in report["request"]:
         with open(report["request"]["path"], "rb") as fobj:
             file_content = fobj.read()
         file_md5 = utils.convert_to_md5(file_content)
         file_md5 = '"' + file_md5 + '"'
-        sys.stdout.write(f'check_if_match_header: md5 for file {file_md5}\n')
+        #sys.stdout.write(f'check_if_match_header: md5 for file {file_md5}\n')
         if report["request"]["If-None-Match"] == "*" and file_md5 == report["request"]["If-None-Match"]:
             if report["request"]["http_method"] in ["GET", "HEAD"]:
                 report["response"]["status_code"] = "304"
@@ -112,10 +112,10 @@ Function to set host path
 """
 def fix_host_path(report, config):
     if report["request"]["path"].startswith(config["MAPPING"]["host_path"]):
-        sys.stdout.write(f'handle_server_request: path: path starts with ptomar\n')
+        #sys.stdout.write(f'handle_server_request: path: path starts with ptomar\n')
         report["request"]["path"] = report["request"]["path"].replace(config["MAPPING"]["host_path"], config["MAPPING"]["root_dir"])
     else:
-        sys.stdout.write(f'handle_server_request: path: absolute path\n')
+        #sys.stdout.write(f'handle_server_request: path: absolute path\n')
         report["request"]["path"] = config["MAPPING"]["root_dir"] + report["request"]["path"]
     if os.path.isdir(report["request"]["path"]) and report["request"]["path"][-1] != "/":
         report["response"]["status_code"] = "301"
@@ -134,14 +134,14 @@ def check_file_redirects(report, config):
     try:
         # Check 301 redirects
         path = report["request"]["path"].replace(config["MAPPING"]["root_dir"], "")
-        sys.stdout.write(f'check_file_redirects: Path for file redirect {path}\n')
+        #sys.stdout.write(f'check_file_redirects: Path for file redirect {path}\n')
         regex_pattern = re.compile(config["REDIRECT"]["301"].split()[0])
-        sys.stdout.write(f'301 check_file_redirects: pattern {regex_pattern}\n')
+        #sys.stdout.write(f'301 check_file_redirects: pattern {regex_pattern}\n')
         if regex_pattern.search(path):
-            sys.stdout.write(f'check_file_redirects: path match: 301: {path}\n')
+            #sys.stdout.write(f'check_file_redirects: path match: 301: {path}\n')
             redirect_match = regex_pattern.search(path)
             if redirect_match:
-                sys.stdout.write(f'check_file_redirects: path match: 302: {path}\n')
+                #sys.stdout.write(f'check_file_redirects: path match: 302: {path}\n')
                 split_redirect = redirect_pattern.split()[1].split("/")
                 count_dollars = 0
                 redirect_path = ""
@@ -156,13 +156,13 @@ def check_file_redirects(report, config):
                 return report
         # Check 302 redirects
         else:
-            sys.stdout.write(f'check_file_redirects: 302\n')
+            #sys.stdout.write(f'check_file_redirects: 302\n')
             for redirect_pattern in config["REDIRECT"]["302"]:
                 regex_pattern = re.compile(redirect_pattern.split()[0])
-                sys.stdout.write(f'302 check_file_redirects: pattern {regex_pattern}\n')
+                #sys.stdout.write(f'302 check_file_redirects: pattern {regex_pattern}\n')
                 redirect_match = regex_pattern.search(path)
                 if redirect_match:
-                    sys.stdout.write(f'check_file_redirects: path match: 302: {path}\n')
+                    #sys.stdout.write(f'check_file_redirects: path match: 302: {path}\n')
                     split_redirect = redirect_pattern.split()[1].split("/")
                     count_dollars = 0
                     redirect_path = ""
@@ -175,7 +175,7 @@ def check_file_redirects(report, config):
                     report["response"]["status_code"] = "302"
                     report["response"]["Location"] = config["MAPPING"]["host_path"] + redirect_path[:-1]
                     return report
-        sys.stdout.write(f'check_file_redirects: \n {report}\n')
+        #sys.stdout.write(f'check_file_redirects: \n {report}\n')
         return report
     except Exception as e:
         sys.stderr.write(f'check_file_redirects: error: {e}\n')
@@ -186,9 +186,9 @@ Function to match Range_header
 """    
 def check_range_request(report, config=None):
     try:
-        sys.stdout.write(f'check_range_request: \n')
+        #sys.stdout.write(f'check_range_request: \n')
         if "Range" in report["request"] and report["request"]["method"] == "GET":
-            sys.stdout.write(f'check_range_request: True\n')
+            #sys.stdout.write(f'check_range_request: True\n')
             ranges = report["request"]["Range"].split("=")[1].split("-")
             if len(ranges) == 2:
                 report["response"]["range"] = ranges
@@ -202,7 +202,7 @@ Function to check accept multiple choices file
 """
 def check_accept_file_path(report, config=None):
     try:
-        sys.stdout.write(f'check_accept_file_path: start\n')
+        #sys.stdout.write(f'check_accept_file_path: start\n')
         if report["request"]["method"] in ["HEAD", "GET"]:
             dir_path = report["request"]["path"].rsplit("/", 1)
             for roots, dirs, files in os.walk(dir_path[0]):
@@ -235,7 +235,7 @@ def check_accept_charset_header(report, config=None):
             report["response"]["accept_charset"] = sorted_d
             if "status_code" not in report["response"]:
                 report["response"]["status_code"] = "XXX"
-        sys.stdout.write(f'check_accept_charset_header: done\n')
+        #sys.stdout.write(f'check_accept_charset_header: done\n')
     except Exception as e:
         sys.stderr.write(f'check_accept_charset_header: error: {e}\n')
     return report
@@ -259,7 +259,7 @@ def check_accept_encoding_header(report, config=None):
             report["response"]["accept_encoding"] = sorted_d
             if "status_code" not in report["response"]:
                 report["response"]["status_code"] = "XXX"        
-            sys.stdout.write(f'check_accept_encoding_header: done\n')
+            #sys.stdout.write(f'check_accept_encoding_header: done\n')
     except Exception as e:
         sys.stderr.write(f'check_accept_encoding_header: error: {e}\n')
     return report
@@ -283,7 +283,7 @@ def check_accept_language_header(report, config=None):
             report["response"]["accept_language"] = sorted_d
             if "status_code" not in report["response"]:
                 report["response"]["status_code"] = "XXX"
-        sys.stdout.write(f'check_accept_language_header: done\n')
+        #sys.stdout.write(f'check_accept_language_header: done\n')
     except Exception as e:
         sys.stderr.write(f'check_accept_language_header: error: {e}\n')
     return report
@@ -308,7 +308,7 @@ def check_accept_header(report, config=None):
             report["response"]["accept"] = sorted_d
             if "status_code" not in report["response"]:
                 report["response"]["status_code"] = "XXX"
-        sys.stdout.write(f'check_accept_header: done\n')
+        #sys.stdout.write(f'check_accept_header: done\n')
     except Exception as e:
         sys.stderr.write(f'check_accept_header: error: {e}\n')
     return report
