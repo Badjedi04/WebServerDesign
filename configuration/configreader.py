@@ -52,7 +52,7 @@ def read_redirect():
         for section in config.sections(): 
             #sys.stdout.write(f'read_redirect: section: {section}\n')
             for (key, value) in config[section].items():
-                sys.stdout.write(f'read_redirect: {key}: {value}\n')
+                #sys.stdout.write(f'read_redirect: {key}: {value}\n')
           
                 config_dict[key] = convert_list(value)
                 #sys.stdout.write(f'read_redirect: \n{config_dict}\n')
