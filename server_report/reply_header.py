@@ -34,7 +34,7 @@ def create_response_header(config, report):
                         report["response"]["payload"] = response["payload"]
             if report["request"]["Connection"]:
                 report["response"]["Connection"] = report["request"]["Connection"]
-        sys.stdout.write(f'Report\n{report}\n') 
+        #sys.stdout.write(f'Report\n{report}\n') 
         return report
     except Exception as e:
         sys.stderr.write(f'create_response_header: error {e}\n')
