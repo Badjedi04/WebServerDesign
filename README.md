@@ -1,8 +1,4 @@
-# Web Server Design
-
-CS 531 - Web Server Design
-
-Fall 2022
+# CS 431/531 Web Server Design - Fall 2022
 
 Author: Prashant 
 
@@ -17,9 +13,6 @@ docker build --tag web:v1.0 .
 Run Docker Image
 
 docker run --rm -it -p 3001:80 -v ${PWD}:/app --entrypoint bash web:v1.1
-
-
-# CS 431/531 Web Server Design - Fall 2022
 
 This repository contains assignments and resources related to the **CS 431/531 Web Server Design** course at Old Dominion University, taught by **Dr. Sawood Alam**. The course focuses on developing a standards-compliant HTTP web server with an in-depth exploration of HTTP protocols, web architecture, and server-side execution.
 
