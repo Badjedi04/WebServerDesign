@@ -59,16 +59,6 @@ All assignments are done on top of the previous one, resulting in a single main 
 | Assignment 5 | Unsafe methods and server-side execution with CGI. |
 
 
-## How to Run the Assignments
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/cs431_webserver.git
-   cd cs431_webserver
-   ```
-2. Follow the setup instructions in the main branch.
-3. Run test cases and verify outputs.
-
 ## References
 
 - [RFC 7230 - HTTP/1.1 Message Syntax](https://datatracker.ietf.org/doc/html/rfc7230)
