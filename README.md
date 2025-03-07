@@ -1,5 +1,3 @@
-# CS 431/531 Web Server Design - Fall 2022
-
 Author: Prashant 
 
 Old Dominion University
@@ -14,7 +12,6 @@ Run Docker Image
 
 docker run --rm -it -p 3001:80 -v ${PWD}:/app --entrypoint bash web:v1.1
 
-This repository contains assignments and resources related to the **CS 431/531 Web Server Design** course at Old Dominion University, taught by **Dr. Sawood Alam**. The course focuses on developing a standards-compliant HTTP web server with an in-depth exploration of HTTP protocols, web architecture, and server-side execution.
 
 ## Course Details
 
@@ -45,18 +42,6 @@ The course covers a wide range of topics related to web server design, including
 10. **HTTPS, HTTP/2, HTTP/3**
 11. **REST and HATEOAS Concepts**
 12. **Web Archiving (WARC, IPFS, IPWB)**
-
-## Assignments
-
-All assignments are done on top of the previous one, resulting in a single main branch that contains all the assignments.
-
-| Assignment | Description |
-|------------|-------------|
-| Assignment 1 | Basic web server implementation with logs, methods, headers, and MIME types. |
-| Assignment 2 | Conditionals, redirections, long-lived, and pipelined connections. |
-| Assignment 3 | Encoding, content negotiation, and partial content. |
-| Assignment 4 | Authentication and authorization mechanisms. |
-| Assignment 5 | Unsafe methods and server-side execution with CGI. |
 
 
 ## References
